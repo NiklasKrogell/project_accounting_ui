@@ -1,4 +1,5 @@
 import { useState } from 'react';
+// @ts-ignore: CSS import type declarations not available
 import './App.css';
 import { AuthProvider, useAuth } from './auth/AuthContext';
 import Login from './pages/Login';

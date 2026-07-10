@@ -1,0 +1,91 @@
+{
+  "common": {
+    "appName": "Project Accounting",
+    "loading": "Loading…",
+    "logout": "Log out",
+    "language": "Language",
+    "administrator": "administrator",
+    "inactive": "inactive",
+    "cancel": "Cancel",
+    "genericError": "Something went wrong."
+  },
+  "languages": {
+    "fi": "Suomi",
+    "en": "English"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "fiscalYears": "Fiscal years"
+  },
+  "auth": {
+    "login": {
+      "title": "Log in",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Log in",
+      "submitting": "Logging in…",
+      "noAccount": "No account?",
+      "signUp": "Sign up"
+    },
+    "signup": {
+      "title": "Create your account",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "email": "Email",
+      "password": "Password",
+      "passwordHint": "Password (min 10 characters)",
+      "companyName": "Company name",
+      "submit": "Sign up",
+      "submitting": "Creating…",
+      "haveAccount": "Already have an account?",
+      "logIn": "Log in"
+    }
+  },
+  "dashboard": {
+    "roleLabel": "Your role in this company:",
+    "connected": "Connected — server confirms access to company {{companyId}}.",
+    "placeholder": "Accounting features will appear here."
+  },
+  "subscription": {
+    "title": "Subscription required",
+    "statusNote": "does not have an active subscription (status: {{status}}).",
+    "body": "To start using the app for this company, its subscription must be paid. Online payment is coming soon — until then, please contact support to activate the subscription."
+  },
+  "fiscalYears": {
+    "title": "Fiscal years",
+    "readOnlyNote": "You have read-only access. Managing fiscal years requires accountant rights.",
+    "empty": "No fiscal years yet.",
+    "newButton": "New fiscal year",
+    "granularityLabel": "Period division: {{value}}",
+    "periodsTitle": "Accounting periods",
+    "period": "Period {{index}}",
+    "form": {
+      "title": "New fiscal year",
+      "startDate": "Start date",
+      "endDate": "End date",
+      "granularity": "Period division",
+      "submit": "Create fiscal year",
+      "submitting": "Creating…"
+    },
+    "granularity": {
+      "MONTH": "Monthly",
+      "QUARTER": "Quarterly"
+    },
+    "status": {
+      "OPEN": "Open",
+      "CLOSED": "Closed"
+    },
+    "actions": {
+      "closeYear": "Close fiscal year",
+      "reopenYear": "Reopen fiscal year",
+      "deleteYear": "Delete",
+      "closePeriod": "Close",
+      "reopenPeriod": "Reopen",
+      "working": "Working…"
+    },
+    "hints": {
+      "closeYearBlocked": "Close all accounting periods before closing the fiscal year."
+    },
+    "confirmDelete": "Delete fiscal year {{range}}? This cannot be undone."
+  }
+}

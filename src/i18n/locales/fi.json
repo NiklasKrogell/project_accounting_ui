@@ -1,0 +1,91 @@
+{
+  "common": {
+    "appName": "Project Accounting",
+    "loading": "Ladataan…",
+    "logout": "Kirjaudu ulos",
+    "language": "Kieli",
+    "administrator": "ylläpitäjä",
+    "inactive": "ei-aktiivinen",
+    "cancel": "Peruuta",
+    "genericError": "Jokin meni pieleen."
+  },
+  "languages": {
+    "fi": "Suomi",
+    "en": "English"
+  },
+  "nav": {
+    "dashboard": "Kojelauta",
+    "fiscalYears": "Tilikaudet"
+  },
+  "auth": {
+    "login": {
+      "title": "Kirjaudu sisään",
+      "email": "Sähköposti",
+      "password": "Salasana",
+      "submit": "Kirjaudu",
+      "submitting": "Kirjaudutaan…",
+      "noAccount": "Ei tiliä?",
+      "signUp": "Luo tili"
+    },
+    "signup": {
+      "title": "Luo tili",
+      "firstName": "Etunimi",
+      "lastName": "Sukunimi",
+      "email": "Sähköposti",
+      "password": "Salasana",
+      "passwordHint": "Salasana (vähintään 10 merkkiä)",
+      "companyName": "Yrityksen nimi",
+      "submit": "Luo tili",
+      "submitting": "Luodaan…",
+      "haveAccount": "Onko sinulla jo tili?",
+      "logIn": "Kirjaudu sisään"
+    }
+  },
+  "dashboard": {
+    "roleLabel": "Roolisi tässä yrityksessä:",
+    "connected": "Yhteys muodostettu — palvelin vahvistaa pääsyn yritykseen {{companyId}}.",
+    "placeholder": "Kirjanpidon toiminnot ilmestyvät tähän."
+  },
+  "subscription": {
+    "title": "Tilaus vaaditaan",
+    "statusNote": "ei ole aktiivista tilausta (tila: {{status}}).",
+    "body": "Jotta voit käyttää sovellusta tälle yritykselle, tilauksen on oltava maksettu. Verkkomaksu on tulossa — siihen asti ota yhteyttä tukeen tilauksen aktivoimiseksi."
+  },
+  "fiscalYears": {
+    "title": "Tilikaudet",
+    "readOnlyNote": "Sinulla on lukuoikeus. Tilikausien hallinta vaatii kirjanpitäjän oikeudet.",
+    "empty": "Ei tilikausia vielä.",
+    "newButton": "Uusi tilikausi",
+    "granularityLabel": "Kausijako: {{value}}",
+    "periodsTitle": "Kirjanpitokaudet",
+    "period": "Kausi {{index}}",
+    "form": {
+      "title": "Uusi tilikausi",
+      "startDate": "Alkupäivä",
+      "endDate": "Loppupäivä",
+      "granularity": "Kausijako",
+      "submit": "Luo tilikausi",
+      "submitting": "Luodaan…"
+    },
+    "granularity": {
+      "MONTH": "Kuukausittain",
+      "QUARTER": "Neljännesvuosittain"
+    },
+    "status": {
+      "OPEN": "Avoin",
+      "CLOSED": "Suljettu"
+    },
+    "actions": {
+      "closeYear": "Sulje tilikausi",
+      "reopenYear": "Avaa tilikausi",
+      "deleteYear": "Poista",
+      "closePeriod": "Sulje",
+      "reopenPeriod": "Avaa",
+      "working": "Käsitellään…"
+    },
+    "hints": {
+      "closeYearBlocked": "Sulje kaikki kirjanpitokaudet ennen tilikauden sulkemista."
+    },
+    "confirmDelete": "Poistetaanko tilikausi {{range}}? Tätä ei voi perua."
+  }
+}

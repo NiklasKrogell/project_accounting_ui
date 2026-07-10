@@ -1,4 +1,5 @@
 import { useState, type ChangeEvent, type FormEvent } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../auth/AuthContext';
 
 interface SignupProps {
@@ -14,6 +15,7 @@ interface SignupFormState {
 }
 
 export default function Signup({ onShowLogin }: SignupProps) {
+  const { t } = useTranslation();
   const { signup } = useAuth();
   const [form, setForm] = useState<SignupFormState>({
     firstName: '',
@@ -43,34 +45,38 @@ export default function Signup({ onShowLogin }: SignupProps) {
 
   return (
     <div className="card">
-      <h1>Create your account</h1>
+      <h1>{t('auth.signup.title')}</h1>
       <form onSubmit={handleSubmit}>
         <label>
-          First name
+          {t('auth.signup.firstName')}
           <input value={form.firstName} onChange={set('firstName')} required autoFocus />
         </label>
         <label>
-          Last name
+          {t('auth.signup.lastName')}
           <input value={form.lastName} onChange={set('lastName')} required />
         </label>
         <label>
-          Email
+          {t('auth.signup.email')}
           <input type="email" value={form.email} onChange={set('email')} required />
         </label>
         <label>
-          Password (min 10 characters)
+          {t('auth.signup.passwordHint')}
           <input type="password" value={form.password} onChange={set('password')} minLength={10} required />
         </label>
         <label>
-          Company name
+          {t('auth.signup.companyName')}
           <input value={form.companyName} onChange={set('companyName')} required />
         </label>
         {error && <p className="error">{error}</p>}
-        <button type="submit" disabled={busy}>{busy ? 'Creating…' : 'Sign up'}</button>
+        <button type="submit" disabled={busy}>
+          {busy ? t('auth.signup.submitting') : t('auth.signup.submit')}
+        </button>
       </form>
       <p>
-        Already have an account?{' '}
-        <button className="link" type="button" onClick={onShowLogin}>Log in</button>
+        {t('auth.signup.haveAccount')}{' '}
+        <button className="link" type="button" onClick={onShowLogin}>
+          {t('auth.signup.logIn')}
+        </button>
       </p>
     </div>
   );

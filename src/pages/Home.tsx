@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { api } from '../api/client';
 import { useAuth } from '../auth/AuthContext';
 
@@ -11,6 +12,7 @@ interface PingResponse {
 // Bare landing page proving gated data access: /api/ping only answers when the
 // session is valid AND the active company's subscription is ACTIVE.
 export default function Home() {
+  const { t } = useTranslation();
   const { activeMembership } = useAuth();
   const [ping, setPing] = useState<PingResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -22,10 +24,13 @@ export default function Home() {
   return (
     <div className="card">
       <h1>{activeMembership?.companyName}</h1>
-      <p>Your role in this company: <strong>{activeMembership?.role}</strong>{activeMembership?.isAdmin ? ' (administrator)' : ''}</p>
-      {ping && <p className="ok">Connected — server confirms access to company {ping.companyId}.</p>}
+      <p>
+        {t('dashboard.roleLabel')} <strong>{activeMembership?.role}</strong>
+        {activeMembership?.isAdmin ? ` (${t('common.administrator')})` : ''}
+      </p>
+      {ping && <p className="ok">{t('dashboard.connected', { companyId: ping.companyId })}</p>}
       {error && <p className="error">{error}</p>}
-      <p>Accounting features will appear here.</p>
+      <p>{t('dashboard.placeholder')}</p>
     </div>
   );
 }

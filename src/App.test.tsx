@@ -1,8 +1,10 @@
 import { render, screen } from '@testing-library/react';
 import App from './App';
 
-test('renders learn react link', () => {
+// With no backend reachable, /api/auth/me rejects and the app settles on the
+// logged-out view. The email field's label is language-independent enough to
+// assert on (matches both the Finnish and English translations).
+test('renders the login screen when logged out', async () => {
   render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+  expect(await screen.findByLabelText(/email|sähköposti/i)).toBeInTheDocument();
 });

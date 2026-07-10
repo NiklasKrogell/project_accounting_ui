@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../auth/AuthContext';
 
 interface LoginProps {
@@ -6,6 +7,7 @@ interface LoginProps {
 }
 
 export default function Login({ onShowSignup }: LoginProps) {
+  const { t } = useTranslation();
   const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -26,22 +28,26 @@ export default function Login({ onShowSignup }: LoginProps) {
 
   return (
     <div className="card">
-      <h1>Log in</h1>
+      <h1>{t('auth.login.title')}</h1>
       <form onSubmit={handleSubmit}>
         <label>
-          Email
+          {t('auth.login.email')}
           <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoFocus />
         </label>
         <label>
-          Password
+          {t('auth.login.password')}
           <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
         </label>
         {error && <p className="error">{error}</p>}
-        <button type="submit" disabled={busy}>{busy ? 'Logging in…' : 'Log in'}</button>
+        <button type="submit" disabled={busy}>
+          {busy ? t('auth.login.submitting') : t('auth.login.submit')}
+        </button>
       </form>
       <p>
-        No account?{' '}
-        <button className="link" type="button" onClick={onShowSignup}>Sign up</button>
+        {t('auth.login.noAccount')}{' '}
+        <button className="link" type="button" onClick={onShowSignup}>
+          {t('auth.login.signUp')}
+        </button>
       </p>
     </div>
   );

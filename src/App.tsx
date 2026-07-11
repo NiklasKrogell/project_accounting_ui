@@ -1,129 +1,51 @@
-import { useState } from 'react';
+import { Navigate, Route, Routes } from 'react-router-dom';
+import { Box, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 // @ts-ignore: CSS import type declarations not available
 import './App.css';
 import './i18n';
-import { changeLanguage, SUPPORTED_LANGUAGES, type Language } from './i18n';
 import { AuthProvider, useAuth } from './auth/AuthContext';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
-import SubscriptionRequired from './pages/SubscriptionRequired';
 import Home from './pages/Home';
 import FiscalYears from './pages/FiscalYears';
+import ProtectedRoute from './routes/ProtectedRoute';
+import PublicOnlyRoute from './routes/PublicOnlyRoute';
+import Layout from './routes/Layout';
 
-type View = 'dashboard' | 'fiscalYears';
-
-function LanguageSwitcher() {
-  const { t, i18n } = useTranslation();
-  return (
-    <select
-      value={i18n.language}
-      onChange={(e) => changeLanguage(e.target.value as Language)}
-      title={t('common.language')}
-      aria-label={t('common.language')}
-    >
-      {SUPPORTED_LANGUAGES.map((lng) => (
-        <option key={lng} value={lng}>
-          {t(`languages.${lng}`)}
-        </option>
-      ))}
-    </select>
-  );
-}
-
-function Shell() {
+function AppRoutes() {
   const { t } = useTranslation();
-  const { loading, user, memberships, activeCompanyId, activeMembership, logout, switchCompany } =
-    useAuth();
-  const [showSignup, setShowSignup] = useState(false);
-  const [view, setView] = useState<View>('dashboard');
+  const { loading } = useAuth();
 
   if (loading) {
     return (
-      <main className="center">
-        <p>{t('common.loading')}</p>
-      </main>
+      <Box sx={{ display: 'flex', justifyContent: 'center', p: 6 }}>
+        <Typography>{t('common.loading')}</Typography>
+      </Box>
     );
   }
-
-  if (!user) {
-    return (
-      <main className="center">
-        {showSignup ? (
-          <Signup onShowLogin={() => setShowSignup(false)} />
-        ) : (
-          <Login onShowSignup={() => setShowSignup(true)} />
-        )}
-      </main>
-    );
-  }
-
-  const subscriptionActive = activeMembership?.subscriptionStatus === 'ACTIVE';
 
   return (
-    <>
-      <header className="topbar">
-        <span className="brand">{t('common.appName')}</span>
-        {memberships.length > 0 && (
-          <select
-            value={activeCompanyId ?? ''}
-            onChange={(e) => switchCompany(e.target.value)}
-            title={t('nav.dashboard')}
-          >
-            {memberships.map((m) => (
-              <option key={m.companyId} value={m.companyId}>
-                {m.companyName}
-                {m.subscriptionStatus !== 'ACTIVE' ? ` (${t('common.inactive')})` : ''}
-              </option>
-            ))}
-          </select>
-        )}
-        <span className="spacer" />
-        <LanguageSwitcher />
-        <span>
-          {user.firstName} {user.lastName}
-        </span>
-        <button type="button" onClick={logout}>
-          {t('common.logout')}
-        </button>
-      </header>
-
-      {subscriptionActive && (
-        <nav className="tabs">
-          <button
-            type="button"
-            className={view === 'dashboard' ? 'tab active' : 'tab'}
-            onClick={() => setView('dashboard')}
-          >
-            {t('nav.dashboard')}
-          </button>
-          <button
-            type="button"
-            className={view === 'fiscalYears' ? 'tab active' : 'tab'}
-            onClick={() => setView('fiscalYears')}
-          >
-            {t('nav.fiscalYears')}
-          </button>
-        </nav>
-      )}
-
-      <main className={subscriptionActive ? 'content' : 'center'}>
-        {!subscriptionActive ? (
-          <SubscriptionRequired />
-        ) : view === 'fiscalYears' ? (
-          <FiscalYears />
-        ) : (
-          <Home />
-        )}
-      </main>
-    </>
+    <Routes>
+      <Route element={<PublicOnlyRoute />}>
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+      </Route>
+      <Route element={<ProtectedRoute />}>
+        <Route element={<Layout />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/fiscal-years" element={<FiscalYears />} />
+        </Route>
+      </Route>
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
   );
 }
 
 export default function App() {
   return (
     <AuthProvider>
-      <Shell />
+      <AppRoutes />
     </AuthProvider>
   );
 }

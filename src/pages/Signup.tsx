@@ -1,10 +1,7 @@
 import { useState, type ChangeEvent, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
-
-interface SignupProps {
-  onShowLogin: () => void;
-}
 
 interface SignupFormState {
   firstName: string;
@@ -20,7 +17,7 @@ interface SignupFormState {
   billingCountry: string;
 }
 
-export default function Signup({ onShowLogin }: SignupProps) {
+export default function Signup() {
   const { t } = useTranslation();
   const { signup } = useAuth();
   const [form, setForm] = useState<SignupFormState>({
@@ -109,10 +106,7 @@ export default function Signup({ onShowLogin }: SignupProps) {
         </button>
       </form>
       <p>
-        {t('auth.signup.haveAccount')}{' '}
-        <button className="link" type="button" onClick={onShowLogin}>
-          {t('auth.signup.logIn')}
-        </button>
+        {t('auth.signup.haveAccount')} <Link to="/login">{t('auth.signup.logIn')}</Link>
       </p>
     </div>
   );

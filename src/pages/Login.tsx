@@ -1,12 +1,9 @@
 import { useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 
-interface LoginProps {
-  onShowSignup: () => void;
-}
-
-export default function Login({ onShowSignup }: LoginProps) {
+export default function Login() {
   const { t } = useTranslation();
   const { login } = useAuth();
   const [email, setEmail] = useState('');
@@ -44,10 +41,7 @@ export default function Login({ onShowSignup }: LoginProps) {
         </button>
       </form>
       <p>
-        {t('auth.login.noAccount')}{' '}
-        <button className="link" type="button" onClick={onShowSignup}>
-          {t('auth.login.signUp')}
-        </button>
+        {t('auth.login.noAccount')} <Link to="/signup">{t('auth.login.signUp')}</Link>
       </p>
     </div>
   );

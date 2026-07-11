@@ -57,7 +57,8 @@ export default function Layout() {
               size="small"
               value={activeCompanyId ?? ''}
               onChange={(e: SelectChangeEvent) => switchCompany(e.target.value)}
-              title={t('nav.dashboard')}
+              title={t('common.company')}
+              aria-label={t('common.company')}
               sx={{ mr: 2 }}
             >
               {memberships.map((m) => (

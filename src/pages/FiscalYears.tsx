@@ -1,5 +1,21 @@
 import { useCallback, useEffect, useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
+import {
+  Alert,
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Chip,
+  MenuItem,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableRow,
+  TextField,
+  Typography,
+} from '@mui/material';
 import { useAuth } from '../auth/AuthContext';
 import { fiscalYearsApi } from '../api/fiscalYears';
 import type { FiscalYear, PeriodGranularity, PeriodStatus } from '../types/fiscal';
@@ -50,18 +66,28 @@ export default function FiscalYears() {
   const lang = i18n.language;
 
   return (
-    <div className="page">
-      <div className="page-head">
-        <h1>{t('fiscalYears.title')}</h1>
+    <Box>
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 2, mb: 2 }}>
+        <Typography variant="h4" component="h1">
+          {t('fiscalYears.title')}
+        </Typography>
         {canManage && (
-          <button type="button" onClick={() => setShowForm((s) => !s)}>
+          <Button variant="contained" onClick={() => setShowForm((s) => !s)}>
             {t('fiscalYears.newButton')}
-          </button>
+          </Button>
         )}
-      </div>
+      </Box>
 
-      {!canManage && <p className="muted">{t('fiscalYears.readOnlyNote')}</p>}
-      {error && <p className="error">{error}</p>}
+      {!canManage && (
+        <Typography color="text.secondary" sx={{ mb: 2 }}>
+          {t('fiscalYears.readOnlyNote')}
+        </Typography>
+      )}
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+      )}
 
       {showForm && canManage && (
         <NewFiscalYearForm
@@ -74,29 +100,23 @@ export default function FiscalYears() {
       )}
 
       {years === null ? (
-        <p>{t('common.loading')}</p>
+        <Typography>{t('common.loading')}</Typography>
       ) : years.length === 0 ? (
-        <p className="muted">{t('fiscalYears.empty')}</p>
+        <Typography color="text.secondary">{t('fiscalYears.empty')}</Typography>
       ) : (
         years.map((fy) => (
-          <FiscalYearCard
-            key={fy.id}
-            fy={fy}
-            lang={lang}
-            canManage={canManage}
-            busyId={busyId}
-            onRun={run}
-          />
+          <FiscalYearCard key={fy.id} fy={fy} lang={lang} canManage={canManage} busyId={busyId} onRun={run} />
         ))
       )}
-    </div>
+    </Box>
   );
 }
 
 function StatusBadge({ status }: { status: PeriodStatus }) {
   const { t } = useTranslation();
-  const cls = status === 'OPEN' ? 'badge badge-open' : 'badge badge-closed';
-  return <span className={cls}>{t(`fiscalYears.status.${status}`)}</span>;
+  return (
+    <Chip size="small" label={t(`fiscalYears.status.${status}`)} color={status === 'OPEN' ? 'success' : 'error'} />
+  );
 }
 
 interface FiscalYearCardProps {
@@ -114,94 +134,100 @@ function FiscalYearCard({ fy, lang, canManage, busyId, onRun }: FiscalYearCardPr
   const range = formatDateRange(fy.startDate, fy.endDate, lang);
 
   return (
-    <section className="card fiscal-year">
-      <div className="fy-head">
-        <div>
-          <h2>{range}</h2>
-          <p className="muted">
-            {t('fiscalYears.granularityLabel', {
-              value: t(`fiscalYears.granularity.${fy.granularity}`),
-            })}
-          </p>
-        </div>
-        <StatusBadge status={fy.status} />
-      </div>
+    <Card sx={{ mb: 2 }}>
+      <CardContent>
+        <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 2 }}>
+          <Box>
+            <Typography variant="h6" component="h2">
+              {range}
+            </Typography>
+            <Typography color="text.secondary" variant="body2">
+              {t('fiscalYears.granularityLabel', { value: t(`fiscalYears.granularity.${fy.granularity}`) })}
+            </Typography>
+          </Box>
+          <StatusBadge status={fy.status} />
+        </Box>
 
-      {canManage && (
-        <div className="fy-actions">
-          {isOpen ? (
-            <button
-              type="button"
-              disabled={!allPeriodsClosed || busyId === fy.id}
-              title={!allPeriodsClosed ? t('fiscalYears.hints.closeYearBlocked') : undefined}
-              onClick={() => onRun(fy.id, () => fiscalYearsApi.close(fy.id))}
-            >
-              {t('fiscalYears.actions.closeYear')}
-            </button>
-          ) : (
-            <button
-              type="button"
-              disabled={busyId === fy.id}
-              onClick={() => onRun(fy.id, () => fiscalYearsApi.reopen(fy.id))}
-            >
-              {t('fiscalYears.actions.reopenYear')}
-            </button>
-          )}
-          {isOpen && (
-            <button
-              type="button"
-              className="danger"
-              disabled={busyId === fy.id}
-              onClick={() => {
-                if (window.confirm(t('fiscalYears.confirmDelete', { range }))) {
-                  onRun(fy.id, () => fiscalYearsApi.remove(fy.id));
-                }
-              }}
-            >
-              {t('fiscalYears.actions.deleteYear')}
-            </button>
-          )}
-        </div>
-      )}
+        {canManage && (
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, my: 2 }}>
+            {isOpen ? (
+              <Button
+                variant="outlined"
+                disabled={!allPeriodsClosed || busyId === fy.id}
+                title={!allPeriodsClosed ? t('fiscalYears.hints.closeYearBlocked') : undefined}
+                onClick={() => onRun(fy.id, () => fiscalYearsApi.close(fy.id))}
+              >
+                {t('fiscalYears.actions.closeYear')}
+              </Button>
+            ) : (
+              <Button
+                variant="outlined"
+                disabled={busyId === fy.id}
+                onClick={() => onRun(fy.id, () => fiscalYearsApi.reopen(fy.id))}
+              >
+                {t('fiscalYears.actions.reopenYear')}
+              </Button>
+            )}
+            {isOpen && (
+              <Button
+                variant="outlined"
+                color="error"
+                disabled={busyId === fy.id}
+                onClick={() => {
+                  if (window.confirm(t('fiscalYears.confirmDelete', { range }))) {
+                    onRun(fy.id, () => fiscalYearsApi.remove(fy.id));
+                  }
+                }}
+              >
+                {t('fiscalYears.actions.deleteYear')}
+              </Button>
+            )}
+          </Box>
+        )}
 
-      <h3>{t('fiscalYears.periodsTitle')}</h3>
-      <table className="periods">
-        <tbody>
-          {fy.periods.map((p) => (
-            <tr key={p.id}>
-              <td>{t('fiscalYears.period', { index: p.index })}</td>
-              <td>{formatDateRange(p.startDate, p.endDate, lang)}</td>
-              <td>
-                <StatusBadge status={p.status} />
-              </td>
-              <td className="right">
-                {canManage &&
-                  isOpen &&
-                  (p.status === 'OPEN' ? (
-                    <button
-                      type="button"
-                      className="secondary"
-                      disabled={busyId === p.id}
-                      onClick={() => onRun(p.id, () => fiscalYearsApi.closePeriod(p.id))}
-                    >
-                      {t('fiscalYears.actions.closePeriod')}
-                    </button>
-                  ) : (
-                    <button
-                      type="button"
-                      className="secondary"
-                      disabled={busyId === p.id}
-                      onClick={() => onRun(p.id, () => fiscalYearsApi.reopenPeriod(p.id))}
-                    >
-                      {t('fiscalYears.actions.reopenPeriod')}
-                    </button>
-                  ))}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </section>
+        <Typography variant="subtitle1" component="h3" sx={{ mt: 2 }}>
+          {t('fiscalYears.periodsTitle')}
+        </Typography>
+        <TableContainer>
+          <Table size="small">
+            <TableBody>
+              {fy.periods.map((p) => (
+                <TableRow key={p.id}>
+                  <TableCell>{t('fiscalYears.period', { index: p.index })}</TableCell>
+                  <TableCell>{formatDateRange(p.startDate, p.endDate, lang)}</TableCell>
+                  <TableCell>
+                    <StatusBadge status={p.status} />
+                  </TableCell>
+                  <TableCell align="right">
+                    {canManage &&
+                      isOpen &&
+                      (p.status === 'OPEN' ? (
+                        <Button
+                          size="small"
+                          variant="outlined"
+                          disabled={busyId === p.id}
+                          onClick={() => onRun(p.id, () => fiscalYearsApi.closePeriod(p.id))}
+                        >
+                          {t('fiscalYears.actions.closePeriod')}
+                        </Button>
+                      ) : (
+                        <Button
+                          size="small"
+                          variant="outlined"
+                          disabled={busyId === p.id}
+                          onClick={() => onRun(p.id, () => fiscalYearsApi.reopenPeriod(p.id))}
+                        >
+                          {t('fiscalYears.actions.reopenPeriod')}
+                        </Button>
+                      ))}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </CardContent>
+    </Card>
   );
 }
 
@@ -230,28 +256,45 @@ function NewFiscalYearForm({ onCreated, onError }: NewFiscalYearFormProps) {
   }
 
   return (
-    <form className="card fy-form" onSubmit={handleSubmit}>
-      <h2>{t('fiscalYears.form.title')}</h2>
-      <div className="fy-form-row">
-        <label>
-          {t('fiscalYears.form.startDate')}
-          <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} required />
-        </label>
-        <label>
-          {t('fiscalYears.form.endDate')}
-          <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} required />
-        </label>
-        <label>
-          {t('fiscalYears.form.granularity')}
-          <select value={granularity} onChange={(e) => setGranularity(e.target.value as PeriodGranularity)}>
-            <option value="MONTH">{t('fiscalYears.granularity.MONTH')}</option>
-            <option value="QUARTER">{t('fiscalYears.granularity.QUARTER')}</option>
-          </select>
-        </label>
-      </div>
-      <button type="submit" disabled={busy}>
-        {busy ? t('fiscalYears.form.submitting') : t('fiscalYears.form.submit')}
-      </button>
-    </form>
+    <Card sx={{ mb: 2 }}>
+      <CardContent>
+        <Typography variant="h6" component="h2" gutterBottom>
+          {t('fiscalYears.form.title')}
+        </Typography>
+        <Box component="form" onSubmit={handleSubmit}>
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 2 }}>
+            <TextField
+              type="date"
+              label={t('fiscalYears.form.startDate')}
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              required
+              slotProps={{ inputLabel: { shrink: true } }}
+            />
+            <TextField
+              type="date"
+              label={t('fiscalYears.form.endDate')}
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              required
+              slotProps={{ inputLabel: { shrink: true } }}
+            />
+            <TextField
+              select
+              label={t('fiscalYears.form.granularity')}
+              value={granularity}
+              onChange={(e) => setGranularity(e.target.value as PeriodGranularity)}
+              sx={{ minWidth: 200 }}
+            >
+              <MenuItem value="MONTH">{t('fiscalYears.granularity.MONTH')}</MenuItem>
+              <MenuItem value="QUARTER">{t('fiscalYears.granularity.QUARTER')}</MenuItem>
+            </TextField>
+          </Box>
+          <Button type="submit" variant="contained" disabled={busy}>
+            {busy ? t('fiscalYears.form.submitting') : t('fiscalYears.form.submit')}
+          </Button>
+        </Box>
+      </CardContent>
+    </Card>
   );
 }

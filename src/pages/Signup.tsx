@@ -12,6 +12,12 @@ interface SignupFormState {
   email: string;
   password: string;
   companyName: string;
+  businessId: string;
+  billingEmail: string;
+  billingAddress: string;
+  billingCity: string;
+  billingPostalCode: string;
+  billingCountry: string;
 }
 
 export default function Signup({ onShowLogin }: SignupProps) {
@@ -23,6 +29,12 @@ export default function Signup({ onShowLogin }: SignupProps) {
     email: '',
     password: '',
     companyName: '',
+    businessId: '',
+    billingEmail: '',
+    billingAddress: '',
+    billingCity: '',
+    billingPostalCode: '',
+    billingCountry: '',
   });
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -66,6 +78,30 @@ export default function Signup({ onShowLogin }: SignupProps) {
         <label>
           {t('auth.signup.companyName')}
           <input value={form.companyName} onChange={set('companyName')} required />
+        </label>
+        <label>
+          {t('auth.signup.businessId')}
+          <input value={form.businessId} onChange={set('businessId')} required />
+        </label>
+        <label>
+          {t('auth.signup.billingEmail')}
+          <input type="email" value={form.billingEmail} onChange={set('billingEmail')} required />
+        </label>
+        <label>
+          {t('auth.signup.billingAddress')}
+          <input value={form.billingAddress} onChange={set('billingAddress')} required />
+        </label>
+        <label>
+          {t('auth.signup.billingCity')}
+          <input value={form.billingCity} onChange={set('billingCity')} required />
+        </label>
+        <label>
+          {t('auth.signup.billingPostalCode')}
+          <input value={form.billingPostalCode} onChange={set('billingPostalCode')} required />
+        </label>
+        <label>
+          {t('auth.signup.billingCountry')}
+          <input value={form.billingCountry} onChange={set('billingCountry')} required />
         </label>
         {error && <p className="error">{error}</p>}
         <button type="submit" disabled={busy}>

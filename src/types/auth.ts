@@ -31,6 +31,12 @@ export interface SignupInput {
   firstName: string;
   lastName: string;
   companyName: string;
+  businessId: string;
+  billingEmail: string;
+  billingAddress: string;
+  billingCity: string;
+  billingPostalCode: string;
+  billingCountry: string;
   phone?: string;
 }
 

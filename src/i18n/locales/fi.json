@@ -14,7 +14,7 @@
     "en": "English"
   },
   "nav": {
-    "dashboard": "Kojelauta",
+    "dashboard": "Dashboard",
     "fiscalYears": "Tilikaudet"
   },
   "auth": {
@@ -35,6 +35,12 @@
       "password": "Salasana",
       "passwordHint": "Salasana (vähintään 10 merkkiä)",
       "companyName": "Yrityksen nimi",
+      "businessId": "Y-tunnus",
+      "billingEmail": "Laskutussähköposti",
+      "billingAddress": "Laskutusosoite",
+      "billingCity": "Kaupunki",
+      "billingPostalCode": "Postinumero",
+      "billingCountry": "Maa",
       "submit": "Luo tili",
       "submitting": "Luodaan…",
       "haveAccount": "Onko sinulla jo tili?",

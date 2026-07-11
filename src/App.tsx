@@ -1,8 +1,6 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { Box, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-// @ts-ignore: CSS import type declarations not available
-import './App.css';
 import './i18n';
 import { AuthProvider, useAuth } from './auth/AuthContext';
 import Login from './pages/Login';

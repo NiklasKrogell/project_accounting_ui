@@ -1,6 +1,7 @@
 import { useState, type ChangeEvent, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
+import { Alert, Box, Button, Card, CardContent, Link, TextField, Typography } from '@mui/material';
 import { useAuth } from '../auth/AuthContext';
 
 interface SignupFormState {
@@ -53,61 +54,108 @@ export default function Signup() {
   }
 
   return (
-    <div className="card">
-      <h1>{t('auth.signup.title')}</h1>
-      <form onSubmit={handleSubmit}>
-        <label>
-          {t('auth.signup.firstName')}
-          <input value={form.firstName} onChange={set('firstName')} required autoFocus />
-        </label>
-        <label>
-          {t('auth.signup.lastName')}
-          <input value={form.lastName} onChange={set('lastName')} required />
-        </label>
-        <label>
-          {t('auth.signup.email')}
-          <input type="email" value={form.email} onChange={set('email')} required />
-        </label>
-        <label>
-          {t('auth.signup.passwordHint')}
-          <input type="password" value={form.password} onChange={set('password')} minLength={10} required />
-        </label>
-        <label>
-          {t('auth.signup.companyName')}
-          <input value={form.companyName} onChange={set('companyName')} required />
-        </label>
-        <label>
-          {t('auth.signup.businessId')}
-          <input value={form.businessId} onChange={set('businessId')} required />
-        </label>
-        <label>
-          {t('auth.signup.billingEmail')}
-          <input type="email" value={form.billingEmail} onChange={set('billingEmail')} required />
-        </label>
-        <label>
-          {t('auth.signup.billingAddress')}
-          <input value={form.billingAddress} onChange={set('billingAddress')} required />
-        </label>
-        <label>
-          {t('auth.signup.billingCity')}
-          <input value={form.billingCity} onChange={set('billingCity')} required />
-        </label>
-        <label>
-          {t('auth.signup.billingPostalCode')}
-          <input value={form.billingPostalCode} onChange={set('billingPostalCode')} required />
-        </label>
-        <label>
-          {t('auth.signup.billingCountry')}
-          <input value={form.billingCountry} onChange={set('billingCountry')} required />
-        </label>
-        {error && <p className="error">{error}</p>}
-        <button type="submit" disabled={busy}>
-          {busy ? t('auth.signup.submitting') : t('auth.signup.submit')}
-        </button>
-      </form>
-      <p>
-        {t('auth.signup.haveAccount')} <Link to="/login">{t('auth.signup.logIn')}</Link>
-      </p>
-    </div>
+    <Box sx={{ display: 'flex', justifyContent: 'center', p: 6 }}>
+      <Card sx={{ width: '100%', maxWidth: 480 }}>
+        <CardContent>
+          <Typography variant="h5" component="h1" gutterBottom>
+            {t('auth.signup.title')}
+          </Typography>
+          <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <TextField
+              label={t('auth.signup.firstName')}
+              value={form.firstName}
+              onChange={set('firstName')}
+              required
+              autoFocus
+              fullWidth
+            />
+            <TextField
+              label={t('auth.signup.lastName')}
+              value={form.lastName}
+              onChange={set('lastName')}
+              required
+              fullWidth
+            />
+            <TextField
+              type="email"
+              label={t('auth.signup.email')}
+              value={form.email}
+              onChange={set('email')}
+              required
+              fullWidth
+            />
+            <TextField
+              type="password"
+              label={t('auth.signup.passwordHint')}
+              value={form.password}
+              onChange={set('password')}
+              slotProps={{ htmlInput: { minLength: 10 } }}
+              required
+              fullWidth
+            />
+            <TextField
+              label={t('auth.signup.companyName')}
+              value={form.companyName}
+              onChange={set('companyName')}
+              required
+              fullWidth
+            />
+            <TextField
+              label={t('auth.signup.businessId')}
+              value={form.businessId}
+              onChange={set('businessId')}
+              required
+              fullWidth
+            />
+            <TextField
+              type="email"
+              label={t('auth.signup.billingEmail')}
+              value={form.billingEmail}
+              onChange={set('billingEmail')}
+              required
+              fullWidth
+            />
+            <TextField
+              label={t('auth.signup.billingAddress')}
+              value={form.billingAddress}
+              onChange={set('billingAddress')}
+              required
+              fullWidth
+            />
+            <TextField
+              label={t('auth.signup.billingCity')}
+              value={form.billingCity}
+              onChange={set('billingCity')}
+              required
+              fullWidth
+            />
+            <TextField
+              label={t('auth.signup.billingPostalCode')}
+              value={form.billingPostalCode}
+              onChange={set('billingPostalCode')}
+              required
+              fullWidth
+            />
+            <TextField
+              label={t('auth.signup.billingCountry')}
+              value={form.billingCountry}
+              onChange={set('billingCountry')}
+              required
+              fullWidth
+            />
+            {error && <Alert severity="error">{error}</Alert>}
+            <Button type="submit" variant="contained" disabled={busy}>
+              {busy ? t('auth.signup.submitting') : t('auth.signup.submit')}
+            </Button>
+          </Box>
+          <Typography sx={{ mt: 2 }}>
+            {t('auth.signup.haveAccount')}{' '}
+            <Link component={RouterLink} to="/login">
+              {t('auth.signup.logIn')}
+            </Link>
+          </Typography>
+        </CardContent>
+      </Card>
+    </Box>
   );
 }

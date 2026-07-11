@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Alert, Card, CardContent, Typography } from '@mui/material';
 import { api } from '../api/client';
 import { useAuth } from '../auth/AuthContext';
 
@@ -22,15 +23,27 @@ export default function Home() {
   }, [activeMembership?.companyId]);
 
   return (
-    <div className="card">
-      <h1>{activeMembership?.companyName}</h1>
-      <p>
-        {t('dashboard.roleLabel')} <strong>{activeMembership?.role}</strong>
-        {activeMembership?.isAdmin ? ` (${t('common.administrator')})` : ''}
-      </p>
-      {ping && <p className="ok">{t('dashboard.connected', { companyId: ping.companyId })}</p>}
-      {error && <p className="error">{error}</p>}
-      <p>{t('dashboard.placeholder')}</p>
-    </div>
+    <Card>
+      <CardContent>
+        <Typography variant="h5" component="h1" gutterBottom>
+          {activeMembership?.companyName}
+        </Typography>
+        <Typography>
+          {t('dashboard.roleLabel')} <strong>{activeMembership?.role}</strong>
+          {activeMembership?.isAdmin ? ` (${t('common.administrator')})` : ''}
+        </Typography>
+        {ping && (
+          <Alert severity="success" sx={{ mt: 2 }}>
+            {t('dashboard.connected', { companyId: ping.companyId })}
+          </Alert>
+        )}
+        {error && (
+          <Alert severity="error" sx={{ mt: 2 }}>
+            {error}
+          </Alert>
+        )}
+        <Typography sx={{ mt: 2 }}>{t('dashboard.placeholder')}</Typography>
+      </CardContent>
+    </Card>
   );
 }

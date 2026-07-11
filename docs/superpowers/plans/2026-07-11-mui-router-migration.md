@@ -6,7 +6,9 @@
 
 **Architecture:** `BrowserRouter` + MUI `ThemeProvider`/`CssBaseline` wrap the app at the root (`index.tsx`). `App.tsx` becomes a route table instead of a `view`-state switch. Two small guard components (`ProtectedRoute`, `PublicOnlyRoute`) replace the old auth-state branching; a `Layout` component (MUI `AppBar` + `Tabs`) replaces the old inline topbar/tabs markup and hosts the subscription-status gate so the header stays visible even when a company's subscription isn't active — matching current behavior. Each page then gets its markup migrated from plain HTML/CSS classes to MUI components, one file at a time.
 
-**Tech Stack:** React 19, TypeScript 4.9.5, Create React App (react-scripts 5), `@mui/material` 9.2.0, `@mui/icons-material` 9.2.0, `@emotion/react` 11.14.0, `@emotion/styled` 11.14.1, `react-router-dom` 7.18.1 (used in declarative/v6-style mode only — no loaders/actions), `@fontsource/roboto` 5.2.10, `react-i18next`.
+**Tech Stack:** React 19, TypeScript 4.9.5, Create React App (react-scripts 5), `@mui/material` 9.2.0, `@mui/icons-material` 9.2.0, `@emotion/react` 11.14.0, `@emotion/styled` 11.14.1, `react-router-dom` 6.30.4 (declarative API), `@fontsource/roboto` 5.2.10, `react-i18next`.
+
+**Amendment (post Task 1, during Task 4):** the plan originally pinned `react-router-dom@7.18.1`. That version splits into internal `react-router` + `react-router-dom` packages with a `./dom` subpath export in `react-router`'s `package.json` `exports` map. CRA5's bundled Jest (27.5.1) does not resolve `exports` subpaths, so any test importing `react-router-dom` fails with `Cannot find module 'react-router/dom'` — a toolchain incompatibility, not a code defect. Discovered by the Task 4 implementer; user chose to downgrade to `react-router-dom@6.30.4` (latest v6, no package split, resolves fine under Jest 27) over patching Jest's `moduleNameMapper`. All later references to `react-router-dom@7.18.1` in this plan should be read as `6.30.4` — the API used (`BrowserRouter`, `Routes`, `Route`, `Outlet`, `Navigate`, `Link`, `useNavigate`, `useLocation`) is identical in both.
 
 ## Global Constraints
 

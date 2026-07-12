@@ -16,7 +16,68 @@
   },
   "nav": {
     "dashboard": "Dashboard",
-    "fiscalYears": "Tilikaudet"
+    "fiscalYears": "Tilikaudet",
+    "accounting": "Kirjanpito",
+    "journal": "Päiväkirja",
+    "new": "Uusi",
+    "newEntry": "Kirjaus"
+  },
+  "voucherType": {
+    "SALES": "Myynti",
+    "PURCHASE": "Osto",
+    "PAYMENT": "Maksu",
+    "EXPENSE": "Kulu",
+    "WAGE": "Palkka",
+    "MEMOVOUCHER": "Muistiotosite"
+  },
+  "journal": {
+    "title": "Päiväkirja",
+    "newButton": "Uusi kirjaus",
+    "empty": "Ei kirjauksia.",
+    "filters": {
+      "from": "Alkaen",
+      "to": "Päättyen",
+      "voucherType": "Tositelaji",
+      "all": "Kaikki"
+    },
+    "columns": {
+      "account": "Tili",
+      "description": "Selite",
+      "debit": "Debet",
+      "credit": "Kredit",
+      "vat": "ALV"
+    }
+  },
+  "journalEntry": {
+    "dialogTitle": "Uusi kirjaus",
+    "voucherType": "Tositelaji",
+    "date": "Päivämäärä",
+    "description": "Selite",
+    "primaryAccount": "Tili",
+    "linesTitle": "Kirjausrivit",
+    "line": {
+      "account": "Tili",
+      "type": "Tyyppi",
+      "amount": "Summa",
+      "vatRate": "ALV-%",
+      "vatAmount": "ALV",
+      "description": "Riviselite"
+    },
+    "type": {
+      "debit": "Debet",
+      "credit": "Kredit"
+    },
+    "addLine": "Lisää rivi",
+    "removeLine": "Poista rivi",
+    "balance": {
+      "debit": "Debet",
+      "credit": "Kredit",
+      "difference": "Erotus",
+      "balanced": "Täsmää"
+    },
+    "submit": "Tallenna kirjaus",
+    "submitting": "Tallennetaan…",
+    "loadingAccounts": "Ladataan tilejä…"
   },
   "auth": {
     "login": {

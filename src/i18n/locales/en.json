@@ -16,7 +16,68 @@
   },
   "nav": {
     "dashboard": "Dashboard",
-    "fiscalYears": "Fiscal years"
+    "fiscalYears": "Fiscal years",
+    "accounting": "Accounting",
+    "journal": "Journal",
+    "new": "New",
+    "newEntry": "Entry"
+  },
+  "voucherType": {
+    "SALES": "Sales",
+    "PURCHASE": "Purchase",
+    "PAYMENT": "Payment",
+    "EXPENSE": "Expense",
+    "WAGE": "Wage",
+    "MEMOVOUCHER": "Memo voucher"
+  },
+  "journal": {
+    "title": "Journal",
+    "newButton": "New entry",
+    "empty": "No entries.",
+    "filters": {
+      "from": "From",
+      "to": "To",
+      "voucherType": "Voucher type",
+      "all": "All"
+    },
+    "columns": {
+      "account": "Account",
+      "description": "Description",
+      "debit": "Debit",
+      "credit": "Credit",
+      "vat": "VAT"
+    }
+  },
+  "journalEntry": {
+    "dialogTitle": "New entry",
+    "voucherType": "Voucher type",
+    "date": "Date",
+    "description": "Description",
+    "primaryAccount": "Account",
+    "linesTitle": "Entry lines",
+    "line": {
+      "account": "Account",
+      "type": "Type",
+      "amount": "Amount",
+      "vatRate": "VAT %",
+      "vatAmount": "VAT",
+      "description": "Line description"
+    },
+    "type": {
+      "debit": "Debit",
+      "credit": "Credit"
+    },
+    "addLine": "Add line",
+    "removeLine": "Remove line",
+    "balance": {
+      "debit": "Debit",
+      "credit": "Credit",
+      "difference": "Difference",
+      "balanced": "Balanced"
+    },
+    "submit": "Save entry",
+    "submitting": "Saving…",
+    "loadingAccounts": "Loading accounts…"
   },
   "auth": {
     "login": {

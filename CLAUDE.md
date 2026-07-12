@@ -20,6 +20,8 @@ npm test -- MyComponent          # run tests matching a name/file pattern
 
 CI (`.github/workflows/ci.yml`, push/PR to `master`): Node 22, `npm ci` → `npm test -- --watchAll=false` → `npm run build`.
 
+ALWAYS ASK BEFORE TESTING WITH PREVIEW!
+
 ## Architecture
 
 ### Routing

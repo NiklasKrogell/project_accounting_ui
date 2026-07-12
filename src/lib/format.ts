@@ -14,3 +14,8 @@ export function formatDate(iso: string, lang: string): string {
 export function formatDateRange(startIso: string, endIso: string, lang: string): string {
   return `${formatDate(startIso, lang)} – ${formatDate(endIso, lang)}`;
 }
+
+// Formats a euro amount for display (fi -> 1 234,56 €, en -> €1,234.56).
+export function formatCurrency(amount: number, lang: string): string {
+  return new Intl.NumberFormat(lang, { style: 'currency', currency: 'EUR' }).format(amount);
+}

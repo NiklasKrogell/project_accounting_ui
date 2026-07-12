@@ -7,6 +7,7 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Home from './pages/Home';
 import FiscalYears from './pages/FiscalYears';
+import Journal from './pages/Journal';
 import ProtectedRoute from './routes/ProtectedRoute';
 import PublicOnlyRoute from './routes/PublicOnlyRoute';
 import Layout from './routes/Layout';
@@ -33,6 +34,7 @@ function AppRoutes() {
         <Route element={<Layout />}>
           <Route path="/" element={<Home />} />
           <Route path="/fiscal-years" element={<FiscalYears />} />
+          <Route path="/accounting/journal" element={<Journal />} />
         </Route>
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />

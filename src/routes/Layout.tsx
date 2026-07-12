@@ -4,14 +4,35 @@ import { useAuth } from '../auth/AuthContext';
 import SubscriptionRequired from '../pages/SubscriptionRequired';
 import { CustomAppBar } from '../components/Header/CustomAppBar';
 import { TabBar } from '../components/Header/TabBar';
+import { resolveActiveTab, type NavAction } from '../components/Header/navConfig';
+import {
+  JournalEntryDialogProvider,
+  useJournalEntryDialog,
+} from '../components/JournalEntry/JournalEntryDialogContext';
 
+// Split in two so LayoutContent can use hooks that need the dialog provider.
 export default function Layout() {
+  return (
+    <JournalEntryDialogProvider>
+      <LayoutContent />
+    </JournalEntryDialogProvider>
+  );
+}
+
+function LayoutContent() {
   const { activeMembership } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
+  const { openCreate } = useJournalEntryDialog();
 
   const subscriptionActive = activeMembership?.subscriptionStatus === 'ACTIVE';
-  const activeTab = location.pathname === '/fiscal-years' ? '/fiscal-years' : '/';
+  const activeTab = resolveActiveTab(location.pathname);
+
+  const handleAction = (action: NavAction) => {
+    if (action === 'newJournalEntry') {
+      openCreate({ onSaved: () => navigate('/accounting/journal') });
+    }
+  };
 
   return (
     <>
@@ -19,10 +40,11 @@ export default function Layout() {
       <CustomAppBar/>
 
       {/* Tabs */}
-      <TabBar 
+      <TabBar
         subscriptionActive={subscriptionActive}
         activeTab={activeTab}
         navigate={navigate}
+        onAction={handleAction}
       />
 
       {/* Main content */}

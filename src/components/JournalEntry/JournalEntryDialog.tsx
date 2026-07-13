@@ -19,30 +19,33 @@ import AddIcon from '@mui/icons-material/Add';
 import { accountsApi } from '../../api/accounts';
 import { journalEntriesApi } from '../../api/journalEntries';
 import type { Account } from '../../types/account';
-import type {
-  CreateJournalEntryInput,
-  EntryLineType,
-  JournalEntry,
-  VoucherType,
-} from '../../types/journal';
+import type { CreateJournalEntryInput, JournalEntry, VoucherType } from '../../types/journal';
 import { VOUCHER_TYPES } from '../../types/journal';
 import { formatCurrency } from '../../lib/format';
 
 const MAX_LINES = 100;
 
+// Fixed column widths shared by the header row and every line row so they
+// line up like a spreadsheet. Account/description flex, the rest are fixed.
+const LINE_GRID_COLUMNS = 'minmax(200px, 2fr) 120px 80px 100px minmax(140px, 1.4fr) 40px';
+
 // Inputs are kept as strings while editing; parsed on submit. The Account
 // object (not just its id) is stored so the Autocomplete stays controlled.
+// There's no separate debit/credit field: the amount's sign carries it
+// (+ = debit, - = credit), same convention as most bookkeeping software.
+// vatAmount isn't entered directly — it's derived from amount x vatRate.
+// vatCode is a placeholder column: VAT codes aren't modeled anywhere in the
+// backend yet, so it's purely local and never sent with the entry.
 interface LineDraft {
   account: Account | null;
-  type: EntryLineType;
   amount: string;
   vatRate: string;
-  vatAmount: string;
+  vatCode: string;
   description: string;
 }
 
-function emptyLine(type: EntryLineType): LineDraft {
-  return { account: null, type, amount: '', vatRate: '0', vatAmount: '0', description: '' };
+function emptyLine(): LineDraft {
+  return { account: null, amount: '', vatRate: '0', vatCode: '', description: '' };
 }
 
 // Local (not UTC) date so an evening entry defaults to the user's calendar day.
@@ -51,7 +54,7 @@ function todayIso(): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
-// Accepts Finnish comma decimals ('123,45'). Returns null when not a number.
+// Accepts Finnish comma decimals ('123,45' / '-123,45'). Returns null when not a number.
 function parseAmount(value: string): number | null {
   if (!value.trim()) return null;
   const n = parseFloat(value.trim().replace(',', '.'));
@@ -60,6 +63,15 @@ function parseAmount(value: string): number | null {
 
 function toCents(value: number): number {
   return Math.round(value * 100);
+}
+
+// VAT amount in cents for a line, derived from its (signed) amount and VAT
+// rate — null when either input doesn't parse yet.
+function lineVatCents(line: LineDraft): number | null {
+  const amount = parseAmount(line.amount);
+  const vatRate = parseAmount(line.vatRate);
+  if (amount === null || vatRate === null) return null;
+  return Math.round(Math.abs(toCents(amount)) * (vatRate / 100));
 }
 
 const accountLabel = (a: Account) => `${a.number} ${a.name}`;
@@ -83,8 +95,7 @@ export default function JournalEntryDialog({ open, onClose, onSaved }: Props) {
   const [voucherType, setVoucherType] = useState<VoucherType>('SALES');
   const [date, setDate] = useState(todayIso());
   const [description, setDescription] = useState('');
-  const [primaryAccount, setPrimaryAccount] = useState<Account | null>(null);
-  const [lines, setLines] = useState<LineDraft[]>([emptyLine('debit'), emptyLine('credit')]);
+  const [lines, setLines] = useState<LineDraft[]>([emptyLine(), emptyLine()]);
 
   const [busy, setBusy] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -96,8 +107,7 @@ export default function JournalEntryDialog({ open, onClose, onSaved }: Props) {
     setVoucherType('SALES');
     setDate(todayIso());
     setDescription('');
-    setPrimaryAccount(null);
-    setLines([emptyLine('debit'), emptyLine('credit')]);
+    setLines([emptyLine(), emptyLine()]);
     setSubmitError(null);
     setAccounts(null);
     setAccountsError(null);
@@ -112,55 +122,75 @@ export default function JournalEntryDialog({ open, onClose, onSaved }: Props) {
     let credit = 0;
     for (const line of lines) {
       const amount = parseAmount(line.amount);
-      if (amount === null || amount <= 0) continue;
-      if (line.type === 'debit') debit += toCents(amount);
-      else credit += toCents(amount);
+      if (amount === null) continue;
+      const cents = toCents(amount);
+      if (cents > 0) debit += cents;
+      else if (cents < 0) credit += -cents;
     }
     return { debit, credit, difference: debit - credit };
   }, [lines]);
 
   const balanced = balance.difference === 0 && balance.debit > 0 && balance.credit > 0;
+  // Nothing entered yet vs. entered-but-mismatched get different colors below.
+  const hasAnyAmount = balance.debit > 0 || balance.credit > 0;
+
+  // Debit-side VAT is deductible (receivable, "Alv-saamiset"); credit-side
+  // VAT is collected on behalf of the tax authority (payable, "Alv-velka").
+  const vatSummary = useMemo(() => {
+    let receivable = 0;
+    let payable = 0;
+    for (const line of lines) {
+      const amount = parseAmount(line.amount);
+      const vatCents = lineVatCents(line);
+      if (amount === null || vatCents === null) continue;
+      if (amount > 0) receivable += vatCents;
+      else if (amount < 0) payable += vatCents;
+    }
+    return { receivable, payable };
+  }, [lines]);
 
   const linesValid = lines.every((line) => {
     const amount = parseAmount(line.amount);
     const vatRate = parseAmount(line.vatRate);
-    const vatAmount = parseAmount(line.vatAmount);
     return (
       line.account !== null &&
       amount !== null &&
-      amount > 0 &&
+      amount !== 0 &&
       vatRate !== null &&
       vatRate >= 0 &&
-      vatRate <= 100 &&
-      vatAmount !== null &&
-      vatAmount >= 0
+      vatRate <= 100
     );
   });
 
-  const canSubmit =
-    !busy && balanced && linesValid && description.trim().length > 0 && primaryAccount !== null && !!date;
+  const canSubmit = !busy && balanced && linesValid && description.trim().length > 0 && !!date;
 
   function updateLine(index: number, patch: Partial<LineDraft>) {
     setLines((prev) => prev.map((line, i) => (i === index ? { ...line, ...patch } : line)));
   }
 
   async function handleSubmit() {
-    if (!canSubmit || !primaryAccount) return;
+    if (!canSubmit) return;
     setBusy(true);
     setSubmitError(null);
     const input: CreateJournalEntryInput = {
       voucherType,
       date,
       description: description.trim(),
-      accountId: primaryAccount.id,
-      lines: lines.map((line) => ({
-        accountId: line.account!.id,
-        amount: parseAmount(line.amount)!,
-        description: line.description.trim() || undefined,
-        vatRate: parseAmount(line.vatRate)!,
-        vatAmount: parseAmount(line.vatAmount)!,
-        type: line.type,
-      })),
+      // The backend's top-level accountId is a required "primary account" on
+      // the voucher; there's no separate field for it in the UI since it'd
+      // just duplicate a line — the first line's account stands in for it.
+      accountId: lines[0].account!.id,
+      lines: lines.map((line) => {
+        const amount = parseAmount(line.amount)!;
+        return {
+          accountId: line.account!.id,
+          amount: Math.abs(amount),
+          description: line.description.trim() || undefined,
+          vatRate: parseAmount(line.vatRate)!,
+          vatAmount: lineVatCents(line)! / 100,
+          type: amount < 0 ? 'credit' : 'debit',
+        };
+      }),
     };
     try {
       const entry = await journalEntriesApi.create(input);
@@ -210,19 +240,6 @@ export default function JournalEntryDialog({ open, onClose, onSaved }: Props) {
             required
             slotProps={{ inputLabel: { shrink: true } }}
           />
-          <Autocomplete
-            options={accounts ?? []}
-            value={primaryAccount}
-            onChange={(_, value) => setPrimaryAccount(value)}
-            getOptionLabel={accountLabel}
-            isOptionEqualToValue={(a, b) => a.id === b.id}
-            loading={accounts === null}
-            loadingText={t('journalEntry.loadingAccounts')}
-            sx={{ minWidth: 260, flexGrow: 1 }}
-            renderInput={(params) => (
-              <TextField {...params} label={t('journalEntry.primaryAccount')} required />
-            )}
-          />
         </Box>
         <TextField
           label={t('journalEntry.description')}
@@ -236,10 +253,30 @@ export default function JournalEntryDialog({ open, onClose, onSaved }: Props) {
         <Typography variant="subtitle1" component="h3" sx={{ mt: 3, mb: 1 }}>
           {t('journalEntry.linesTitle')}
         </Typography>
+
+        <Box sx={{ display: 'grid', gridTemplateColumns: LINE_GRID_COLUMNS, gap: 1, alignItems: 'end', mb: 0.5 }}>
+          <Typography variant="caption" color="text.secondary">
+            {t('journalEntry.line.account')}
+          </Typography>
+          <Typography variant="caption" color="text.secondary">
+            {t('journalEntry.line.amount')}
+          </Typography>
+          <Typography variant="caption" color="text.secondary">
+            {t('journalEntry.line.vatRate')}
+          </Typography>
+          <Typography variant="caption" color="text.secondary">
+            {t('journalEntry.line.vatCode')}
+          </Typography>
+          <Typography variant="caption" color="text.secondary">
+            {t('journalEntry.line.description')}
+          </Typography>
+          <span />
+        </Box>
+
         {lines.map((line, index) => (
           <Box
             key={index}
-            sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 1, alignItems: 'center' }}
+            sx={{ display: 'grid', gridTemplateColumns: LINE_GRID_COLUMNS, gap: 1, mb: 1, alignItems: 'center' }}
           >
             <Autocomplete
               options={accounts ?? []}
@@ -250,53 +287,31 @@ export default function JournalEntryDialog({ open, onClose, onSaved }: Props) {
               loading={accounts === null}
               loadingText={t('journalEntry.loadingAccounts')}
               size="small"
-              sx={{ minWidth: 220, flexGrow: 1 }}
-              renderInput={(params) => (
-                <TextField {...params} label={t('journalEntry.line.account')} required />
-              )}
+              renderInput={(params) => <TextField {...params} fullWidth required />}
             />
             <TextField
-              select
               size="small"
-              label={t('journalEntry.line.type')}
-              value={line.type}
-              onChange={(e) => updateLine(index, { type: e.target.value as EntryLineType })}
-              sx={{ width: 110 }}
-            >
-              <MenuItem value="debit">{t('journalEntry.type.debit')}</MenuItem>
-              <MenuItem value="credit">{t('journalEntry.type.credit')}</MenuItem>
-            </TextField>
-            <TextField
-              size="small"
-              label={t('journalEntry.line.amount')}
               value={line.amount}
               onChange={(e) => updateLine(index, { amount: e.target.value })}
+              placeholder="+100,00"
               required
-              sx={{ width: 120 }}
               slotProps={{ htmlInput: { inputMode: 'decimal' } }}
             />
             <TextField
               size="small"
-              label={t('journalEntry.line.vatRate')}
               value={line.vatRate}
               onChange={(e) => updateLine(index, { vatRate: e.target.value })}
-              sx={{ width: 90 }}
               slotProps={{ htmlInput: { inputMode: 'decimal' } }}
             />
             <TextField
               size="small"
-              label={t('journalEntry.line.vatAmount')}
-              value={line.vatAmount}
-              onChange={(e) => updateLine(index, { vatAmount: e.target.value })}
-              sx={{ width: 110 }}
-              slotProps={{ htmlInput: { inputMode: 'decimal' } }}
+              value={line.vatCode}
+              onChange={(e) => updateLine(index, { vatCode: e.target.value })}
             />
             <TextField
               size="small"
-              label={t('journalEntry.line.description')}
               value={line.description}
               onChange={(e) => updateLine(index, { description: e.target.value })}
-              sx={{ minWidth: 140, flexGrow: 1 }}
             />
             <IconButton
               aria-label={t('journalEntry.removeLine')}
@@ -310,7 +325,7 @@ export default function JournalEntryDialog({ open, onClose, onSaved }: Props) {
         <Button
           startIcon={<AddIcon />}
           disabled={lines.length >= MAX_LINES}
-          onClick={() => setLines((prev) => [...prev, emptyLine('debit')])}
+          onClick={() => setLines((prev) => [...prev, emptyLine()])}
         >
           {t('journalEntry.addLine')}
         </Button>
@@ -318,8 +333,8 @@ export default function JournalEntryDialog({ open, onClose, onSaved }: Props) {
         <Typography
           sx={{
             mt: 2,
-            color: balanced ? 'success.main' : 'text.secondary',
-            fontWeight: balanced ? 600 : 400,
+            color: balanced ? 'success.main' : hasAnyAmount ? 'error.main' : 'text.secondary',
+            fontWeight: balanced || hasAnyAmount ? 600 : 400,
           }}
         >
           {t('journalEntry.balance.debit')}: {formatCurrency(balance.debit / 100, lang)}
@@ -329,6 +344,11 @@ export default function JournalEntryDialog({ open, onClose, onSaved }: Props) {
           {balanced
             ? t('journalEntry.balance.balanced')
             : `${t('journalEntry.balance.difference')}: ${formatCurrency(balance.difference / 100, lang)}`}
+        </Typography>
+        <Typography color="text.secondary">
+          {t('journalEntry.vat.receivable')}: {formatCurrency(vatSummary.receivable / 100, lang)}
+          {' | '}
+          {t('journalEntry.vat.payable')}: {formatCurrency(vatSummary.payable / 100, lang)}
         </Typography>
       </DialogContent>
       <DialogActions>

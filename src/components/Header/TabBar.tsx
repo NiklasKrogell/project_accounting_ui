@@ -18,7 +18,21 @@ interface Props {
 interface OpenMenu {
     tab: Extract<NavTab, { kind: 'menu' }>;
     anchorEl: HTMLElement;
+    // Captured from the tab at open time so the dropdown matches its width.
+    width: number;
 }
+
+// Mirrors MUI's default Tab styling (theme.typography.button + its layout)
+// so dropdown items read as an extension of the tab they fell from.
+const menuItemSx = {
+    ...theme.typography.button,
+    justifyContent: 'center',
+    minHeight: 48,
+    color: theme.palette.text.secondary,
+    '&:hover': {
+        color: theme.palette.primary.main,
+    },
+};
 
 // Small grace period so moving the cursor from the tab into the menu (crossing
 // the mouseleave/mouseenter boundary) doesn't flicker the menu closed.
@@ -48,7 +62,7 @@ export const TabBar: React.FC<Props> = ({ subscriptionActive, activeTab, navigat
 
     const openFor = (tab: Extract<NavTab, { kind: 'menu' }>, anchorEl: HTMLElement) => {
         cancelClose();
-        setOpenMenu({ tab, anchorEl });
+        setOpenMenu({ tab, anchorEl, width: anchorEl.getBoundingClientRect().width });
     };
 
     const closeMenu = () => {

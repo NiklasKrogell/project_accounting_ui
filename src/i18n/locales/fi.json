@@ -53,19 +53,13 @@
     "voucherType": "Tositelaji",
     "date": "Päivämäärä",
     "description": "Selite",
-    "primaryAccount": "Tili",
     "linesTitle": "Kirjausrivit",
     "line": {
       "account": "Tili",
-      "type": "Tyyppi",
       "amount": "Summa",
       "vatRate": "ALV-%",
-      "vatAmount": "ALV",
+      "vatCode": "ALV-tunnus",
       "description": "Riviselite"
-    },
-    "type": {
-      "debit": "Debet",
-      "credit": "Kredit"
     },
     "addLine": "Lisää rivi",
     "removeLine": "Poista rivi",
@@ -74,6 +68,10 @@
       "credit": "Kredit",
       "difference": "Erotus",
       "balanced": "Täsmää"
+    },
+    "vat": {
+      "receivable": "Alv-saamiset",
+      "payable": "Alv-velka"
     },
     "submit": "Tallenna kirjaus",
     "submitting": "Tallennetaan…",

@@ -53,19 +53,13 @@
     "voucherType": "Voucher type",
     "date": "Date",
     "description": "Description",
-    "primaryAccount": "Account",
     "linesTitle": "Entry lines",
     "line": {
       "account": "Account",
-      "type": "Type",
       "amount": "Amount",
       "vatRate": "VAT %",
-      "vatAmount": "VAT",
+      "vatCode": "VAT code",
       "description": "Line description"
-    },
-    "type": {
-      "debit": "Debit",
-      "credit": "Credit"
     },
     "addLine": "Add line",
     "removeLine": "Remove line",
@@ -74,6 +68,10 @@
       "credit": "Credit",
       "difference": "Difference",
       "balanced": "Balanced"
+    },
+    "vat": {
+      "receivable": "VAT receivable",
+      "payable": "VAT payable"
     },
     "submit": "Save entry",
     "submitting": "Saving…",

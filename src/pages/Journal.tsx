@@ -1,33 +1,16 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import {
-  Alert,
-  Box,
-  Button,
-  Card,
-  CardContent,
-  Chip,
-  MenuItem,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TablePagination,
-  TableRow,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { Alert, Box, Button, Typography } from '@mui/material';
 import { useAuth } from '../auth/AuthContext';
 import { journalEntriesApi } from '../api/journalEntries';
 import { accountsApi } from '../api/accounts';
 import { useJournalEntryDialog } from '../components/JournalEntry/JournalEntryDialogContext';
+import { JournalFilters } from '../components/Journal/JournalFilters';
+import { JournalEntriesTable } from '../components/Journal/JournalEntriesTable';
 import type { JournalEntry, VoucherType } from '../types/journal';
-import { VOUCHER_TYPES } from '../types/journal';
 import type { Account } from '../types/account';
 import { roleAtLeast } from '../lib/roles';
-import { formatCurrency, formatDate } from '../lib/format';
 
 // Journal (päiväkirja): chronological list of entries with their lines.
 // Everyone with access can view; creating entries requires LEDGER+.
@@ -94,13 +77,6 @@ export default function Journal() {
     setPage(0);
   };
 
-  const rows = useMemo(() => {
-    if (!entries) return null;
-    return entries.map((entry) => (
-      <EntryRows key={entry.id} entry={entry} lang={lang} accountLabel={accountLabel} />
-    ));
-  }, [entries, lang, accountLabel]);
-
   return (
     <Box>
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 2, mb: 2 }}>
@@ -120,125 +96,28 @@ export default function Journal() {
         </Alert>
       )}
 
-      <Card sx={{ mb: 2 }}>
-        <CardContent sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
-          <TextField
-            type="date"
-            size="small"
-            label={t('journal.filters.from')}
-            value={from}
-            onChange={(e) => applyFilter(() => setFrom(e.target.value))}
-            slotProps={{ inputLabel: { shrink: true } }}
-          />
-          <TextField
-            type="date"
-            size="small"
-            label={t('journal.filters.to')}
-            value={to}
-            onChange={(e) => applyFilter(() => setTo(e.target.value))}
-            slotProps={{ inputLabel: { shrink: true } }}
-          />
-          <TextField
-            select
-            size="small"
-            label={t('journal.filters.voucherType')}
-            value={voucherType}
-            onChange={(e) => applyFilter(() => setVoucherType(e.target.value as VoucherType | ''))}
-            sx={{ minWidth: 180 }}
-          >
-            <MenuItem value="">{t('journal.filters.all')}</MenuItem>
-            {VOUCHER_TYPES.map((type) => (
-              <MenuItem key={type} value={type}>
-                {t(`voucherType.${type}`)}
-              </MenuItem>
-            ))}
-          </TextField>
-        </CardContent>
-      </Card>
+      <JournalFilters
+        from={from}
+        to={to}
+        voucherType={voucherType}
+        onFromChange={(value) => applyFilter(() => setFrom(value))}
+        onToChange={(value) => applyFilter(() => setTo(value))}
+        onVoucherTypeChange={(value) => applyFilter(() => setVoucherType(value))}
+      />
 
-      <Card>
-        {entries === null ? (
-          <CardContent>
-            <Typography>{t('common.loading')}</Typography>
-          </CardContent>
-        ) : entries.length === 0 ? (
-          <CardContent>
-            <Typography color="text.secondary">{t('journal.empty')}</Typography>
-          </CardContent>
-        ) : (
-          <TableContainer>
-            <Table size="small">
-              <TableHead>
-                <TableRow>
-                  <TableCell>{t('journal.columns.account')}</TableCell>
-                  <TableCell>{t('journal.columns.description')}</TableCell>
-                  <TableCell align="right">{t('journal.columns.debit')}</TableCell>
-                  <TableCell align="right">{t('journal.columns.credit')}</TableCell>
-                  <TableCell align="right">{t('journal.columns.vat')}</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>{rows}</TableBody>
-            </Table>
-          </TableContainer>
-        )}
-        <TablePagination
-          component="div"
-          count={total}
-          page={page}
-          onPageChange={(_, newPage) => setPage(newPage)}
-          rowsPerPage={rowsPerPage}
-          onRowsPerPageChange={(e) => {
-            setRowsPerPage(parseInt(e.target.value, 10));
-            setPage(0);
-          }}
-          rowsPerPageOptions={[25, 50, 100]}
-        />
-      </Card>
+      <JournalEntriesTable
+        entries={entries}
+        lang={lang}
+        accountLabel={accountLabel}
+        total={total}
+        page={page}
+        rowsPerPage={rowsPerPage}
+        onPageChange={setPage}
+        onRowsPerPageChange={(value) => {
+          setRowsPerPage(value);
+          setPage(0);
+        }}
+      />
     </Box>
-  );
-}
-
-interface EntryRowsProps {
-  entry: JournalEntry;
-  lang: string;
-  accountLabel: (id: string) => string;
-}
-
-// One header row per entry (date, voucher chip, description) followed by its
-// indented lines. No expand/collapse — prototype-simple.
-function EntryRows({ entry, lang, accountLabel }: EntryRowsProps) {
-  const { t } = useTranslation();
-  return (
-    <>
-      <TableRow sx={{ backgroundColor: 'action.hover' }}>
-        <TableCell colSpan={5}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap' }}>
-            <Typography variant="body2" sx={{ fontWeight: 600 }}>
-              {formatDate(entry.date, lang)}
-            </Typography>
-            <Chip
-              size="small"
-              color="primary"
-              variant="outlined"
-              label={`${t(`voucherType.${entry.voucherType}`)} #${entry.voucherNumber}`}
-            />
-            <Typography variant="body2">{entry.description}</Typography>
-          </Box>
-        </TableCell>
-      </TableRow>
-      {entry.lines.map((line) => (
-        <TableRow key={line.id}>
-          <TableCell sx={{ pl: 4 }}>{accountLabel(line.accountId)}</TableCell>
-          <TableCell>{line.description}</TableCell>
-          <TableCell align="right">
-            {line.type === 'debit' ? formatCurrency(line.amount, lang) : ''}
-          </TableCell>
-          <TableCell align="right">
-            {line.type === 'credit' ? formatCurrency(line.amount, lang) : ''}
-          </TableCell>
-          <TableCell align="right">{line.vatRate !== 0 ? `${line.vatRate} %` : ''}</TableCell>
-        </TableRow>
-      ))}
-    </>
   );
 }

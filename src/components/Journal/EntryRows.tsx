@@ -1,0 +1,49 @@
+import { useTranslation } from 'react-i18next';
+import { Box, Chip, TableCell, TableRow, Typography } from '@mui/material';
+import type { JournalEntry } from '../../types/journal';
+import { formatCurrency, formatDate } from '../../lib/format';
+
+interface EntryRowsProps {
+  entry: JournalEntry;
+  lang: string;
+  accountLabel: (id: string) => string;
+}
+
+// One header row per entry (date, voucher chip, description) followed by its
+// indented lines. No expand/collapse — prototype-simple.
+export function EntryRows({ entry, lang, accountLabel }: EntryRowsProps) {
+  const { t } = useTranslation();
+  return (
+    <>
+      <TableRow sx={{ backgroundColor: 'action.hover' }}>
+        <TableCell colSpan={5}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap' }}>
+            <Typography variant="body2" sx={{ fontWeight: 600 }}>
+              {formatDate(entry.date, lang)}
+            </Typography>
+            <Chip
+              size="small"
+              color="primary"
+              variant="outlined"
+              label={`${t(`voucherType.${entry.voucherType}`)} #${entry.voucherNumber}`}
+            />
+            <Typography variant="body2">{entry.description}</Typography>
+          </Box>
+        </TableCell>
+      </TableRow>
+      {entry.lines.map((line) => (
+        <TableRow key={line.id}>
+          <TableCell sx={{ pl: 4 }}>{accountLabel(line.accountId)}</TableCell>
+          <TableCell>{line.description}</TableCell>
+          <TableCell align="right">
+            {line.type === 'debit' ? formatCurrency(line.amount, lang) : ''}
+          </TableCell>
+          <TableCell align="right">
+            {line.type === 'credit' ? formatCurrency(line.amount, lang) : ''}
+          </TableCell>
+          <TableCell align="right">{line.vatRate !== 0 ? `${line.vatRate} %` : ''}</TableCell>
+        </TableRow>
+      ))}
+    </>
+  );
+}

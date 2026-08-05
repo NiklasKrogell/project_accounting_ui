@@ -21,6 +21,16 @@ export interface AccountGroupRef {
   mainClass: AccountMainClass;
 }
 
+export interface AccountGroup {
+  id: string;
+  name: string;
+  mainClass: AccountMainClass;
+  // Included by the list endpoint, omitted when the relation wasn't loaded.
+  accounts?: Account[];
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface Account {
   id: string;
   // Account number is a per-company string (e.g. '1900'), not a numeric id.

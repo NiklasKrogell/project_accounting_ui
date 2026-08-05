@@ -19,8 +19,29 @@
     "fiscalYears": "Tilikaudet",
     "accounting": "Kirjanpito",
     "journal": "Päiväkirja",
+    "chartOfAccounts": "Tilikartta",
     "new": "Uusi",
     "newEntry": "Kirjaus"
+  },
+  "accountMainClass": {
+    "REVENUE": "Liikevaihto",
+    "MATERIALS_AND_SERVICES": "Materiaalit ja palvelut",
+    "PERSONNEL_EXPENSES": "Henkilöstökulut",
+    "DEPRECIATION": "Poistot ja arvonalentumiset",
+    "OTHER_OPERATING_EXPENSES": "Liiketoiminnan muut kulut",
+    "FINANCIAL_INCOME_AND_EXPENSES": "Rahoitustuotot ja -kulut",
+    "APPROPRIATIONS_AND_TAXES": "Tilinpäätössiirrot ja verot",
+    "FIXED_ASSETS": "Pysyvät vastaavat",
+    "CURRENT_ASSETS": "Vaihtuvat vastaavat",
+    "EQUITY": "Oma pääoma",
+    "PROVISIONS": "Pakolliset varaukset",
+    "LIABILITIES": "Vieras pääoma"
+  },
+  "chartOfAccounts": {
+    "title": "Tilikartta",
+    "empty": "Ei tilejä vielä.",
+    "emptyGroup": "Ei tilejä tässä ryhmässä.",
+    "ungrouped": "Ryhmittelemättömät tilit"
   },
   "voucherType": {
     "SALES": "Myynti",

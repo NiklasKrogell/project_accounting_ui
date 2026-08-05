@@ -27,7 +27,10 @@ export const NAV_TABS: NavTab[] = [
     kind: 'menu',
     labelKey: 'nav.accounting',
     value: '/accounting',
-    items: [{ labelKey: 'nav.journal', path: '/accounting/journal' }],
+    items: [
+      { labelKey: 'nav.journal', path: '/accounting/journal' },
+      { labelKey: 'nav.chartOfAccounts', path: '/accounting/chart-of-accounts' },
+    ],
   },
   {
     kind: 'menu',

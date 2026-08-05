@@ -19,8 +19,29 @@
     "fiscalYears": "Fiscal years",
     "accounting": "Accounting",
     "journal": "Journal",
+    "chartOfAccounts": "Chart of accounts",
     "new": "New",
     "newEntry": "Entry"
+  },
+  "accountMainClass": {
+    "REVENUE": "Revenue",
+    "MATERIALS_AND_SERVICES": "Materials and services",
+    "PERSONNEL_EXPENSES": "Personnel expenses",
+    "DEPRECIATION": "Depreciation and impairment",
+    "OTHER_OPERATING_EXPENSES": "Other operating expenses",
+    "FINANCIAL_INCOME_AND_EXPENSES": "Financial income and expenses",
+    "APPROPRIATIONS_AND_TAXES": "Appropriations and taxes",
+    "FIXED_ASSETS": "Non-current assets",
+    "CURRENT_ASSETS": "Current assets",
+    "EQUITY": "Equity",
+    "PROVISIONS": "Provisions",
+    "LIABILITIES": "Liabilities"
+  },
+  "chartOfAccounts": {
+    "title": "Chart of accounts",
+    "empty": "No accounts yet.",
+    "emptyGroup": "No accounts in this group.",
+    "ungrouped": "Ungrouped accounts"
   },
   "voucherType": {
     "SALES": "Sales",

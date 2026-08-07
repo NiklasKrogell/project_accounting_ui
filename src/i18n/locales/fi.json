@@ -20,8 +20,7 @@
     "accounting": "Kirjanpito",
     "journal": "Päiväkirja",
     "chartOfAccounts": "Tilikartta",
-    "new": "Uusi",
-    "newEntry": "Kirjaus"
+    "newEntry": "Uusi kirjaus"
   },
   "accountMainClass": {
     "REVENUE": "Liikevaihto",
@@ -42,6 +41,14 @@
     "empty": "Ei tilejä vielä.",
     "emptyGroup": "Ei tilejä tässä ryhmässä.",
     "ungrouped": "Ryhmittelemättömät tilit"
+  },
+  "accountEdit": {
+    "title": "Muokkaa tiliä",
+    "number": "Tilinumero",
+    "numberHint": "Tilinumeroa ei voi vielä muuttaa.",
+    "name": "Tilin nimi",
+    "submit": "Tallenna",
+    "submitting": "Tallennetaan…"
   },
   "voucherType": {
     "SALES": "Myynti",

@@ -43,6 +43,7 @@ export const TabBar: React.FC<Props> = ({ subscriptionActive, activeTab, navigat
     const { activeMembership } = useAuth();
     const [openMenu, setOpenMenu] = useState<OpenMenu | null>(null);
     const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const paperRef = useRef<HTMLDivElement | null>(null);
 
     useEffect(() => () => {
         if (closeTimer.current) clearTimeout(closeTimer.current);
@@ -65,14 +66,29 @@ export const TabBar: React.FC<Props> = ({ subscriptionActive, activeTab, navigat
         setOpenMenu({ tab, anchorEl, width: anchorEl.getBoundingClientRect().width });
     };
 
+    // Closing is paired with `disableRestoreFocus` on the Menu below. MUI's
+    // focus trap would otherwise force-focus whatever was focused when the menu
+    // took focus — after editing an account and scrolling away, that's an
+    // off-screen table row, and re-focusing it yanks the viewport back down to
+    // it. We restore focus ourselves instead: only when focus is actually
+    // inside the menu (so a plain hover-out never steals it), only to the tab
+    // that owns the menu, and never with a scroll.
+    const finishClose = () => {
+        const paper = paperRef.current;
+        if (openMenu && paper?.contains(document.activeElement)) {
+            openMenu.anchorEl.focus({ preventScroll: true });
+        }
+        setOpenMenu(null);
+    };
+
     const closeMenu = () => {
         cancelClose();
-        setOpenMenu(null);
+        finishClose();
     };
 
     const scheduleClose = () => {
         cancelClose();
-        closeTimer.current = setTimeout(() => setOpenMenu(null), CLOSE_DELAY_MS);
+        closeTimer.current = setTimeout(finishClose, CLOSE_DELAY_MS);
     };
 
     const handleItemClick = (item: NavMenuEntry) => {
@@ -118,20 +134,24 @@ export const TabBar: React.FC<Props> = ({ subscriptionActive, activeTab, navigat
                 onClose={closeMenu}
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
                 transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+                // See finishClose(): we handle focus restoration ourselves so
+                // closing the menu can never scroll the page.
+                disableRestoreFocus
                 // Let hovers pass through the modal backdrop (so other tabs stay
                 // hoverable), but re-enable pointer events on the menu paper.
                 slotProps={{
                     root: { sx: { pointerEvents: 'none' } },
                     paper: {
+                        ref: paperRef,
                         onMouseEnter: cancelClose,
                         onMouseLeave: scheduleClose,
-                        sx: { pointerEvents: 'auto' },
+                        sx: { pointerEvents: 'auto', minWidth: openMenu?.width },
                     },
                 }}
             >
                 {openMenu &&
                     visibleItems(openMenu.tab).map((item) => (
-                        <MenuItem key={item.labelKey} onClick={() => handleItemClick(item)}>
+                        <MenuItem key={item.labelKey} onClick={() => handleItemClick(item)} sx={menuItemSx}>
                             {t(item.labelKey)}
                         </MenuItem>
                     ))}

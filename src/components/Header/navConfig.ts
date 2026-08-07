@@ -1,7 +1,7 @@
 import type { Role } from '../../types/auth';
 
 // Actions a nav menu item can trigger instead of navigating. Handled by
-// Layout's onAction; the union grows as more "Uusi" items are added.
+// Layout's onAction; the union grows as more action items are added.
 export type NavAction = 'newJournalEntry';
 
 export interface NavMenuEntry {
@@ -28,15 +28,10 @@ export const NAV_TABS: NavTab[] = [
     labelKey: 'nav.accounting',
     value: '/accounting',
     items: [
+      { labelKey: 'nav.newEntry', action: 'newJournalEntry', minRole: 'LEDGER' },
       { labelKey: 'nav.journal', path: '/accounting/journal' },
       { labelKey: 'nav.chartOfAccounts', path: '/accounting/chart-of-accounts' },
     ],
-  },
-  {
-    kind: 'menu',
-    labelKey: 'nav.new',
-    value: '__new__',
-    items: [{ labelKey: 'nav.newEntry', action: 'newJournalEntry', minRole: 'LEDGER' }],
   },
 ];
 

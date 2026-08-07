@@ -20,8 +20,7 @@
     "accounting": "Accounting",
     "journal": "Journal",
     "chartOfAccounts": "Chart of accounts",
-    "new": "New",
-    "newEntry": "Entry"
+    "newEntry": "New entry"
   },
   "accountMainClass": {
     "REVENUE": "Revenue",
@@ -42,6 +41,14 @@
     "empty": "No accounts yet.",
     "emptyGroup": "No accounts in this group.",
     "ungrouped": "Ungrouped accounts"
+  },
+  "accountEdit": {
+    "title": "Edit account",
+    "number": "Account number",
+    "numberHint": "The account number can't be changed yet.",
+    "name": "Account name",
+    "submit": "Save",
+    "submitting": "Saving…"
   },
   "voucherType": {
     "SALES": "Sales",

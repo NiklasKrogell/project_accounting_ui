@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, FormControlLabel, MenuItem, Switch, TextField } from '@mui/material';
+import { costCenterLabel, type CostCenter } from '../../types/costCenter';
 import type { FiscalYear } from '../../types/fiscal';
 import { formatDateRange } from '../../lib/format';
 
@@ -7,10 +8,13 @@ interface IncomeStatementFiltersProps {
   fiscalYears: FiscalYear[];
   from: string;
   to: string;
+  costCenterId: string;
+  costCenters: CostCenter[];
   showAccounts: boolean;
   grossResult: boolean;
   lang: string;
   onPeriodChange: (from: string, to: string) => void;
+  onCostCenterChange: (value: string) => void;
   onShowAccountsChange: (value: boolean) => void;
   onGrossResultChange: (value: boolean) => void;
 }
@@ -25,10 +29,13 @@ export function IncomeStatementFilters({
   fiscalYears,
   from,
   to,
+  costCenterId,
+  costCenters,
   showAccounts,
   grossResult,
   lang,
   onPeriodChange,
+  onCostCenterChange,
   onShowAccountsChange,
   onGrossResultChange,
 }: IncomeStatementFiltersProps) {
@@ -75,6 +82,21 @@ export function IncomeStatementFilters({
           onChange={(e) => onPeriodChange(from, e.target.value)}
           slotProps={{ inputLabel: { shrink: true } }}
         />
+        <TextField
+          select
+          size="small"
+          label={t('incomeStatement.filters.costCenter')}
+          value={costCenterId}
+          onChange={(e) => onCostCenterChange(e.target.value)}
+          sx={{ minWidth: 240 }}
+        >
+          <MenuItem value="">{t('incomeStatement.filters.allCostCenters')}</MenuItem>
+          {costCenters.map((costCenter) => (
+            <MenuItem key={costCenter.id} value={costCenter.id}>
+              {costCenterLabel(costCenter)}
+            </MenuItem>
+          ))}
+        </TextField>
         <FormControlLabel
           control={
             <Switch

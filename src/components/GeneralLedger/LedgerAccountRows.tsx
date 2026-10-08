@@ -6,6 +6,7 @@ import { formatCurrency, formatDate } from '../../lib/format';
 interface LedgerAccountRowsProps {
   account: GeneralLedgerAccount;
   lang: string;
+  costCenterLabel: (id: string | null) => string;
 }
 
 const numeric = { fontVariantNumeric: 'tabular-nums' } as const;
@@ -14,13 +15,13 @@ const numeric = { fontVariantNumeric: 'tabular-nums' } as const;
 // balance, one indented row per posting with a running balance, and a closing
 // row carrying the period totals. Returns a fragment of rows (same shape as
 // Journal's EntryRows) so every account shares the one table's columns.
-export function LedgerAccountRows({ account, lang }: LedgerAccountRowsProps) {
+export function LedgerAccountRows({ account, lang, costCenterLabel }: LedgerAccountRowsProps) {
   const { t } = useTranslation();
 
   return (
     <>
       <TableRow sx={{ backgroundColor: 'action.hover' }}>
-        <TableCell colSpan={6}>
+        <TableCell colSpan={7}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap' }}>
             <Typography variant="body2" sx={{ fontWeight: 600, ...numeric }}>
               {account.accountNumber} {account.accountName}
@@ -43,6 +44,7 @@ export function LedgerAccountRows({ account, lang }: LedgerAccountRowsProps) {
             {formatCurrency(account.openingBalance, lang)}
           </Typography>
         </TableCell>
+        <TableCell />
       </TableRow>
 
       {account.lines.map((line) => (
@@ -63,6 +65,7 @@ export function LedgerAccountRows({ account, lang }: LedgerAccountRowsProps) {
           <TableCell align="right" sx={numeric}>
             {formatCurrency(line.runningBalance, lang)}
           </TableCell>
+          <TableCell>{costCenterLabel(line.costCenterId)}</TableCell>
         </TableRow>
       ))}
 
@@ -79,6 +82,7 @@ export function LedgerAccountRows({ account, lang }: LedgerAccountRowsProps) {
         <TableCell align="right" sx={{ fontWeight: 600, ...numeric }}>
           {formatCurrency(account.closingBalance, lang)}
         </TableCell>
+        <TableCell />
       </TableRow>
     </>
   );

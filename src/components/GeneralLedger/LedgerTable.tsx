@@ -18,6 +18,7 @@ import { LedgerAccountRows } from './LedgerAccountRows';
 interface LedgerTableProps {
   accounts: GeneralLedgerAccount[] | null;
   lang: string;
+  costCenterLabel: (id: string | null) => string;
   // Counts ACCOUNTS, not rows — pagination is per account.
   total: number;
   page: number;
@@ -29,6 +30,7 @@ interface LedgerTableProps {
 export function LedgerTable({
   accounts,
   lang,
+  costCenterLabel,
   total,
   page,
   rowsPerPage,
@@ -40,9 +42,14 @@ export function LedgerTable({
   const rows = useMemo(() => {
     if (!accounts) return null;
     return accounts.map((account) => (
-      <LedgerAccountRows key={account.accountId} account={account} lang={lang} />
+      <LedgerAccountRows
+        key={account.accountId}
+        account={account}
+        lang={lang}
+        costCenterLabel={costCenterLabel}
+      />
     ));
-  }, [accounts, lang]);
+  }, [accounts, lang, costCenterLabel]);
 
   return (
     <Card>
@@ -65,6 +72,7 @@ export function LedgerTable({
                 <TableCell align="right">{t('generalLedger.columns.debit')}</TableCell>
                 <TableCell align="right">{t('generalLedger.columns.credit')}</TableCell>
                 <TableCell align="right">{t('generalLedger.columns.balance')}</TableCell>
+                <TableCell>{t('generalLedger.columns.costCenter')}</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>{rows}</TableBody>

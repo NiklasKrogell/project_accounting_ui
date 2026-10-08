@@ -1,10 +1,12 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Box, Typography } from '@mui/material';
 import { useAuth } from '../auth/AuthContext';
 import { generalLedgerApi } from '../api/generalLedger';
 import { accountsApi } from '../api/accounts';
+import { costCentersApi } from '../api/costCenters';
 import type { Account } from '../types/account';
+import { costCenterLabel, type CostCenter } from '../types/costCenter';
 import type { GeneralLedgerAccount } from '../types/generalLedger';
 import { GeneralLedgerFilters } from '../components/GeneralLedger/GeneralLedgerFilters';
 import { LedgerTable } from '../components/GeneralLedger/LedgerTable';
@@ -24,11 +26,13 @@ export default function GeneralLedger() {
   const [accounts, setAccounts] = useState<GeneralLedgerAccount[] | null>(null);
   const [total, setTotal] = useState(0);
   const [accountOptions, setAccountOptions] = useState<Account[]>([]);
+  const [costCenterOptions, setCostCenterOptions] = useState<CostCenter[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
   const [accountId, setAccountId] = useState('');
+  const [costCenterId, setCostCenterId] = useState('');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(25);
 
@@ -39,6 +43,7 @@ export default function GeneralLedger() {
         from: from || undefined,
         to: to || undefined,
         accountId: accountId || undefined,
+        costCenterId: costCenterId || undefined,
         take: rowsPerPage,
         skip: page * rowsPerPage,
       });
@@ -47,20 +52,34 @@ export default function GeneralLedger() {
     } catch (err) {
       setError((err as Error).message);
     }
-  }, [from, to, accountId, page, rowsPerPage]);
+  }, [from, to, accountId, costCenterId, page, rowsPerPage]);
 
   useEffect(() => {
     void load();
   }, [load, activeMembership?.companyId]);
 
-  // The account filter's options. companyId is in the deps so switching
-  // company doesn't leave the previous company's accounts in the select.
+  // The account and cost center filters' options. companyId is in the deps so
+  // switching company doesn't leave the previous company's options in the
+  // selects, nor its cost center selected (the new company would 404 on it).
   useEffect(() => {
+    setCostCenterId('');
     accountsApi
       .list()
       .then(setAccountOptions)
       .catch((err) => setError((err as Error).message));
+    costCentersApi
+      .list()
+      .then(setCostCenterOptions)
+      .catch((err) => setError((err as Error).message));
   }, [activeMembership?.companyId]);
+
+  const costCenterLabelById = useMemo(() => {
+    const byId = new Map(costCenterOptions.map((c) => [c.id, c]));
+    return (id: string | null) => {
+      const costCenter = id ? byId.get(id) : undefined;
+      return costCenter ? costCenterLabel(costCenter) : '';
+    };
+  }, [costCenterOptions]);
 
   // Filter changes reset pagination so results always start from page one.
   const applyFilter = (setter: () => void) => {
@@ -85,14 +104,18 @@ export default function GeneralLedger() {
         to={to}
         accountId={accountId}
         accounts={accountOptions}
+        costCenterId={costCenterId}
+        costCenters={costCenterOptions}
         onFromChange={(value) => applyFilter(() => setFrom(value))}
         onToChange={(value) => applyFilter(() => setTo(value))}
         onAccountChange={(value) => applyFilter(() => setAccountId(value))}
+        onCostCenterChange={(value) => applyFilter(() => setCostCenterId(value))}
       />
 
       <LedgerTable
         accounts={accounts}
         lang={lang}
+        costCenterLabel={costCenterLabelById}
         total={total}
         page={page}
         rowsPerPage={rowsPerPage}

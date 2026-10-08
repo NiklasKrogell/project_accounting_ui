@@ -2,8 +2,10 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Box, Typography } from '@mui/material';
 import { useAuth } from '../auth/AuthContext';
+import { costCentersApi } from '../api/costCenters';
 import { fiscalYearsApi } from '../api/fiscalYears';
 import { incomeStatementApi } from '../api/incomeStatement';
+import type { CostCenter } from '../types/costCenter';
 import type { FiscalYear } from '../types/fiscal';
 import type { IncomeStatement as Statement } from '../types/incomeStatement';
 import { comparisonRange, defaultFiscalYear, todayIso } from '../lib/reportPeriod';
@@ -28,6 +30,8 @@ export default function IncomeStatement() {
   const [fiscalYears, setFiscalYears] = useState<FiscalYear[] | null>(null);
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
+  const [costCenters, setCostCenters] = useState<CostCenter[]>([]);
+  const [costCenterId, setCostCenterId] = useState('');
   const [showAccounts, setShowAccounts] = useState(true);
   const [grossResult, setGrossResult] = useState(false);
   const [statement, setStatement] = useState<Statement | null>(null);
@@ -41,7 +45,17 @@ export default function IncomeStatement() {
     setStatement(null);
     setFrom('');
     setTo('');
+    setCostCenters([]);
+    setCostCenterId('');
     setError(null);
+    costCentersApi
+      .list()
+      .then((list) => {
+        if (!cancelled) setCostCenters(list);
+      })
+      .catch((err) => {
+        if (!cancelled) setError((err as Error).message);
+      });
     fiscalYearsApi
       .list()
       .then((years) => {
@@ -68,7 +82,11 @@ export default function IncomeStatement() {
     let cancelled = false;
     setError(null);
     incomeStatementApi
-      .get({ period: { from, to }, comparison: comparisonRange(from, to, fiscalYears) })
+      .get({
+        period: { from, to },
+        comparison: comparisonRange(from, to, fiscalYears),
+        costCenterId: costCenterId || undefined,
+      })
       .then((data) => {
         if (!cancelled) setStatement(data);
       })
@@ -79,7 +97,7 @@ export default function IncomeStatement() {
     return () => {
       cancelled = true;
     };
-  }, [periodReady, from, to, fiscalYears]);
+  }, [periodReady, from, to, fiscalYears, costCenterId]);
 
   const unallocatedItems =
     statement?.rows.flatMap((row) =>
@@ -108,6 +126,8 @@ export default function IncomeStatement() {
             fiscalYears={fiscalYears}
             from={from}
             to={to}
+            costCenterId={costCenterId}
+            costCenters={costCenters}
             showAccounts={showAccounts}
             grossResult={grossResult}
             lang={lang}
@@ -115,6 +135,7 @@ export default function IncomeStatement() {
               setFrom(newFrom);
               setTo(newTo);
             }}
+            onCostCenterChange={setCostCenterId}
             onShowAccountsChange={setShowAccounts}
             onGrossResultChange={setGrossResult}
           />

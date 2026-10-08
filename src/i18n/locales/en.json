@@ -24,6 +24,7 @@
     "journal": "Journal",
     "generalLedger": "General ledger",
     "chartOfAccounts": "Chart of accounts",
+    "costCenters": "Cost centers",
     "newEntry": "New entry",
     "incomeStatement": "Income statement",
     "balanceSheet": "Balance sheet"
@@ -177,6 +178,27 @@
     "submit": "Save",
     "submitting": "Saving…"
   },
+  "costCenters": {
+    "title": "Cost centers",
+    "readOnlyNote": "You have read-only access. Managing cost centers requires ledger rights.",
+    "empty": "No cost centers yet.",
+    "newButton": "New cost center",
+    "columns": {
+      "code": "Code",
+      "name": "Name"
+    },
+    "edit": "Edit cost center {{label}}",
+    "delete": "Delete cost center {{label}}",
+    "confirmDelete": "Delete cost center {{label}}?",
+    "dialog": {
+      "createTitle": "New cost center",
+      "editTitle": "Edit cost center",
+      "code": "Code",
+      "name": "Name",
+      "submit": "Save",
+      "submitting": "Saving…"
+    }
+  },
   "voucherType": {
     "SALES": "Sales",
     "PURCHASE": "Purchase",
@@ -197,6 +219,7 @@
     },
     "columns": {
       "account": "Account",
+      "costCenter": "Cost center",
       "description": "Description",
       "debit": "Debit",
       "credit": "Credit",
@@ -213,12 +236,15 @@
       "from": "From",
       "to": "To",
       "account": "Account",
-      "allAccounts": "All accounts"
+      "allAccounts": "All accounts",
+      "costCenter": "Cost center",
+      "allCostCenters": "All cost centers"
     },
     "columns": {
       "date": "Date",
       "voucher": "Voucher",
       "description": "Description",
+      "costCenter": "Cost center",
       "debit": "Debit",
       "credit": "Credit",
       "balance": "Balance"
@@ -235,6 +261,8 @@
       "customPeriod": "Custom period",
       "from": "From",
       "to": "To",
+      "costCenter": "Cost center",
+      "allCostCenters": "All cost centers",
       "showAccounts": "Show accounts",
       "grossResult": "Combine items 1–5 as gross result"
     },
@@ -282,6 +310,7 @@
     "linesTitle": "Entry lines",
     "line": {
       "account": "Account",
+      "costCenter": "Cost center",
       "amount": "Amount",
       "vatRate": "VAT %",
       "vatCode": "VAT code",
@@ -301,7 +330,8 @@
     },
     "submit": "Save entry",
     "submitting": "Saving…",
-    "loadingAccounts": "Loading accounts…"
+    "loadingAccounts": "Loading accounts…",
+    "loadingCostCenters": "Loading cost centers…"
   },
   "auth": {
     "login": {

@@ -24,6 +24,7 @@
     "journal": "Päiväkirja",
     "generalLedger": "Pääkirja",
     "chartOfAccounts": "Tilikartta",
+    "costCenters": "Kustannuspaikat",
     "newEntry": "Uusi kirjaus",
     "incomeStatement": "Tuloslaskelma",
     "balanceSheet": "Tase"
@@ -177,6 +178,27 @@
     "submit": "Tallenna",
     "submitting": "Tallennetaan…"
   },
+  "costCenters": {
+    "title": "Kustannuspaikat",
+    "readOnlyNote": "Sinulla on lukuoikeus. Kustannuspaikkojen hallinta vaatii kirjaajan oikeudet.",
+    "empty": "Ei kustannuspaikkoja vielä.",
+    "newButton": "Uusi kustannuspaikka",
+    "columns": {
+      "code": "Koodi",
+      "name": "Nimi"
+    },
+    "edit": "Muokkaa kustannuspaikkaa {{label}}",
+    "delete": "Poista kustannuspaikka {{label}}",
+    "confirmDelete": "Poistetaanko kustannuspaikka {{label}}?",
+    "dialog": {
+      "createTitle": "Uusi kustannuspaikka",
+      "editTitle": "Muokkaa kustannuspaikkaa",
+      "code": "Koodi",
+      "name": "Nimi",
+      "submit": "Tallenna",
+      "submitting": "Tallennetaan…"
+    }
+  },
   "voucherType": {
     "SALES": "Myynti",
     "PURCHASE": "Osto",
@@ -197,6 +219,7 @@
     },
     "columns": {
       "account": "Tili",
+      "costCenter": "Kustannuspaikka",
       "description": "Selite",
       "debit": "Debet",
       "credit": "Kredit",
@@ -213,12 +236,15 @@
       "from": "Alkaen",
       "to": "Päättyen",
       "account": "Tili",
-      "allAccounts": "Kaikki tilit"
+      "allAccounts": "Kaikki tilit",
+      "costCenter": "Kustannuspaikka",
+      "allCostCenters": "Kaikki kustannuspaikat"
     },
     "columns": {
       "date": "Päivämäärä",
       "voucher": "Tosite",
       "description": "Selite",
+      "costCenter": "Kustannuspaikka",
       "debit": "Debet",
       "credit": "Kredit",
       "balance": "Saldo"
@@ -235,6 +261,8 @@
       "customPeriod": "Oma aikaväli",
       "from": "Alkaen",
       "to": "Päättyen",
+      "costCenter": "Kustannuspaikka",
+      "allCostCenters": "Kaikki kustannuspaikat",
       "showAccounts": "Näytä tilit",
       "grossResult": "Yhdistä erät 1–5 bruttotulokseksi"
     },
@@ -282,6 +310,7 @@
     "linesTitle": "Kirjausrivit",
     "line": {
       "account": "Tili",
+      "costCenter": "Kustannuspaikka",
       "amount": "Summa",
       "vatRate": "ALV-%",
       "vatCode": "ALV-tunnus",
@@ -301,7 +330,8 @@
     },
     "submit": "Tallenna kirjaus",
     "submitting": "Tallennetaan…",
-    "loadingAccounts": "Ladataan tilejä…"
+    "loadingAccounts": "Ladataan tilejä…",
+    "loadingCostCenters": "Ladataan kustannuspaikkoja…"
   },
   "auth": {
     "login": {

@@ -7,16 +7,17 @@ interface EntryRowsProps {
   entry: JournalEntry;
   lang: string;
   accountLabel: (id: string) => string;
+  costCenterLabel: (id: string | null) => string;
 }
 
 // One header row per entry (date, voucher chip, description) followed by its
 // indented lines. No expand/collapse — prototype-simple.
-export function EntryRows({ entry, lang, accountLabel }: EntryRowsProps) {
+export function EntryRows({ entry, lang, accountLabel, costCenterLabel }: EntryRowsProps) {
   const { t } = useTranslation();
   return (
     <>
       <TableRow sx={{ backgroundColor: 'action.hover' }}>
-        <TableCell colSpan={5}>
+        <TableCell colSpan={6}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap' }}>
             <Typography variant="body2" sx={{ fontWeight: 600 }}>
               {formatDate(entry.date, lang)}
@@ -42,6 +43,7 @@ export function EntryRows({ entry, lang, accountLabel }: EntryRowsProps) {
             {line.type === 'credit' ? formatCurrency(line.amount, lang) : ''}
           </TableCell>
           <TableCell align="right">{line.vatRate !== 0 ? `${line.vatRate} %` : ''}</TableCell>
+          <TableCell>{costCenterLabel(line.costCenterId)}</TableCell>
         </TableRow>
       ))}
     </>

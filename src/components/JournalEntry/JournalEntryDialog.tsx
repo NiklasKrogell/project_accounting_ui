@@ -17,17 +17,24 @@ import {
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutlined';
 import AddIcon from '@mui/icons-material/Add';
 import { accountsApi } from '../../api/accounts';
+import { costCentersApi } from '../../api/costCenters';
 import { journalEntriesApi } from '../../api/journalEntries';
 import type { Account } from '../../types/account';
+import { costCenterLabel, type CostCenter } from '../../types/costCenter';
 import type { CreateJournalEntryInput, JournalEntry, VoucherType } from '../../types/journal';
 import { VOUCHER_TYPES } from '../../types/journal';
 import { formatCurrency } from '../../lib/format';
 
 const MAX_LINES = 100;
 
+// The VAT rates a line can be given, as LineDraft.vatRate strings.
+const VAT_RATES = ['25.5', '13.5', '10', '0'];
+
 // Fixed column widths shared by the header row and every line row so they
-// line up like a spreadsheet. Account/description flex, the rest are fixed.
-const LINE_GRID_COLUMNS = 'minmax(200px, 2fr) 120px 80px 100px minmax(140px, 1.4fr) 40px';
+// line up like a spreadsheet. Account/cost center/description flex, the rest
+// are fixed.
+const LINE_GRID_COLUMNS =
+  'minmax(200px, 2fr) 120px 110px 100px minmax(140px, 1.4fr) minmax(150px, 1.3fr) 40px';
 
 // Inputs are kept as strings while editing; parsed on submit. The Account
 // object (not just its id) is stored so the Autocomplete stays controlled.
@@ -36,8 +43,10 @@ const LINE_GRID_COLUMNS = 'minmax(200px, 2fr) 120px 80px 100px minmax(140px, 1.4
 // vatAmount isn't entered directly — it's derived from amount x vatRate.
 // vatCode is a placeholder column: VAT codes aren't modeled anywhere in the
 // backend yet, so it's purely local and never sent with the entry.
+// costCenter is optional per line and never blocks submitting.
 interface LineDraft {
   account: Account | null;
+  costCenter: CostCenter | null;
   amount: string;
   vatRate: string;
   vatCode: string;
@@ -45,7 +54,7 @@ interface LineDraft {
 }
 
 function emptyLine(): LineDraft {
-  return { account: null, amount: '', vatRate: '0', vatCode: '', description: '' };
+  return { account: null, costCenter: null, amount: '', vatRate: '0', vatCode: '', description: '' };
 }
 
 // Local (not UTC) date so an evening entry defaults to the user's calendar day.
@@ -91,6 +100,7 @@ export default function JournalEntryDialog({ open, onClose, onSaved }: Props) {
 
   const [accounts, setAccounts] = useState<Account[] | null>(null);
   const [accountsError, setAccountsError] = useState<string | null>(null);
+  const [costCenters, setCostCenters] = useState<CostCenter[] | null>(null);
 
   const [voucherType, setVoucherType] = useState<VoucherType>('SALES');
   const [date, setDate] = useState(todayIso());
@@ -100,8 +110,8 @@ export default function JournalEntryDialog({ open, onClose, onSaved }: Props) {
   const [busy, setBusy] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
-  // Reset the form and (re)fetch accounts every time the dialog opens — this
-  // is trivially correct across company switches.
+  // Reset the form and (re)fetch accounts and cost centers every time the
+  // dialog opens — this is trivially correct across company switches.
   useEffect(() => {
     if (!open) return;
     setVoucherType('SALES');
@@ -114,6 +124,11 @@ export default function JournalEntryDialog({ open, onClose, onSaved }: Props) {
     accountsApi
       .list()
       .then(setAccounts)
+      .catch((err) => setAccountsError((err as Error).message));
+    setCostCenters(null);
+    costCentersApi
+      .list()
+      .then(setCostCenters)
       .catch((err) => setAccountsError((err as Error).message));
   }, [open]);
 
@@ -184,6 +199,7 @@ export default function JournalEntryDialog({ open, onClose, onSaved }: Props) {
         const amount = parseAmount(line.amount)!;
         return {
           accountId: line.account!.id,
+          costCenterId: line.costCenter?.id ?? null,
           amount: Math.abs(amount),
           description: line.description.trim() || undefined,
           vatRate: parseAmount(line.vatRate)!,
@@ -204,7 +220,7 @@ export default function JournalEntryDialog({ open, onClose, onSaved }: Props) {
   }
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+    <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
       <DialogTitle>{t('journalEntry.dialogTitle')}</DialogTitle>
       <DialogContent>
         {accountsError && (
@@ -270,6 +286,9 @@ export default function JournalEntryDialog({ open, onClose, onSaved }: Props) {
           <Typography variant="caption" color="text.secondary">
             {t('journalEntry.line.description')}
           </Typography>
+          <Typography variant="caption" color="text.secondary">
+            {t('journalEntry.line.costCenter')}
+          </Typography>
           <span />
         </Box>
 
@@ -298,11 +317,17 @@ export default function JournalEntryDialog({ open, onClose, onSaved }: Props) {
               slotProps={{ htmlInput: { inputMode: 'decimal' } }}
             />
             <TextField
+              select
               size="small"
               value={line.vatRate}
               onChange={(e) => updateLine(index, { vatRate: e.target.value })}
-              slotProps={{ htmlInput: { inputMode: 'decimal' } }}
-            />
+            >
+              {VAT_RATES.map((rate) => (
+                <MenuItem key={rate} value={rate}>
+                  {rate.replace('.', ',')} %
+                </MenuItem>
+              ))}
+            </TextField>
             <TextField
               size="small"
               value={line.vatCode}
@@ -312,6 +337,17 @@ export default function JournalEntryDialog({ open, onClose, onSaved }: Props) {
               size="small"
               value={line.description}
               onChange={(e) => updateLine(index, { description: e.target.value })}
+            />
+            <Autocomplete
+              options={costCenters ?? []}
+              value={line.costCenter}
+              onChange={(_, value) => updateLine(index, { costCenter: value })}
+              getOptionLabel={costCenterLabel}
+              isOptionEqualToValue={(a, b) => a.id === b.id}
+              loading={costCenters === null}
+              loadingText={t('journalEntry.loadingCostCenters')}
+              size="small"
+              renderInput={(params) => <TextField {...params} fullWidth />}
             />
             <IconButton
               aria-label={t('journalEntry.removeLine')}

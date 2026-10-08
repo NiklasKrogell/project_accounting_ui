@@ -17,6 +17,7 @@ export interface GeneralLedgerLine {
   // The entry's own description, shown alongside the line's.
   entryDescription: string;
   description: string;
+  costCenterId: string | null;
   // Exactly one of these is non-zero; the backend has already split the
   // line's side, so the view needs no sign logic.
   debit: number;
@@ -46,6 +47,8 @@ export interface GeneralLedgerFilter {
   from?: string;
   to?: string;
   accountId?: string;
+  // Narrows lines, opening balances and totals to one cost center.
+  costCenterId?: string;
   take?: number;
   skip?: number;
 }

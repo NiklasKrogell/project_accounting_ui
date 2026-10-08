@@ -7,6 +7,7 @@ function toQueryString(filter: GeneralLedgerFilter): string {
   if (filter.from) params.set('from', filter.from);
   if (filter.to) params.set('to', filter.to);
   if (filter.accountId) params.set('accountId', filter.accountId);
+  if (filter.costCenterId) params.set('costCenterId', filter.costCenterId);
   // Explicit undefined checks so skip=0 survives.
   if (filter.take !== undefined) params.set('take', String(filter.take));
   if (filter.skip !== undefined) params.set('skip', String(filter.skip));

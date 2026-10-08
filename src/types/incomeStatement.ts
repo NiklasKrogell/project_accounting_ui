@@ -56,6 +56,8 @@ export type StatementRow = StatementItemRow | StatementSubtotalRow;
 export interface IncomeStatement {
   period: DateRange;
   comparison: DateRange | null;
+  // The cost center the figures were narrowed to, null for the whole company.
+  costCenterId: string | null;
   // Every item of the layout in statutory order, empty ones included.
   rows: StatementRow[];
   // Items 1-5 combined ("Bruttotulos").
@@ -67,4 +69,5 @@ export interface IncomeStatement {
 export interface IncomeStatementFilter {
   period: DateRange;
   comparison?: DateRange;
+  costCenterId?: string;
 }

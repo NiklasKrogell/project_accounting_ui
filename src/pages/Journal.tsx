@@ -5,11 +5,13 @@ import { Alert, Box, Button, Typography } from '@mui/material';
 import { useAuth } from '../auth/AuthContext';
 import { journalEntriesApi } from '../api/journalEntries';
 import { accountsApi } from '../api/accounts';
+import { costCentersApi } from '../api/costCenters';
 import { useJournalEntryDialog } from '../components/JournalEntry/JournalEntryDialogContext';
 import { JournalFilters } from '../components/Journal/JournalFilters';
 import { JournalEntriesTable } from '../components/Journal/JournalEntriesTable';
 import type { JournalEntry, VoucherType } from '../types/journal';
 import type { Account } from '../types/account';
+import { costCenterLabel, type CostCenter } from '../types/costCenter';
 import { roleAtLeast } from '../lib/roles';
 
 // Journal (päiväkirja): chronological list of entries with their lines.
@@ -25,6 +27,7 @@ export default function Journal() {
   const [entries, setEntries] = useState<JournalEntry[] | null>(null);
   const [total, setTotal] = useState(0);
   const [accountsById, setAccountsById] = useState<Map<string, Account>>(new Map());
+  const [costCentersById, setCostCentersById] = useState<Map<string, CostCenter>>(new Map());
   const [error, setError] = useState<string | null>(null);
 
   const [from, setFrom] = useState('');
@@ -61,6 +64,10 @@ export default function Journal() {
       .list()
       .then((accounts) => setAccountsById(new Map(accounts.map((a) => [a.id, a]))))
       .catch((err) => setError((err as Error).message));
+    costCentersApi
+      .list()
+      .then((costCenters) => setCostCentersById(new Map(costCenters.map((c) => [c.id, c]))))
+      .catch((err) => setError((err as Error).message));
   }, [activeMembership?.companyId]);
 
   const accountLabel = useCallback(
@@ -69,6 +76,14 @@ export default function Journal() {
       return account ? `${account.number} ${account.name}` : '';
     },
     [accountsById],
+  );
+
+  const costCenterLabelById = useCallback(
+    (id: string | null) => {
+      const costCenter = id ? costCentersById.get(id) : undefined;
+      return costCenter ? costCenterLabel(costCenter) : '';
+    },
+    [costCentersById],
   );
 
   // Filter changes reset pagination so results always start from page one.
@@ -109,6 +124,7 @@ export default function Journal() {
         entries={entries}
         lang={lang}
         accountLabel={accountLabel}
+        costCenterLabel={costCenterLabelById}
         total={total}
         page={page}
         rowsPerPage={rowsPerPage}

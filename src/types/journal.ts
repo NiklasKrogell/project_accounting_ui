@@ -24,6 +24,7 @@ export interface JournalEntryLine {
   vatRate: number;
   vatAmount: number;
   type: EntryLineType;
+  costCenterId: string | null;
 }
 
 export interface JournalEntry {
@@ -47,6 +48,8 @@ export interface JournalEntryLineInput {
   vatRate: number;
   vatAmount: number;
   type: EntryLineType;
+  // Optional; omitted or null leaves the line without a cost center.
+  costCenterId?: string | null;
 }
 
 export interface CreateJournalEntryInput {

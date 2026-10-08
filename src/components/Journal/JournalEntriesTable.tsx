@@ -19,6 +19,7 @@ interface JournalEntriesTableProps {
   entries: JournalEntry[] | null;
   lang: string;
   accountLabel: (id: string) => string;
+  costCenterLabel: (id: string | null) => string;
   total: number;
   page: number;
   rowsPerPage: number;
@@ -30,6 +31,7 @@ export function JournalEntriesTable({
   entries,
   lang,
   accountLabel,
+  costCenterLabel,
   total,
   page,
   rowsPerPage,
@@ -41,9 +43,15 @@ export function JournalEntriesTable({
   const rows = useMemo(() => {
     if (!entries) return null;
     return entries.map((entry) => (
-      <EntryRows key={entry.id} entry={entry} lang={lang} accountLabel={accountLabel} />
+      <EntryRows
+        key={entry.id}
+        entry={entry}
+        lang={lang}
+        accountLabel={accountLabel}
+        costCenterLabel={costCenterLabel}
+      />
     ));
-  }, [entries, lang, accountLabel]);
+  }, [entries, lang, accountLabel, costCenterLabel]);
 
   return (
     <Card>
@@ -65,6 +73,7 @@ export function JournalEntriesTable({
                 <TableCell align="right">{t('journal.columns.debit')}</TableCell>
                 <TableCell align="right">{t('journal.columns.credit')}</TableCell>
                 <TableCell align="right">{t('journal.columns.vat')}</TableCell>
+                <TableCell>{t('journal.columns.costCenter')}</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>{rows}</TableBody>

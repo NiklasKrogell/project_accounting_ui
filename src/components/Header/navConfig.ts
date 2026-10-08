@@ -31,6 +31,7 @@ export const NAV_TABS: NavTab[] = [
       { labelKey: 'nav.journal', path: '/accounting/journal' },
       { labelKey: 'nav.fiscalYears', path: '/fiscal-years' },
       { labelKey: 'nav.chartOfAccounts', path: '/accounting/chart-of-accounts' },
+      { labelKey: 'nav.costCenters', path: '/accounting/cost-centers' },
     ],
   },
   { kind: 'menu', labelKey: 'nav.purchases', value: '/purchases', items: [] },

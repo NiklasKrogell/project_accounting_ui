@@ -1,15 +1,19 @@
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, MenuItem, TextField } from '@mui/material';
 import type { Account } from '../../types/account';
+import { costCenterLabel, type CostCenter } from '../../types/costCenter';
 
 interface GeneralLedgerFiltersProps {
   from: string;
   to: string;
   accountId: string;
   accounts: Account[];
+  costCenterId: string;
+  costCenters: CostCenter[];
   onFromChange: (value: string) => void;
   onToChange: (value: string) => void;
   onAccountChange: (value: string) => void;
+  onCostCenterChange: (value: string) => void;
 }
 
 export function GeneralLedgerFilters({
@@ -17,9 +21,12 @@ export function GeneralLedgerFilters({
   to,
   accountId,
   accounts,
+  costCenterId,
+  costCenters,
   onFromChange,
   onToChange,
   onAccountChange,
+  onCostCenterChange,
 }: GeneralLedgerFiltersProps) {
   const { t } = useTranslation();
 
@@ -54,6 +61,21 @@ export function GeneralLedgerFilters({
           {accounts.map((account) => (
             <MenuItem key={account.id} value={account.id}>
               {account.number} {account.name}
+            </MenuItem>
+          ))}
+        </TextField>
+        <TextField
+          select
+          size="small"
+          label={t('generalLedger.filters.costCenter')}
+          value={costCenterId}
+          onChange={(e) => onCostCenterChange(e.target.value)}
+          sx={{ minWidth: 240 }}
+        >
+          <MenuItem value="">{t('generalLedger.filters.allCostCenters')}</MenuItem>
+          {costCenters.map((costCenter) => (
+            <MenuItem key={costCenter.id} value={costCenter.id}>
+              {costCenterLabel(costCenter)}
             </MenuItem>
           ))}
         </TextField>

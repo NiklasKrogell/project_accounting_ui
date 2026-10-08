@@ -57,15 +57,16 @@ interface LineDraft {
   description: string;
 }
 
-// A VAT row the backend will generate from the line at `index`. accountId is
+// A VAT row the backend will generate from the line at `index`, with that
+// line's description and cost center. accountId is
 // undefined until the VAT accounts have loaded and null when the company
 // hasn't set the one this row needs.
 interface VatRowPreview {
   index: number;
   debit: boolean;
   cents: number;
-  vatRate: string;
   description: string;
+  costCenter: CostCenter | null;
   accountId: string | null | undefined;
 }
 
@@ -170,8 +171,8 @@ export default function JournalEntryDialog({ open, onClose, onSaved }: Props) {
         index,
         debit,
         cents,
-        vatRate: line.vatRate,
         description: line.description,
+        costCenter: line.costCenter,
         accountId: debit ? vatAccounts?.vatReceivableAccountId : vatAccounts?.vatPayableAccountId,
       });
     });
@@ -452,10 +453,14 @@ export default function JournalEntryDialog({ open, onClose, onSaved }: Props) {
                   <Typography variant="body2">
                     {formatCurrency((row.debit ? row.cents : -row.cents) / 100, lang)}
                   </Typography>
-                  <Typography variant="body2">{row.vatRate.replace('.', ',')} %</Typography>
+                  {/* The row is the tax itself, so its VAT % and VAT code stay empty. */}
+                  <span />
                   <span />
                   <Typography variant="body2" noWrap>
                     {row.description}
+                  </Typography>
+                  <Typography variant="body2" noWrap>
+                    {row.costCenter ? costCenterLabel(row.costCenter) : ''}
                   </Typography>
                 </Box>
               );

@@ -1,23 +1,50 @@
 import { useTranslation } from 'react-i18next';
-import { Box, Typography } from '@mui/material';
+import { Box, Chip, IconButton, Typography } from '@mui/material';
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import type { Account } from '../../types/account';
+import { subItemLabel } from '../../lib/incomeStatementScheme';
 import type { ChartGroup } from './chartSections';
 import { AccountsTable } from './AccountsTable';
 
 interface AccountGroupSectionProps {
   group: ChartGroup;
   onSelectAccount?: (account: Account) => void;
+  // When omitted (read-only access), the group can't be edited.
+  onEditGroup?: (group: ChartGroup) => void;
 }
 
-// One account group inside a main class card: its name plus its accounts.
-export function AccountGroupSection({ group, onSelectAccount }: AccountGroupSectionProps) {
+// One account group inside a main class card: its name, the income statement
+// sub-item it is classified as (if any), and its accounts.
+export function AccountGroupSection({
+  group,
+  onSelectAccount,
+  onEditGroup,
+}: AccountGroupSectionProps) {
   const { t } = useTranslation();
 
   return (
     <Box sx={{ mt: 2 }}>
-      <Typography variant="subtitle2" component="h3" color="text.secondary">
-        {group.name}
-      </Typography>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
+        <Typography variant="subtitle2" component="h3" color="text.secondary">
+          {group.name}
+        </Typography>
+        {group.incomeStatementSubItem && (
+          <Chip
+            size="small"
+            variant="outlined"
+            label={subItemLabel(group.incomeStatementSubItem, t)}
+          />
+        )}
+        {onEditGroup && (
+          <IconButton
+            size="small"
+            aria-label={t('chartOfAccounts.editGroup', { name: group.name })}
+            onClick={() => onEditGroup(group)}
+          >
+            <EditOutlinedIcon fontSize="inherit" />
+          </IconButton>
+        )}
+      </Box>
       {group.accounts.length === 0 ? (
         <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
           {t('chartOfAccounts.emptyGroup')}

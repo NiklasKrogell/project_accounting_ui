@@ -24,33 +24,80 @@
     "journal": "Päiväkirja",
     "generalLedger": "Pääkirja",
     "chartOfAccounts": "Tilikartta",
-    "newEntry": "Uusi kirjaus"
+    "newEntry": "Uusi kirjaus",
+    "incomeStatement": "Tuloslaskelma"
   },
   "accountMainClass": {
     "REVENUE": "Liikevaihto",
+    "CHANGE_IN_FINISHED_GOODS_INVENTORIES": "Valmiiden ja keskeneräisten tuotteiden varastojen muutos",
+    "PRODUCTION_FOR_OWN_USE": "Valmistus omaan käyttöön",
+    "OTHER_OPERATING_INCOME": "Liiketoiminnan muut tuotot",
     "MATERIALS_AND_SERVICES": "Materiaalit ja palvelut",
     "PERSONNEL_EXPENSES": "Henkilöstökulut",
     "DEPRECIATION": "Poistot ja arvonalentumiset",
     "OTHER_OPERATING_EXPENSES": "Liiketoiminnan muut kulut",
     "FINANCIAL_INCOME_AND_EXPENSES": "Rahoitustuotot ja -kulut",
-    "APPROPRIATIONS_AND_TAXES": "Tilinpäätössiirrot ja verot",
+    "APPROPRIATIONS": "Tilinpäätössiirrot",
+    "INCOME_TAXES": "Tuloverot",
+    "OTHER_DIRECT_TAXES": "Muut välittömät verot",
     "FIXED_ASSETS": "Pysyvät vastaavat",
     "CURRENT_ASSETS": "Vaihtuvat vastaavat",
     "EQUITY": "Oma pääoma",
     "PROVISIONS": "Pakolliset varaukset",
     "LIABILITIES": "Vieras pääoma"
   },
+  "incomeStatementSubItem": {
+    "MATERIALS_SUPPLIES_AND_GOODS": "Aineet, tarvikkeet ja tavarat",
+    "PURCHASES": "Ostot tilikauden aikana",
+    "CHANGE_IN_INVENTORIES": "Varastojen muutos",
+    "EXTERNAL_SERVICES": "Ulkopuoliset palvelut",
+    "WAGES_AND_SALARIES": "Palkat ja palkkiot",
+    "SOCIAL_SECURITY_EXPENSES": "Henkilösivukulut",
+    "PENSION_EXPENSES": "Eläkekulut",
+    "OTHER_SOCIAL_SECURITY_EXPENSES": "Muut henkilösivukulut",
+    "PLANNED_DEPRECIATION": "Suunnitelman mukaiset poistot",
+    "IMPAIRMENT_OF_FIXED_ASSETS": "Arvonalentumiset pysyvien vastaavien hyödykkeistä",
+    "EXCEPTIONAL_IMPAIRMENT_OF_CURRENT_ASSETS": "Vaihtuvien vastaavien poikkeukselliset arvonalentumiset",
+    "INCOME_FROM_GROUP_UNDERTAKINGS": "Tuotot osuuksista saman konsernin yrityksissä",
+    "INCOME_FROM_PARTICIPATING_INTERESTS": "Tuotot osuuksista omistusyhteysyrityksissä",
+    "INCOME_FROM_OTHER_FIXED_ASSET_INVESTMENTS": "Tuotot muista pysyvien vastaavien sijoituksista",
+    "INCOME_FROM_OTHER_FIXED_ASSET_INVESTMENTS_GROUP_UNDERTAKINGS": "Saman konsernin yrityksiltä",
+    "OTHER_INTEREST_AND_FINANCIAL_INCOME": "Muut korko- ja rahoitustuotot",
+    "OTHER_INTEREST_AND_FINANCIAL_INCOME_GROUP_UNDERTAKINGS": "Saman konsernin yrityksiltä",
+    "IMPAIRMENT_OF_FIXED_ASSET_INVESTMENTS": "Arvonalentumiset pysyvien vastaavien sijoituksista",
+    "IMPAIRMENT_OF_CURRENT_ASSET_SECURITIES": "Arvonalentumiset vaihtuvien vastaavien rahoitusarvopapereista",
+    "INTEREST_AND_OTHER_FINANCIAL_EXPENSES": "Korkokulut ja muut rahoituskulut",
+    "INTEREST_AND_OTHER_FINANCIAL_EXPENSES_GROUP_UNDERTAKINGS": "Saman konsernin yrityksille",
+    "CHANGE_IN_DEPRECIATION_DIFFERENCE": "Poistoeron muutos",
+    "CHANGE_IN_TAX_BASED_PROVISIONS": "Verotusperusteisten varausten muutos",
+    "GROUP_CONTRIBUTION": "Konserniavustus"
+  },
   "chartOfAccounts": {
     "title": "Tilikartta",
     "empty": "Ei tilejä vielä.",
     "emptyGroup": "Ei tilejä tässä ryhmässä.",
-    "ungrouped": "Ryhmittelemättömät tilit"
+    "ungrouped": "Ryhmittelemättömät tilit",
+    "newGroup": "Uusi tiliryhmä",
+    "editGroup": "Muokkaa tiliryhmää {{name}}"
   },
   "accountEdit": {
     "title": "Muokkaa tiliä",
     "number": "Tilinumero",
     "numberHint": "Tilinumeroa ei voi vielä muuttaa.",
     "name": "Tilin nimi",
+    "group": "Tiliryhmä",
+    "noGroup": "Ei tiliryhmää",
+    "submit": "Tallenna",
+    "submitting": "Tallennetaan…"
+  },
+  "accountGroupEdit": {
+    "createTitle": "Uusi tiliryhmä",
+    "editTitle": "Muokkaa tiliryhmää",
+    "name": "Tiliryhmän nimi",
+    "mainClass": "Pääluokka",
+    "subItem": "Tuloslaskelman alakohta",
+    "subItemHint": "Tuloslaskelmakaavan alakohta, jossa ryhmän tilit esitetään.",
+    "noSubItem": "Ei alakohtaa",
     "submit": "Tallenna",
     "submitting": "Tallennetaan…"
   },
@@ -99,6 +146,30 @@
       "debit": "Debet",
       "credit": "Kredit",
       "balance": "Saldo"
+    }
+  },
+  "incomeStatement": {
+    "title": "Tuloslaskelma",
+    "noPeriod": "Valitse aikaväli. Yrityksellä ei ole vielä tilikausia.",
+    "invalidPeriod": "Alkupäivä ei voi olla loppupäivän jälkeen.",
+    "grossResult": "Bruttotulos",
+    "unallocated": "Kohdistamatta alakohtaan",
+    "filters": {
+      "fiscalYear": "Tilikausi",
+      "customPeriod": "Oma aikaväli",
+      "from": "Alkaen",
+      "to": "Päättyen",
+      "showAccounts": "Näytä tilit",
+      "grossResult": "Yhdistä erät 1–5 bruttotulokseksi"
+    },
+    "subtotals": {
+      "OPERATING_PROFIT": "Liikevoitto (-tappio)",
+      "PROFIT_BEFORE_APPROPRIATIONS_AND_TAXES": "Voitto (tappio) ennen tilinpäätössiirtoja ja veroja",
+      "PROFIT_FOR_THE_FINANCIAL_YEAR": "Tilikauden voitto (tappio)"
+    },
+    "warnings": {
+      "unclassified": "Näillä tileillä on kirjauksia, mutta niitä ei ole liitetty tiliryhmään, joten niitä ei voitu sijoittaa tuloslaskelmaan: {{accounts}}. Jos ne ovat tuotto- tai kulutilejä, liitä ne tiliryhmään tilikartassa.",
+      "unallocated": "Osaa tileistä ei ole kohdistettu tuloslaskelmakaavan alakohtaan ({{items}}). Summat sisältyvät erän loppusummaan. Aseta tiliryhmälle alakohta tilikartassa."
     }
   },
   "journalEntry": {

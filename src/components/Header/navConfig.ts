@@ -39,7 +39,10 @@ export const NAV_TABS: NavTab[] = [
     kind: 'menu',
     labelKey: 'nav.reports',
     value: '/reports',
-    items: [{ labelKey: 'nav.generalLedger', path: '/accounting/general-ledger' }],
+    items: [
+      { labelKey: 'nav.generalLedger', path: '/accounting/general-ledger' },
+      { labelKey: 'nav.incomeStatement', path: '/reports/income-statement' },
+    ],
   },
 ];
 

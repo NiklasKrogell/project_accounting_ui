@@ -24,33 +24,80 @@
     "journal": "Journal",
     "generalLedger": "General ledger",
     "chartOfAccounts": "Chart of accounts",
-    "newEntry": "New entry"
+    "newEntry": "New entry",
+    "incomeStatement": "Income statement"
   },
   "accountMainClass": {
     "REVENUE": "Revenue",
+    "CHANGE_IN_FINISHED_GOODS_INVENTORIES": "Change in inventories of finished goods and work in progress",
+    "PRODUCTION_FOR_OWN_USE": "Production for own use",
+    "OTHER_OPERATING_INCOME": "Other operating income",
     "MATERIALS_AND_SERVICES": "Materials and services",
     "PERSONNEL_EXPENSES": "Personnel expenses",
     "DEPRECIATION": "Depreciation and impairment",
     "OTHER_OPERATING_EXPENSES": "Other operating expenses",
     "FINANCIAL_INCOME_AND_EXPENSES": "Financial income and expenses",
-    "APPROPRIATIONS_AND_TAXES": "Appropriations and taxes",
+    "APPROPRIATIONS": "Appropriations",
+    "INCOME_TAXES": "Income taxes",
+    "OTHER_DIRECT_TAXES": "Other direct taxes",
     "FIXED_ASSETS": "Non-current assets",
     "CURRENT_ASSETS": "Current assets",
     "EQUITY": "Equity",
     "PROVISIONS": "Provisions",
     "LIABILITIES": "Liabilities"
   },
+  "incomeStatementSubItem": {
+    "MATERIALS_SUPPLIES_AND_GOODS": "Raw materials, consumables and goods",
+    "PURCHASES": "Purchases during the financial year",
+    "CHANGE_IN_INVENTORIES": "Change in inventories",
+    "EXTERNAL_SERVICES": "External services",
+    "WAGES_AND_SALARIES": "Wages and salaries",
+    "SOCIAL_SECURITY_EXPENSES": "Social security expenses",
+    "PENSION_EXPENSES": "Pension expenses",
+    "OTHER_SOCIAL_SECURITY_EXPENSES": "Other social security expenses",
+    "PLANNED_DEPRECIATION": "Depreciation according to plan",
+    "IMPAIRMENT_OF_FIXED_ASSETS": "Impairment of non-current assets",
+    "EXCEPTIONAL_IMPAIRMENT_OF_CURRENT_ASSETS": "Exceptional impairment of current assets",
+    "INCOME_FROM_GROUP_UNDERTAKINGS": "Income from holdings in group undertakings",
+    "INCOME_FROM_PARTICIPATING_INTERESTS": "Income from participating interests",
+    "INCOME_FROM_OTHER_FIXED_ASSET_INVESTMENTS": "Income from other non-current investments",
+    "INCOME_FROM_OTHER_FIXED_ASSET_INVESTMENTS_GROUP_UNDERTAKINGS": "From group undertakings",
+    "OTHER_INTEREST_AND_FINANCIAL_INCOME": "Other interest and financial income",
+    "OTHER_INTEREST_AND_FINANCIAL_INCOME_GROUP_UNDERTAKINGS": "From group undertakings",
+    "IMPAIRMENT_OF_FIXED_ASSET_INVESTMENTS": "Impairment of non-current investments",
+    "IMPAIRMENT_OF_CURRENT_ASSET_SECURITIES": "Impairment of current financial securities",
+    "INTEREST_AND_OTHER_FINANCIAL_EXPENSES": "Interest and other financial expenses",
+    "INTEREST_AND_OTHER_FINANCIAL_EXPENSES_GROUP_UNDERTAKINGS": "To group undertakings",
+    "CHANGE_IN_DEPRECIATION_DIFFERENCE": "Change in depreciation difference",
+    "CHANGE_IN_TAX_BASED_PROVISIONS": "Change in tax-based provisions",
+    "GROUP_CONTRIBUTION": "Group contribution"
+  },
   "chartOfAccounts": {
     "title": "Chart of accounts",
     "empty": "No accounts yet.",
     "emptyGroup": "No accounts in this group.",
-    "ungrouped": "Ungrouped accounts"
+    "ungrouped": "Ungrouped accounts",
+    "newGroup": "New account group",
+    "editGroup": "Edit account group {{name}}"
   },
   "accountEdit": {
     "title": "Edit account",
     "number": "Account number",
     "numberHint": "The account number can't be changed yet.",
     "name": "Account name",
+    "group": "Account group",
+    "noGroup": "No account group",
+    "submit": "Save",
+    "submitting": "Saving…"
+  },
+  "accountGroupEdit": {
+    "createTitle": "New account group",
+    "editTitle": "Edit account group",
+    "name": "Group name",
+    "mainClass": "Main class",
+    "subItem": "Income statement sub-item",
+    "subItemHint": "The sub-item of the income statement layout the group's accounts are shown under.",
+    "noSubItem": "No sub-item",
     "submit": "Save",
     "submitting": "Saving…"
   },
@@ -99,6 +146,30 @@
       "debit": "Debit",
       "credit": "Credit",
       "balance": "Balance"
+    }
+  },
+  "incomeStatement": {
+    "title": "Income statement",
+    "noPeriod": "Choose a period. The company has no fiscal years yet.",
+    "invalidPeriod": "The start date can't be after the end date.",
+    "grossResult": "Gross result",
+    "unallocated": "Not allocated to a sub-item",
+    "filters": {
+      "fiscalYear": "Fiscal year",
+      "customPeriod": "Custom period",
+      "from": "From",
+      "to": "To",
+      "showAccounts": "Show accounts",
+      "grossResult": "Combine items 1–5 as gross result"
+    },
+    "subtotals": {
+      "OPERATING_PROFIT": "Operating profit (loss)",
+      "PROFIT_BEFORE_APPROPRIATIONS_AND_TAXES": "Profit (loss) before appropriations and taxes",
+      "PROFIT_FOR_THE_FINANCIAL_YEAR": "Profit (loss) for the financial year"
+    },
+    "warnings": {
+      "unclassified": "These accounts have postings but belong to no account group, so they could not be placed on the income statement: {{accounts}}. If they are income or expense accounts, add them to a group in the chart of accounts.",
+      "unallocated": "Some accounts are not allocated to a sub-item of the income statement layout ({{items}}). Their amounts are included in the item total. Set a sub-item for the account group in the chart of accounts."
     }
   },
   "journalEntry": {

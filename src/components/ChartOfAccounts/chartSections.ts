@@ -1,8 +1,15 @@
-import type { Account, AccountGroup, AccountMainClass } from '../../types/account';
+import type {
+  Account,
+  AccountGroup,
+  AccountMainClass,
+  IncomeStatementSubItem,
+} from '../../types/account';
 
 export interface ChartGroup {
   id: string;
   name: string;
+  mainClass: AccountMainClass;
+  incomeStatementSubItem: IncomeStatementSubItem | null;
   accounts: Account[];
 }
 
@@ -22,7 +29,13 @@ export function buildChartSections(groups: AccountGroup[]): ChartSection[] {
       section = { mainClass: group.mainClass, groups: [] };
       sections.set(group.mainClass, section);
     }
-    section.groups.push({ id: group.id, name: group.name, accounts: group.accounts ?? [] });
+    section.groups.push({
+      id: group.id,
+      name: group.name,
+      mainClass: group.mainClass,
+      incomeStatementSubItem: group.incomeStatementSubItem,
+      accounts: group.accounts ?? [],
+    });
   }
   return [...sections.values()];
 }

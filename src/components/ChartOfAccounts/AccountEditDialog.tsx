@@ -8,25 +8,30 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  MenuItem,
   TextField,
 } from '@mui/material';
 import { accountsApi } from '../../api/accounts';
-import type { Account } from '../../types/account';
+import type { Account, AccountGroup } from '../../types/account';
 
 interface AccountEditDialogProps {
   // The account being edited; null keeps the dialog closed.
   account: Account | null;
+  // The company's groups, in chart order, for the group select.
+  groups: AccountGroup[];
   onClose: () => void;
   onSaved: () => void;
 }
 
-// Edit dialog for a single account. Only the name is editable for now — the
-// number is shown disabled so it's clear which account is open and which field
-// is (not yet) editable. The backend's PUT replaces the whole account, so the
-// untouched number and group are sent back as-is.
-export function AccountEditDialog({ account, onClose, onSaved }: AccountEditDialogProps) {
+// Edit dialog for a single account: its name and the group it belongs to. The
+// group decides where the account lands on the income statement or balance
+// sheet. The number is shown disabled so it's clear which account is open and
+// that it is not (yet) editable. The backend's PUT replaces the whole account,
+// so the untouched number is sent back as-is.
+export function AccountEditDialog({ account, groups, onClose, onSaved }: AccountEditDialogProps) {
   const { t } = useTranslation();
   const [name, setName] = useState('');
+  const [groupId, setGroupId] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -34,6 +39,7 @@ export function AccountEditDialog({ account, onClose, onSaved }: AccountEditDial
   useEffect(() => {
     if (!account) return;
     setName(account.name);
+    setGroupId(account.accountGroupId ?? '');
     setError(null);
     setBusy(false);
   }, [account]);
@@ -47,7 +53,7 @@ export function AccountEditDialog({ account, onClose, onSaved }: AccountEditDial
       await accountsApi.update(account.id, {
         number: account.number,
         name: name.trim(),
-        accountGroupId: account.accountGroupId,
+        accountGroupId: groupId === '' ? null : groupId,
       });
       onSaved();
       onClose();
@@ -83,6 +89,20 @@ export function AccountEditDialog({ account, onClose, onSaved }: AccountEditDial
               autoFocus
               fullWidth
             />
+            <TextField
+              select
+              label={t('accountEdit.group')}
+              value={groupId}
+              onChange={(e) => setGroupId(e.target.value)}
+              fullWidth
+            >
+              <MenuItem value="">{t('accountEdit.noGroup')}</MenuItem>
+              {groups.map((group) => (
+                <MenuItem key={group.id} value={group.id}>
+                  {t(`accountMainClass.${group.mainClass}`)} – {group.name}
+                </MenuItem>
+              ))}
+            </TextField>
           </Box>
         </DialogContent>
         <DialogActions>

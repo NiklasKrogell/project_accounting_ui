@@ -10,6 +10,7 @@ import FiscalYears from './pages/FiscalYears';
 import Journal from './pages/Journal';
 import ChartOfAccounts from './pages/ChartOfAccounts';
 import GeneralLedger from './pages/GeneralLedger';
+import IncomeStatement from './pages/IncomeStatement';
 import ProtectedRoute from './routes/ProtectedRoute';
 import PublicOnlyRoute from './routes/PublicOnlyRoute';
 import Layout from './routes/Layout';
@@ -39,6 +40,7 @@ function AppRoutes() {
           <Route path="/accounting/journal" element={<Journal />} />
           <Route path="/accounting/chart-of-accounts" element={<ChartOfAccounts />} />
           <Route path="/accounting/general-ledger" element={<GeneralLedger />} />
+          <Route path="/reports/income-statement" element={<IncomeStatement />} />
         </Route>
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />

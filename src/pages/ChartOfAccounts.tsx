@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, Box, Typography } from '@mui/material';
+import { Alert, Box, Button, Typography } from '@mui/material';
 import { useAuth } from '../auth/AuthContext';
 import { accountGroupsApi } from '../api/accountGroups';
 import { accountsApi } from '../api/accounts';
@@ -10,11 +10,15 @@ import { buildChartSections } from '../components/ChartOfAccounts/chartSections'
 import { MainClassCard } from '../components/ChartOfAccounts/MainClassCard';
 import { UngroupedAccountsCard } from '../components/ChartOfAccounts/UngroupedAccountsCard';
 import { AccountEditDialog } from '../components/ChartOfAccounts/AccountEditDialog';
+import {
+  AccountGroupDialog,
+  type AccountGroupDialogTarget,
+} from '../components/ChartOfAccounts/AccountGroupDialog';
 
 // Chart of accounts (tilikartta): listing of the company's accounts, grouped by
 // account group within their main class. Everyone with access can view it;
-// editing an account requires LEDGER+ (mirrors the backend), and without that
-// role the rows simply aren't clickable. Groups come from /account-groups
+// editing accounts and groups requires LEDGER+ (mirrors the backend), and
+// without that role the rows simply aren't clickable. Groups come from /account-groups
 // (which carries their accounts, and so also shows groups that are still
 // empty); /accounts is fetched alongside only to surface accounts that belong
 // to no group at all.
@@ -27,6 +31,7 @@ export default function ChartOfAccounts() {
   const [ungrouped, setUngrouped] = useState<Account[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [editing, setEditing] = useState<Account | null>(null);
+  const [groupTarget, setGroupTarget] = useState<AccountGroupDialogTarget | null>(null);
 
   const load = useCallback(async () => {
     setError(null);
@@ -51,9 +56,16 @@ export default function ChartOfAccounts() {
 
   return (
     <Box>
-      <Typography variant="h4" component="h1" sx={{ mb: 2 }}>
-        {t('chartOfAccounts.title')}
-      </Typography>
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+        <Typography variant="h4" component="h1">
+          {t('chartOfAccounts.title')}
+        </Typography>
+        {canEdit && (
+          <Button variant="outlined" onClick={() => setGroupTarget({ mode: 'create' })}>
+            {t('chartOfAccounts.newGroup')}
+          </Button>
+        )}
+      </Box>
 
       {error && (
         <Alert severity="error" sx={{ mb: 2 }}>
@@ -72,6 +84,9 @@ export default function ChartOfAccounts() {
               key={section.mainClass}
               section={section}
               onSelectAccount={onSelectAccount}
+              onEditGroup={
+                canEdit ? (group) => setGroupTarget({ mode: 'edit', ...group }) : undefined
+              }
             />
           ))}
           {ungrouped.length > 0 && (
@@ -82,7 +97,13 @@ export default function ChartOfAccounts() {
 
       <AccountEditDialog
         account={editing}
+        groups={groups ?? []}
         onClose={() => setEditing(null)}
+        onSaved={() => void load()}
+      />
+      <AccountGroupDialog
+        target={groupTarget}
+        onClose={() => setGroupTarget(null)}
         onSaved={() => void load()}
       />
     </Box>

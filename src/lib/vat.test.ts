@@ -1,4 +1,4 @@
-import { vatCents } from './vat';
+import { vatCents, vatCentsInGross } from './vat';
 
 describe('vatCents', () => {
   it('computes VAT on a net amount', () => {
@@ -17,5 +17,19 @@ describe('vatCents', () => {
   it('rounds to the nearest cent otherwise', () => {
     expect(vatCents(1999, 25.5)).toBe(510);
     expect(vatCents(333, 10)).toBe(33);
+  });
+});
+
+describe('vatCentsInGross', () => {
+  it('computes the VAT contained in a gross amount', () => {
+    expect(vatCentsInGross(12550, 25.5)).toBe(2550);
+    expect(vatCentsInGross(11350, 13.5)).toBe(1350);
+    expect(vatCentsInGross(10000, 0)).toBe(0);
+  });
+
+  it('rounds to the nearest cent', () => {
+    expect(vatCentsInGross(1000, 25.5)).toBe(203);
+    // Not the same as VAT on the net: 15,86 net would give 4,04.
+    expect(vatCentsInGross(1991, 25.5)).toBe(405);
   });
 });

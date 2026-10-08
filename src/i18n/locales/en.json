@@ -27,7 +27,18 @@
     "costCenters": "Cost centers",
     "newEntry": "New entry",
     "incomeStatement": "Income statement",
-    "balanceSheet": "Balance sheet"
+    "balanceSheet": "Balance sheet",
+    "settings": "Settings"
+  },
+  "settings": {
+    "title": "Settings",
+    "sections": {
+      "general": "General settings"
+    },
+    "general": {
+      "language": "Language",
+      "languageHint": "The language of the app's user interface."
+    }
   },
   "accountMainClass": {
     "REVENUE": "Revenue",
@@ -321,6 +332,8 @@
       "account": "Account",
       "costCenter": "Cost center",
       "amount": "Net amount",
+      "amountGross": "Gross amount",
+      "amountPlain": "Amount",
       "vatRate": "VAT %",
       "vatCode": "VAT code",
       "description": "Line description"
@@ -333,10 +346,17 @@
       "difference": "Difference",
       "balanced": "Balanced"
     },
+    "automaticVat": "Automatic VAT",
+    "vatBasis": {
+      "label": "Amounts entered",
+      "net": "Net",
+      "gross": "Gross"
+    },
     "vat": {
       "receivable": "VAT receivable",
       "payable": "VAT payable",
-      "rowsTitle": "VAT rows added to the entry automatically",
+      "rowsTitle": "VAT rows added to the entry automatically.",
+      "grossHint": "The VAT is taken out of the line amount, and the line is stored net.",
       "accountMissing": "The VAT account is not set, so a line with VAT can't be saved. Set the VAT accounts in the chart of accounts."
     },
     "submit": "Save entry",

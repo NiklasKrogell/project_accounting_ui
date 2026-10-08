@@ -27,7 +27,18 @@
     "costCenters": "Kustannuspaikat",
     "newEntry": "Uusi kirjaus",
     "incomeStatement": "Tuloslaskelma",
-    "balanceSheet": "Tase"
+    "balanceSheet": "Tase",
+    "settings": "Asetukset"
+  },
+  "settings": {
+    "title": "Asetukset",
+    "sections": {
+      "general": "Yleiset asetukset"
+    },
+    "general": {
+      "language": "Kieli",
+      "languageHint": "Sovelluksen käyttöliittymän kieli."
+    }
   },
   "accountMainClass": {
     "REVENUE": "Liikevaihto",
@@ -321,6 +332,8 @@
       "account": "Tili",
       "costCenter": "Kustannuspaikka",
       "amount": "Veroton summa",
+      "amountGross": "Verollinen summa",
+      "amountPlain": "Summa",
       "vatRate": "ALV-%",
       "vatCode": "ALV-tunnus",
       "description": "Riviselite"
@@ -333,10 +346,17 @@
       "difference": "Erotus",
       "balanced": "Täsmää"
     },
+    "automaticVat": "Automaattinen ALV",
+    "vatBasis": {
+      "label": "Summat syötetään",
+      "net": "Netto",
+      "gross": "Brutto"
+    },
     "vat": {
       "receivable": "Alv-saamiset",
       "payable": "Alv-velka",
-      "rowsTitle": "ALV-rivit, jotka lisätään kirjaukseen automaattisesti",
+      "rowsTitle": "ALV-rivit, jotka lisätään kirjaukseen automaattisesti.",
+      "grossHint": "Vero vähennetään rivin summasta, ja rivi tallennetaan verottomana.",
       "accountMissing": "ALV-tiliä ei ole asetettu, joten arvonlisäverollista riviä ei voi tallentaa. Aseta ALV-tilit tilikartassa."
     },
     "submit": "Tallenna kirjaus",

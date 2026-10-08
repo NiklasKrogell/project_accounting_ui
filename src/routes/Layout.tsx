@@ -4,7 +4,7 @@ import { useAuth } from '../auth/AuthContext';
 import SubscriptionRequired from '../pages/SubscriptionRequired';
 import { CustomAppBar } from '../components/Header/CustomAppBar';
 import { TabBar } from '../components/Header/TabBar';
-import { resolveActiveTab, type NavAction } from '../components/Header/navConfig';
+import { resolveActiveTab, SETTINGS_PATH, type NavAction } from '../components/Header/navConfig';
 import {
   JournalEntryDialogProvider,
   useJournalEntryDialog,
@@ -27,6 +27,9 @@ function LayoutContent() {
 
   const subscriptionActive = activeMembership?.subscriptionStatus === 'ACTIVE';
   const activeTab = resolveActiveTab(location.pathname);
+  // The settings page brings its own side menu, which has to reach the left
+  // edge of the page, so it opts out of the centered content column.
+  const fullBleed = activeTab === SETTINGS_PATH;
 
   const handleAction = (action: NavAction) => {
     if (action === 'newJournalEntry') {
@@ -35,7 +38,8 @@ function LayoutContent() {
   };
 
   return (
-    <>
+    // Column flex so a full-bleed page can fill the height below the tabs.
+    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       {/* AppBar */}
       <CustomAppBar/>
 
@@ -51,13 +55,15 @@ function LayoutContent() {
       <Box
         component="main"
         sx={
-          subscriptionActive
-            ? { maxWidth: 900, mx: 'auto', p: 3 }
-            : { display: 'flex', justifyContent: 'center', p: 6 }
+          !subscriptionActive
+            ? { display: 'flex', justifyContent: 'center', p: 6 }
+            : fullBleed
+              ? { display: 'flex', flexGrow: 1 }
+              : { width: '100%', maxWidth: 900, mx: 'auto', p: 3 }
         }
       >
         {subscriptionActive ? <Outlet /> : <SubscriptionRequired />}
       </Box>
-    </>
+    </Box>
   );
 }

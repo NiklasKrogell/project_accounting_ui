@@ -81,9 +81,66 @@ describe('JournalEntryDialog', () => {
 
     fireEvent.click(submitButton());
     await waitFor(() => expect(journalEntriesApi.create).toHaveBeenCalledTimes(1));
-    expect(jest.mocked(journalEntriesApi.create).mock.calls[0][0].lines).toEqual([
+    const input = jest.mocked(journalEntriesApi.create).mock.calls[0][0];
+    expect(input.vatBasis).toBe('net');
+    expect(input.automaticVat).toBe(true);
+    expect(input.lines).toEqual([
       expect.objectContaining({ accountId: 'receivables', amount: 125.5, type: 'debit', vatRate: 0 }),
       expect.objectContaining({ accountId: 'sales', amount: 100, type: 'credit', vatRate: 25.5 }),
+    ]);
+  });
+
+  it('saves a gross-priced sale, whose amounts balance as entered', async () => {
+    mockApis({ vatReceivableAccountId: 'vat-receivable', vatPayableAccountId: 'vat-payable' });
+    await fillSale();
+    fireEvent.click(screen.getByRole('button', { name: 'Brutto' }));
+
+    // Read as gross, 125,50 against 100,00 no longer balances.
+    expect(screen.getByText('Verollinen summa')).toBeInTheDocument();
+    expect(screen.getByText(/Erotus/)).toBeInTheDocument();
+    expect(submitButton()).toBeDisabled();
+
+    typeAmount(1, '-125,5');
+    expect(screen.getByText(/Täsmää/)).toBeInTheDocument();
+    // The VAT row is still previewed: it is taken out of the sales line.
+    expect(screen.getByText('2939 Arvonlisäverovelka')).toBeInTheDocument();
+
+    fireEvent.click(submitButton());
+    await waitFor(() => expect(journalEntriesApi.create).toHaveBeenCalledTimes(1));
+    const input = jest.mocked(journalEntriesApi.create).mock.calls[0][0];
+    expect(input.vatBasis).toBe('gross');
+    expect(input.lines).toEqual([
+      expect.objectContaining({ accountId: 'receivables', amount: 125.5, type: 'debit', vatRate: 0 }),
+      expect.objectContaining({ accountId: 'sales', amount: 125.5, type: 'credit', vatRate: 25.5 }),
+    ]);
+  });
+
+  it('generates no VAT rows with automatic VAT off: the lines balance as entered', async () => {
+    // No VAT accounts are needed when the VAT is booked by hand.
+    mockApis({ vatReceivableAccountId: null, vatPayableAccountId: null });
+    await fillSale();
+    fireEvent.click(screen.getByLabelText('Automaattinen ALV'));
+
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    expect(screen.queryByText(/ALV-rivit, jotka/)).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Brutto' })).toBeDisabled();
+    // 125,50 against 100,00: the VAT has to be entered as a line of its own.
+    expect(screen.getByText(/Erotus/)).toBeInTheDocument();
+    expect(submitButton()).toBeDisabled();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Lisää rivi' }));
+    await pickAccount(2, '2939');
+    typeAmount(2, '-25,5');
+    expect(screen.getByText(/Täsmää/)).toBeInTheDocument();
+
+    fireEvent.click(submitButton());
+    await waitFor(() => expect(journalEntriesApi.create).toHaveBeenCalledTimes(1));
+    const input = jest.mocked(journalEntriesApi.create).mock.calls[0][0];
+    expect(input.automaticVat).toBe(false);
+    expect(input.lines).toEqual([
+      expect.objectContaining({ accountId: 'receivables', amount: 125.5, type: 'debit', vatRate: 0 }),
+      expect.objectContaining({ accountId: 'sales', amount: 100, type: 'credit', vatRate: 25.5 }),
+      expect.objectContaining({ accountId: 'vat-payable', amount: 25.5, type: 'credit', vatRate: 0 }),
     ]);
   });
 

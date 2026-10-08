@@ -13,6 +13,9 @@ import CostCenters from './pages/CostCenters';
 import GeneralLedger from './pages/GeneralLedger';
 import IncomeStatement from './pages/IncomeStatement';
 import BalanceSheet from './pages/BalanceSheet';
+import Settings, { SETTINGS_SECTIONS } from './pages/Settings';
+import { GeneralSettings } from './components/Settings/GeneralSettings';
+import { SETTINGS_PATH } from './components/Header/navConfig';
 import ProtectedRoute from './routes/ProtectedRoute';
 import PublicOnlyRoute from './routes/PublicOnlyRoute';
 import Layout from './routes/Layout';
@@ -45,6 +48,10 @@ function AppRoutes() {
           <Route path="/accounting/general-ledger" element={<GeneralLedger />} />
           <Route path="/reports/income-statement" element={<IncomeStatement />} />
           <Route path="/reports/balance-sheet" element={<BalanceSheet />} />
+          <Route path={SETTINGS_PATH} element={<Settings />}>
+            <Route index element={<Navigate to={SETTINGS_SECTIONS[0].path} replace />} />
+            <Route path="general" element={<GeneralSettings />} />
+          </Route>
         </Route>
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />

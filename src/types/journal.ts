@@ -16,6 +16,12 @@ export const VOUCHER_TYPES: VoucherType[] = [
 
 export type EntryLineType = 'debit' | 'credit';
 
+// How the line amounts of an entry being saved relate to VAT: 'net' amounts
+// exclude it (the VAT is added on top), 'gross' amounts include it (the VAT is
+// taken out of the amount). Lines are stored net either way, so this is part
+// of the request only.
+export type VatBasis = 'net' | 'gross';
+
 export interface JournalEntryLine {
   id: string;
   accountId: string;
@@ -43,9 +49,10 @@ export interface JournalEntry {
   lines: JournalEntryLine[];
 }
 
-// An entered line. The amount is net of VAT: the backend derives the VAT from
-// amount x vatRate and posts it as a row of its own, and the entry must balance
-// with those rows counted. vatRate is required — send 0 when not applicable.
+// An entered line. Whether the amount is net of VAT or includes it is the
+// entry's vatBasis; the backend derives the VAT and posts it as a row of its
+// own, and the entry must balance with those rows counted. vatRate is
+// required — send 0 when not applicable.
 export interface JournalEntryLineInput {
   accountId: string;
   amount: number;
@@ -61,6 +68,11 @@ export interface CreateJournalEntryInput {
   date: string;
   description: string;
   accountId: string;
+  // Net when omitted.
+  vatBasis?: VatBasis;
+  // Whether the backend generates the VAT rows; on when omitted. Off, the
+  // lines are stored and balanced as entered and the VAT is booked by hand.
+  automaticVat?: boolean;
   lines: JournalEntryLineInput[];
 }
 

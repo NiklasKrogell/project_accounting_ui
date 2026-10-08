@@ -9,9 +9,13 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  FormControlLabel,
   IconButton,
   MenuItem,
+  Switch,
   TextField,
+  ToggleButton,
+  ToggleButtonGroup,
   Typography,
 } from '@mui/material';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutlined';
@@ -22,10 +26,15 @@ import { costCentersApi } from '../../api/costCenters';
 import { journalEntriesApi } from '../../api/journalEntries';
 import type { Account, VatAccounts } from '../../types/account';
 import { costCenterLabel, type CostCenter } from '../../types/costCenter';
-import type { CreateJournalEntryInput, JournalEntry, VoucherType } from '../../types/journal';
+import type {
+  CreateJournalEntryInput,
+  JournalEntry,
+  VatBasis,
+  VoucherType,
+} from '../../types/journal';
 import { VOUCHER_TYPES } from '../../types/journal';
 import { formatCurrency } from '../../lib/format';
-import { vatCents } from '../../lib/vat';
+import { vatCents, vatCentsInGross } from '../../lib/vat';
 
 const MAX_LINES = 100;
 
@@ -42,9 +51,14 @@ const LINE_GRID_COLUMNS =
 // object (not just its id) is stored so the Autocomplete stays controlled.
 // There's no separate debit/credit field: the amount's sign carries it
 // (+ = debit, - = credit), same convention as most bookkeeping software.
-// The amount is net of VAT. The VAT isn't entered: it's amount x vatRate, and
-// on save the backend posts it as a row of its own on a VAT account (previewed
-// below the lines), so the entry has to balance with that VAT counted.
+// The VAT isn't entered: it's derived from the amount and vatRate, and on save
+// the backend posts it as a row of its own on a VAT account (previewed below
+// the lines). The dialog's net/gross toggle says how the amounts are entered:
+// net, with the VAT added on top — so the entry has to balance with the VAT
+// rows counted — or gross, with the VAT taken out of the amount. With the
+// automatic VAT switch off no VAT rows are generated: the amounts are stored
+// and balanced as entered, the VAT is booked as lines of its own, and vatRate
+// only describes the line.
 // vatCode is a placeholder column: VAT codes aren't modeled anywhere in the
 // backend yet, so it's purely local and never sent with the entry.
 // costCenter is optional per line and never blocks submitting.
@@ -93,11 +107,12 @@ function toCents(value: number): number {
 
 // VAT amount in cents for a line, derived from its (signed) amount and VAT
 // rate — null when either input doesn't parse yet.
-function lineVatCents(line: LineDraft): number | null {
+function lineVatCents(line: LineDraft, basis: VatBasis): number | null {
   const amount = parseAmount(line.amount);
   const vatRate = parseAmount(line.vatRate);
   if (amount === null || vatRate === null) return null;
-  return vatCents(Math.abs(toCents(amount)), vatRate);
+  const cents = Math.abs(toCents(amount));
+  return basis === 'gross' ? vatCentsInGross(cents, vatRate) : vatCents(cents, vatRate);
 }
 
 const accountLabel = (a: Account) => `${a.number} ${a.name}`;
@@ -123,6 +138,8 @@ export default function JournalEntryDialog({ open, onClose, onSaved }: Props) {
   const [voucherType, setVoucherType] = useState<VoucherType>('SALES');
   const [date, setDate] = useState(todayIso());
   const [description, setDescription] = useState('');
+  const [vatBasis, setVatBasis] = useState<VatBasis>('net');
+  const [automaticVat, setAutomaticVat] = useState(true);
   const [lines, setLines] = useState<LineDraft[]>([emptyLine(), emptyLine()]);
 
   const [busy, setBusy] = useState(false);
@@ -136,6 +153,8 @@ export default function JournalEntryDialog({ open, onClose, onSaved }: Props) {
     setVoucherType('SALES');
     setDate(todayIso());
     setDescription('');
+    setVatBasis('net');
+    setAutomaticVat(true);
     setLines([emptyLine(), emptyLine()]);
     setSubmitError(null);
     setAccounts(null);
@@ -159,12 +178,13 @@ export default function JournalEntryDialog({ open, onClose, onSaved }: Props) {
   // The VAT rows the backend will generate, one per line that carries VAT, on
   // the side of that line: VAT on a debit is deductible (receivable,
   // "Alv-saamiset"); VAT on a credit is collected on behalf of the tax
-  // authority (payable, "Alv-velka").
+  // authority (payable, "Alv-velka"). None when automatic VAT is off.
   const vatRows = useMemo(() => {
     const rows: VatRowPreview[] = [];
+    if (!automaticVat) return rows;
     lines.forEach((line, index) => {
       const amount = parseAmount(line.amount);
-      const cents = lineVatCents(line);
+      const cents = lineVatCents(line, vatBasis);
       if (amount === null || amount === 0 || cents === null || cents === 0) return;
       const debit = amount > 0;
       rows.push({
@@ -177,10 +197,10 @@ export default function JournalEntryDialog({ open, onClose, onSaved }: Props) {
       });
     });
     return rows;
-  }, [lines, vatAccounts]);
+  }, [lines, vatAccounts, vatBasis, automaticVat]);
 
-  // Debit and credit totals of the entry as it will be stored: the entered
-  // lines plus their VAT rows.
+  // Debit and credit totals of the entry as it will be stored. Net amounts get
+  // their VAT rows added on top; gross amounts already contain them.
   const balance = useMemo(() => {
     let debit = 0;
     let credit = 0;
@@ -191,12 +211,14 @@ export default function JournalEntryDialog({ open, onClose, onSaved }: Props) {
       if (cents > 0) debit += cents;
       else if (cents < 0) credit += -cents;
     }
-    for (const row of vatRows) {
-      if (row.debit) debit += row.cents;
-      else credit += row.cents;
+    if (vatBasis === 'net') {
+      for (const row of vatRows) {
+        if (row.debit) debit += row.cents;
+        else credit += row.cents;
+      }
     }
     return { debit, credit, difference: debit - credit };
-  }, [lines, vatRows]);
+  }, [lines, vatRows, vatBasis]);
 
   const balanced = balance.difference === 0 && balance.debit > 0 && balance.credit > 0;
   // Nothing entered yet vs. entered-but-mismatched get different colors below.
@@ -253,6 +275,8 @@ export default function JournalEntryDialog({ open, onClose, onSaved }: Props) {
       // the voucher; there's no separate field for it in the UI since it'd
       // just duplicate a line — the first line's account stands in for it.
       accountId: lines[0].account!.id,
+      vatBasis,
+      automaticVat,
       lines: lines.map((line) => {
         const amount = parseAmount(line.amount)!;
         return {
@@ -313,6 +337,32 @@ export default function JournalEntryDialog({ open, onClose, onSaved }: Props) {
             required
             slotProps={{ inputLabel: { shrink: true } }}
           />
+          <FormControlLabel
+            control={
+              <Switch checked={automaticVat} onChange={(e) => setAutomaticVat(e.target.checked)} />
+            }
+            label={t('journalEntry.automaticVat')}
+          />
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Typography variant="body2" color="text.secondary" id="journal-entry-vat-basis">
+              {t('journalEntry.vatBasis.label')}
+            </Typography>
+            <ToggleButtonGroup
+              exclusive
+              size="small"
+              color="primary"
+              // Without automatic VAT nothing is added to or taken out of an
+              // amount, so there is no basis to choose.
+              disabled={!automaticVat}
+              value={vatBasis}
+              // Clicking the selected option reports null; keep the choice.
+              onChange={(_, value: VatBasis | null) => value && setVatBasis(value)}
+              aria-labelledby="journal-entry-vat-basis"
+            >
+              <ToggleButton value="net">{t('journalEntry.vatBasis.net')}</ToggleButton>
+              <ToggleButton value="gross">{t('journalEntry.vatBasis.gross')}</ToggleButton>
+            </ToggleButtonGroup>
+          </Box>
         </Box>
         <TextField
           label={t('journalEntry.description')}
@@ -332,7 +382,13 @@ export default function JournalEntryDialog({ open, onClose, onSaved }: Props) {
             {t('journalEntry.line.account')}
           </Typography>
           <Typography variant="caption" color="text.secondary">
-            {t('journalEntry.line.amount')}
+            {t(
+              !automaticVat
+                ? 'journalEntry.line.amountPlain'
+                : vatBasis === 'gross'
+                  ? 'journalEntry.line.amountGross'
+                  : 'journalEntry.line.amount',
+            )}
           </Typography>
           <Typography variant="caption" color="text.secondary">
             {t('journalEntry.line.vatRate')}
@@ -427,6 +483,7 @@ export default function JournalEntryDialog({ open, onClose, onSaved }: Props) {
           <Box sx={{ mt: 2 }}>
             <Typography variant="caption" color="text.secondary">
               {t('journalEntry.vat.rowsTitle')}
+              {vatBasis === 'gross' && ` ${t('journalEntry.vat.grossHint')}`}
             </Typography>
             {vatAccountMissing && (
               <Alert severity="warning" sx={{ my: 1 }}>
@@ -483,11 +540,13 @@ export default function JournalEntryDialog({ open, onClose, onSaved }: Props) {
             ? t('journalEntry.balance.balanced')
             : `${t('journalEntry.balance.difference')}: ${formatCurrency(balance.difference / 100, lang)}`}
         </Typography>
-        <Typography color="text.secondary">
-          {t('journalEntry.vat.receivable')}: {formatCurrency(vatSummary.receivable / 100, lang)}
-          {' | '}
-          {t('journalEntry.vat.payable')}: {formatCurrency(vatSummary.payable / 100, lang)}
-        </Typography>
+        {automaticVat && (
+          <Typography color="text.secondary">
+            {t('journalEntry.vat.receivable')}: {formatCurrency(vatSummary.receivable / 100, lang)}
+            {' | '}
+            {t('journalEntry.vat.payable')}: {formatCurrency(vatSummary.payable / 100, lang)}
+          </Typography>
+        )}
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>{t('common.cancel')}</Button>

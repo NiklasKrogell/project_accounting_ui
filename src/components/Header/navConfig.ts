@@ -19,6 +19,8 @@ export type NavTab =
   | { kind: 'link'; labelKey: string; value: string }
   | { kind: 'menu'; labelKey: string; value: string; items: NavMenuEntry[] };
 
+export const SETTINGS_PATH = '/settings';
+
 // Single extensibility point for the tab bar: add new tabs and menu items here.
 export const NAV_TABS: NavTab[] = [
   { kind: 'link', labelKey: 'nav.dashboard', value: '/' },
@@ -46,11 +48,13 @@ export const NAV_TABS: NavTab[] = [
       { labelKey: 'nav.balanceSheet', path: '/reports/balance-sheet' },
     ],
   },
+  { kind: 'link', labelKey: 'nav.settings', value: SETTINGS_PATH },
 ];
 
 // Maps the current pathname to the tab that should be highlighted: exact link
-// match first, then the menu tab owning an item with that path, then the menu
-// tab whose value prefixes the path, else '/'.
+// match first, then the menu tab owning an item with that path, then the tab
+// whose value prefixes the path (a menu's child routes, or a link's sub-pages
+// such as /settings/general), else '/'.
 export function resolveActiveTab(pathname: string): string {
   for (const tab of NAV_TABS) {
     if (tab.kind === 'link' && tab.value === pathname) return tab.value;
@@ -59,7 +63,7 @@ export function resolveActiveTab(pathname: string): string {
     if (tab.kind === 'menu' && tab.items.some((item) => item.path === pathname)) return tab.value;
   }
   for (const tab of NAV_TABS) {
-    if (tab.kind === 'menu' && tab.value.startsWith('/') && pathname.startsWith(tab.value)) {
+    if (tab.value.startsWith('/') && tab.value !== '/' && pathname.startsWith(`${tab.value}/`)) {
       return tab.value;
     }
   }

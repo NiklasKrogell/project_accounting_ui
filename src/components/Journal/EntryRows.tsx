@@ -14,6 +14,9 @@ interface EntryRowsProps {
 // indented lines. No expand/collapse — prototype-simple.
 export function EntryRows({ entry, lang, accountLabel, costCenterLabel }: EntryRowsProps) {
   const { t } = useTranslation();
+  // Lines carry no stored order, so put the generated VAT rows after the
+  // entered ones (the sort is stable, so each kind keeps its relative order).
+  const lines = [...entry.lines].sort((a, b) => Number(a.isVat) - Number(b.isVat));
   return (
     <>
       <TableRow sx={{ backgroundColor: 'action.hover' }}>
@@ -32,7 +35,7 @@ export function EntryRows({ entry, lang, accountLabel, costCenterLabel }: EntryR
           </Box>
         </TableCell>
       </TableRow>
-      {entry.lines.map((line) => (
+      {lines.map((line) => (
         <TableRow key={line.id}>
           <TableCell sx={{ pl: 4 }}>{accountLabel(line.accountId)}</TableCell>
           <TableCell>{line.description}</TableCell>

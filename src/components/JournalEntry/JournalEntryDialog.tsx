@@ -17,13 +17,15 @@ import {
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutlined';
 import AddIcon from '@mui/icons-material/Add';
 import { accountsApi } from '../../api/accounts';
+import { chartOfAccountsApi } from '../../api/chartOfAccounts';
 import { costCentersApi } from '../../api/costCenters';
 import { journalEntriesApi } from '../../api/journalEntries';
-import type { Account } from '../../types/account';
+import type { Account, VatAccounts } from '../../types/account';
 import { costCenterLabel, type CostCenter } from '../../types/costCenter';
 import type { CreateJournalEntryInput, JournalEntry, VoucherType } from '../../types/journal';
 import { VOUCHER_TYPES } from '../../types/journal';
 import { formatCurrency } from '../../lib/format';
+import { vatCents } from '../../lib/vat';
 
 const MAX_LINES = 100;
 
@@ -40,7 +42,9 @@ const LINE_GRID_COLUMNS =
 // object (not just its id) is stored so the Autocomplete stays controlled.
 // There's no separate debit/credit field: the amount's sign carries it
 // (+ = debit, - = credit), same convention as most bookkeeping software.
-// vatAmount isn't entered directly — it's derived from amount x vatRate.
+// The amount is net of VAT. The VAT isn't entered: it's amount x vatRate, and
+// on save the backend posts it as a row of its own on a VAT account (previewed
+// below the lines), so the entry has to balance with that VAT counted.
 // vatCode is a placeholder column: VAT codes aren't modeled anywhere in the
 // backend yet, so it's purely local and never sent with the entry.
 // costCenter is optional per line and never blocks submitting.
@@ -51,6 +55,18 @@ interface LineDraft {
   vatRate: string;
   vatCode: string;
   description: string;
+}
+
+// A VAT row the backend will generate from the line at `index`. accountId is
+// undefined until the VAT accounts have loaded and null when the company
+// hasn't set the one this row needs.
+interface VatRowPreview {
+  index: number;
+  debit: boolean;
+  cents: number;
+  vatRate: string;
+  description: string;
+  accountId: string | null | undefined;
 }
 
 function emptyLine(): LineDraft {
@@ -80,7 +96,7 @@ function lineVatCents(line: LineDraft): number | null {
   const amount = parseAmount(line.amount);
   const vatRate = parseAmount(line.vatRate);
   if (amount === null || vatRate === null) return null;
-  return Math.round(Math.abs(toCents(amount)) * (vatRate / 100));
+  return vatCents(Math.abs(toCents(amount)), vatRate);
 }
 
 const accountLabel = (a: Account) => `${a.number} ${a.name}`;
@@ -101,6 +117,7 @@ export default function JournalEntryDialog({ open, onClose, onSaved }: Props) {
   const [accounts, setAccounts] = useState<Account[] | null>(null);
   const [accountsError, setAccountsError] = useState<string | null>(null);
   const [costCenters, setCostCenters] = useState<CostCenter[] | null>(null);
+  const [vatAccounts, setVatAccounts] = useState<VatAccounts | null>(null);
 
   const [voucherType, setVoucherType] = useState<VoucherType>('SALES');
   const [date, setDate] = useState(todayIso());
@@ -110,8 +127,9 @@ export default function JournalEntryDialog({ open, onClose, onSaved }: Props) {
   const [busy, setBusy] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
-  // Reset the form and (re)fetch accounts and cost centers every time the
-  // dialog opens — this is trivially correct across company switches.
+  // Reset the form and (re)fetch accounts, cost centers and the VAT accounts
+  // every time the dialog opens — this is trivially correct across company
+  // switches.
   useEffect(() => {
     if (!open) return;
     setVoucherType('SALES');
@@ -130,8 +148,38 @@ export default function JournalEntryDialog({ open, onClose, onSaved }: Props) {
       .list()
       .then(setCostCenters)
       .catch((err) => setAccountsError((err as Error).message));
+    setVatAccounts(null);
+    chartOfAccountsApi
+      .getVatAccounts()
+      .then(setVatAccounts)
+      .catch((err) => setAccountsError((err as Error).message));
   }, [open]);
 
+  // The VAT rows the backend will generate, one per line that carries VAT, on
+  // the side of that line: VAT on a debit is deductible (receivable,
+  // "Alv-saamiset"); VAT on a credit is collected on behalf of the tax
+  // authority (payable, "Alv-velka").
+  const vatRows = useMemo(() => {
+    const rows: VatRowPreview[] = [];
+    lines.forEach((line, index) => {
+      const amount = parseAmount(line.amount);
+      const cents = lineVatCents(line);
+      if (amount === null || amount === 0 || cents === null || cents === 0) return;
+      const debit = amount > 0;
+      rows.push({
+        index,
+        debit,
+        cents,
+        vatRate: line.vatRate,
+        description: line.description,
+        accountId: debit ? vatAccounts?.vatReceivableAccountId : vatAccounts?.vatPayableAccountId,
+      });
+    });
+    return rows;
+  }, [lines, vatAccounts]);
+
+  // Debit and credit totals of the entry as it will be stored: the entered
+  // lines plus their VAT rows.
   const balance = useMemo(() => {
     let debit = 0;
     let credit = 0;
@@ -142,27 +190,30 @@ export default function JournalEntryDialog({ open, onClose, onSaved }: Props) {
       if (cents > 0) debit += cents;
       else if (cents < 0) credit += -cents;
     }
+    for (const row of vatRows) {
+      if (row.debit) debit += row.cents;
+      else credit += row.cents;
+    }
     return { debit, credit, difference: debit - credit };
-  }, [lines]);
+  }, [lines, vatRows]);
 
   const balanced = balance.difference === 0 && balance.debit > 0 && balance.credit > 0;
   // Nothing entered yet vs. entered-but-mismatched get different colors below.
   const hasAnyAmount = balance.debit > 0 || balance.credit > 0;
 
-  // Debit-side VAT is deductible (receivable, "Alv-saamiset"); credit-side
-  // VAT is collected on behalf of the tax authority (payable, "Alv-velka").
   const vatSummary = useMemo(() => {
     let receivable = 0;
     let payable = 0;
-    for (const line of lines) {
-      const amount = parseAmount(line.amount);
-      const vatCents = lineVatCents(line);
-      if (amount === null || vatCents === null) continue;
-      if (amount > 0) receivable += vatCents;
-      else if (amount < 0) payable += vatCents;
+    for (const row of vatRows) {
+      if (row.debit) receivable += row.cents;
+      else payable += row.cents;
     }
     return { receivable, payable };
-  }, [lines]);
+  }, [vatRows]);
+
+  // The backend refuses a line with VAT when the VAT account of its side isn't
+  // set, so say so up front instead of failing on save.
+  const vatAccountMissing = vatRows.some((row) => row.accountId === null);
 
   const linesValid = lines.every((line) => {
     const amount = parseAmount(line.amount);
@@ -177,7 +228,13 @@ export default function JournalEntryDialog({ open, onClose, onSaved }: Props) {
     );
   });
 
-  const canSubmit = !busy && balanced && linesValid && description.trim().length > 0 && !!date;
+  const canSubmit =
+    !busy &&
+    balanced &&
+    linesValid &&
+    !vatAccountMissing &&
+    description.trim().length > 0 &&
+    !!date;
 
   function updateLine(index: number, patch: Partial<LineDraft>) {
     setLines((prev) => prev.map((line, i) => (i === index ? { ...line, ...patch } : line)));
@@ -203,7 +260,6 @@ export default function JournalEntryDialog({ open, onClose, onSaved }: Props) {
           amount: Math.abs(amount),
           description: line.description.trim() || undefined,
           vatRate: parseAmount(line.vatRate)!,
-          vatAmount: lineVatCents(line)! / 100,
           type: amount < 0 ? 'credit' : 'debit',
         };
       }),
@@ -365,6 +421,47 @@ export default function JournalEntryDialog({ open, onClose, onSaved }: Props) {
         >
           {t('journalEntry.addLine')}
         </Button>
+
+        {vatRows.length > 0 && (
+          <Box sx={{ mt: 2 }}>
+            <Typography variant="caption" color="text.secondary">
+              {t('journalEntry.vat.rowsTitle')}
+            </Typography>
+            {vatAccountMissing && (
+              <Alert severity="warning" sx={{ my: 1 }}>
+                {t('journalEntry.vat.accountMissing')}
+              </Alert>
+            )}
+            {vatRows.map((row) => {
+              const account = accounts?.find((a) => a.id === row.accountId);
+              return (
+                <Box
+                  key={row.index}
+                  sx={{
+                    display: 'grid',
+                    gridTemplateColumns: LINE_GRID_COLUMNS,
+                    gap: 1,
+                    py: 0.5,
+                    alignItems: 'center',
+                    color: 'text.secondary',
+                  }}
+                >
+                  <Typography variant="body2" noWrap>
+                    {account ? accountLabel(account) : '–'}
+                  </Typography>
+                  <Typography variant="body2">
+                    {formatCurrency((row.debit ? row.cents : -row.cents) / 100, lang)}
+                  </Typography>
+                  <Typography variant="body2">{row.vatRate.replace('.', ',')} %</Typography>
+                  <span />
+                  <Typography variant="body2" noWrap>
+                    {row.description}
+                  </Typography>
+                </Box>
+              );
+            })}
+          </Box>
+        )}
 
         <Typography
           sx={{

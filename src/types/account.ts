@@ -151,6 +151,14 @@ export interface AccountGroup {
   updatedAt: string;
 }
 
+// The accounts the backend posts a journal entry line's VAT to: the VAT of a
+// debit line to the receivable account, of a credit line to the payable one.
+// Null until the company has picked one.
+export interface VatAccounts {
+  vatReceivableAccountId: string | null;
+  vatPayableAccountId: string | null;
+}
+
 export interface Account {
   id: string;
   // Account number is a per-company string (e.g. '1900'), not a numeric id.

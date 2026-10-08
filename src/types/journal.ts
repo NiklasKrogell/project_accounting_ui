@@ -24,6 +24,9 @@ export interface JournalEntryLine {
   vatRate: number;
   vatAmount: number;
   type: EntryLineType;
+  // True for a row the backend generated on a VAT account from another line's
+  // VAT; such rows are never sent back when saving an entry.
+  isVat: boolean;
   costCenterId: string | null;
 }
 
@@ -40,13 +43,14 @@ export interface JournalEntry {
   lines: JournalEntryLine[];
 }
 
-// vatRate and vatAmount are required by the backend schema — send 0 when not applicable.
+// An entered line. The amount is net of VAT: the backend derives the VAT from
+// amount x vatRate and posts it as a row of its own, and the entry must balance
+// with those rows counted. vatRate is required — send 0 when not applicable.
 export interface JournalEntryLineInput {
   accountId: string;
   amount: number;
   description?: string;
   vatRate: number;
-  vatAmount: number;
   type: EntryLineType;
   // Optional; omitted or null leaves the line without a cost center.
   costCenterId?: string | null;

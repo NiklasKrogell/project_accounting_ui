@@ -152,7 +152,16 @@
     "emptyGroup": "Ei tilejä tässä ryhmässä.",
     "ungrouped": "Ryhmittelemättömät tilit",
     "newGroup": "Uusi tiliryhmä",
-    "editGroup": "Muokkaa tiliryhmää {{name}}"
+    "editGroup": "Muokkaa tiliryhmää {{name}}",
+    "vatAccounts": "ALV-tilit"
+  },
+  "vatAccounts": {
+    "title": "ALV-tilit",
+    "hint": "Kirjausrivin arvonlisävero kirjataan automaattisesti omalle rivilleen näille tileille: debet-rivin vero saamistilille ja kredit-rivin vero velkatilille.",
+    "receivable": "Alv-saamisten tili",
+    "payable": "Alv-velan tili",
+    "submit": "Tallenna",
+    "submitting": "Tallennetaan…"
   },
   "accountEdit": {
     "title": "Muokkaa tiliä",
@@ -311,7 +320,7 @@
     "line": {
       "account": "Tili",
       "costCenter": "Kustannuspaikka",
-      "amount": "Summa",
+      "amount": "Veroton summa",
       "vatRate": "ALV-%",
       "vatCode": "ALV-tunnus",
       "description": "Riviselite"
@@ -326,7 +335,9 @@
     },
     "vat": {
       "receivable": "Alv-saamiset",
-      "payable": "Alv-velka"
+      "payable": "Alv-velka",
+      "rowsTitle": "ALV-rivit, jotka lisätään kirjaukseen automaattisesti",
+      "accountMissing": "ALV-tiliä ei ole asetettu, joten arvonlisäverollista riviä ei voi tallentaa. Aseta ALV-tilit tilikartassa."
     },
     "submit": "Tallenna kirjaus",
     "submitting": "Tallennetaan…",

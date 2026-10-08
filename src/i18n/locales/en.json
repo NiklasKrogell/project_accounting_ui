@@ -152,7 +152,16 @@
     "emptyGroup": "No accounts in this group.",
     "ungrouped": "Ungrouped accounts",
     "newGroup": "New account group",
-    "editGroup": "Edit account group {{name}}"
+    "editGroup": "Edit account group {{name}}",
+    "vatAccounts": "VAT accounts"
+  },
+  "vatAccounts": {
+    "title": "VAT accounts",
+    "hint": "The VAT of an entry line is posted automatically as a row of its own on these accounts: VAT on a debit line to the receivable account, VAT on a credit line to the payable account.",
+    "receivable": "VAT receivable account",
+    "payable": "VAT payable account",
+    "submit": "Save",
+    "submitting": "Saving…"
   },
   "accountEdit": {
     "title": "Edit account",
@@ -311,7 +320,7 @@
     "line": {
       "account": "Account",
       "costCenter": "Cost center",
-      "amount": "Amount",
+      "amount": "Net amount",
       "vatRate": "VAT %",
       "vatCode": "VAT code",
       "description": "Line description"
@@ -326,7 +335,9 @@
     },
     "vat": {
       "receivable": "VAT receivable",
-      "payable": "VAT payable"
+      "payable": "VAT payable",
+      "rowsTitle": "VAT rows added to the entry automatically",
+      "accountMissing": "The VAT account is not set, so a line with VAT can't be saved. Set the VAT accounts in the chart of accounts."
     },
     "submit": "Save entry",
     "submitting": "Saving…",

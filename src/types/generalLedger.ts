@@ -24,6 +24,8 @@ export interface GeneralLedgerLine {
   credit: number;
   vatRate: number;
   vatAmount: number;
+  // True for a VAT row generated from another line of the entry.
+  isVat: boolean;
   runningBalance: number;
 }
 

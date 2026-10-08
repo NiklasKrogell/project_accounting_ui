@@ -63,6 +63,7 @@ export const TabBar: React.FC<Props> = ({ subscriptionActive, activeTab, navigat
 
     const openFor = (tab: Extract<NavTab, { kind: 'menu' }>, anchorEl: HTMLElement) => {
         cancelClose();
+        if (visibleItems(tab).length === 0) return;
         setOpenMenu({ tab, anchorEl, width: anchorEl.getBoundingClientRect().width });
     };
 
@@ -111,7 +112,9 @@ export const TabBar: React.FC<Props> = ({ subscriptionActive, activeTab, navigat
                     if (tab.kind === 'link') {
                         return <Tab key={tab.value} label={t(tab.labelKey)} value={tab.value} />;
                     }
-                    if (visibleItems(tab).length === 0) return null;
+                    // Hide menus whose items are all role-filtered; menus with no
+                    // items configured yet (placeholders) still show.
+                    if (tab.items.length > 0 && visibleItems(tab).length === 0) return null;
                     return (
                         <Tab
                             key={tab.value}

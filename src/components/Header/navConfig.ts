@@ -22,7 +22,6 @@ export type NavTab =
 // Single extensibility point for the tab bar: add new tabs and menu items here.
 export const NAV_TABS: NavTab[] = [
   { kind: 'link', labelKey: 'nav.dashboard', value: '/' },
-  { kind: 'link', labelKey: 'nav.fiscalYears', value: '/fiscal-years' },
   {
     kind: 'menu',
     labelKey: 'nav.accounting',
@@ -30,17 +29,29 @@ export const NAV_TABS: NavTab[] = [
     items: [
       { labelKey: 'nav.newEntry', action: 'newJournalEntry', minRole: 'LEDGER' },
       { labelKey: 'nav.journal', path: '/accounting/journal' },
-      { labelKey: 'nav.generalLedger', path: '/accounting/general-ledger' },
+      { labelKey: 'nav.fiscalYears', path: '/fiscal-years' },
       { labelKey: 'nav.chartOfAccounts', path: '/accounting/chart-of-accounts' },
     ],
+  },
+  { kind: 'menu', labelKey: 'nav.purchases', value: '/purchases', items: [] },
+  { kind: 'menu', labelKey: 'nav.sales', value: '/sales', items: [] },
+  {
+    kind: 'menu',
+    labelKey: 'nav.reports',
+    value: '/reports',
+    items: [{ labelKey: 'nav.generalLedger', path: '/accounting/general-ledger' }],
   },
 ];
 
 // Maps the current pathname to the tab that should be highlighted: exact link
-// match first, then the menu tab whose value prefixes the path, else '/'.
+// match first, then the menu tab owning an item with that path, then the menu
+// tab whose value prefixes the path, else '/'.
 export function resolveActiveTab(pathname: string): string {
   for (const tab of NAV_TABS) {
     if (tab.kind === 'link' && tab.value === pathname) return tab.value;
+  }
+  for (const tab of NAV_TABS) {
+    if (tab.kind === 'menu' && tab.items.some((item) => item.path === pathname)) return tab.value;
   }
   for (const tab of NAV_TABS) {
     if (tab.kind === 'menu' && tab.value.startsWith('/') && pathname.startsWith(tab.value)) {

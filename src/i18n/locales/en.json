@@ -19,6 +19,7 @@
     "fiscalYears": "Fiscal years",
     "accounting": "Accounting",
     "journal": "Journal",
+    "generalLedger": "General ledger",
     "chartOfAccounts": "Chart of accounts",
     "newEntry": "New entry"
   },
@@ -74,6 +75,27 @@
       "debit": "Debit",
       "credit": "Credit",
       "vat": "VAT"
+    }
+  },
+  "generalLedger": {
+    "title": "General ledger",
+    "empty": "No postings in the selected period.",
+    "accountsPerPage": "Accounts per page",
+    "openingBalance": "Opening balance",
+    "closingBalance": "Closing balance",
+    "filters": {
+      "from": "From",
+      "to": "To",
+      "account": "Account",
+      "allAccounts": "All accounts"
+    },
+    "columns": {
+      "date": "Date",
+      "voucher": "Voucher",
+      "description": "Description",
+      "debit": "Debit",
+      "credit": "Credit",
+      "balance": "Balance"
     }
   },
   "journalEntry": {

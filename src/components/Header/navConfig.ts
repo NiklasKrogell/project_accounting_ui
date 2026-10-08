@@ -30,6 +30,7 @@ export const NAV_TABS: NavTab[] = [
     items: [
       { labelKey: 'nav.newEntry', action: 'newJournalEntry', minRole: 'LEDGER' },
       { labelKey: 'nav.journal', path: '/accounting/journal' },
+      { labelKey: 'nav.generalLedger', path: '/accounting/general-ledger' },
       { labelKey: 'nav.chartOfAccounts', path: '/accounting/chart-of-accounts' },
     ],
   },

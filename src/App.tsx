@@ -9,6 +9,7 @@ import Home from './pages/Home';
 import FiscalYears from './pages/FiscalYears';
 import Journal from './pages/Journal';
 import ChartOfAccounts from './pages/ChartOfAccounts';
+import GeneralLedger from './pages/GeneralLedger';
 import ProtectedRoute from './routes/ProtectedRoute';
 import PublicOnlyRoute from './routes/PublicOnlyRoute';
 import Layout from './routes/Layout';
@@ -37,6 +38,7 @@ function AppRoutes() {
           <Route path="/fiscal-years" element={<FiscalYears />} />
           <Route path="/accounting/journal" element={<Journal />} />
           <Route path="/accounting/chart-of-accounts" element={<ChartOfAccounts />} />
+          <Route path="/accounting/general-ledger" element={<GeneralLedger />} />
         </Route>
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />

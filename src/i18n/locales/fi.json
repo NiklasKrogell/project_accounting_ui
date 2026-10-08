@@ -19,6 +19,7 @@
     "fiscalYears": "Tilikaudet",
     "accounting": "Kirjanpito",
     "journal": "Päiväkirja",
+    "generalLedger": "Pääkirja",
     "chartOfAccounts": "Tilikartta",
     "newEntry": "Uusi kirjaus"
   },
@@ -74,6 +75,27 @@
       "debit": "Debet",
       "credit": "Kredit",
       "vat": "ALV"
+    }
+  },
+  "generalLedger": {
+    "title": "Pääkirja",
+    "empty": "Ei kirjauksia valitulla aikavälillä.",
+    "accountsPerPage": "Tilejä sivulla",
+    "openingBalance": "Alkusaldo",
+    "closingBalance": "Loppusaldo",
+    "filters": {
+      "from": "Alkaen",
+      "to": "Päättyen",
+      "account": "Tili",
+      "allAccounts": "Kaikki tilit"
+    },
+    "columns": {
+      "date": "Päivämäärä",
+      "voucher": "Tosite",
+      "description": "Selite",
+      "debit": "Debet",
+      "credit": "Kredit",
+      "balance": "Saldo"
     }
   },
   "journalEntry": {

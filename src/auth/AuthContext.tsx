@@ -1,6 +1,9 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { api } from '../api/client';
+import { userSettingsApi } from '../api/userSettings';
+import { changeLanguage } from '../i18n';
 import type { AuthContextValue, AuthState, MeResponse, SignupInput } from '../types/auth';
+import type { UserSettingsPatch } from '../types/settings';
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
@@ -8,6 +11,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<AuthState>({
     loading: true,
     user: null,
+    settings: null,
     memberships: [],
     activeCompanyId: null,
   });
@@ -18,18 +22,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setState({
         loading: false,
         user: me.user,
+        settings: me.settings,
         memberships: me.memberships,
         activeCompanyId: me.activeCompanyId,
       });
     } catch {
       // 401 (or network failure) -> logged out
-      setState({ loading: false, user: null, memberships: [], activeCompanyId: null });
+      setState({ loading: false, user: null, settings: null, memberships: [], activeCompanyId: null });
     }
   }, []);
 
   useEffect(() => {
     refresh();
   }, [refresh]);
+
+  // The language is a user setting, so the saved one wins as soon as it is
+  // known. changeLanguage also caches it in this browser, which is what the
+  // logged-out pages (and the first paint) use.
+  const language = state.settings?.language;
+  useEffect(() => {
+    if (language) changeLanguage(language);
+  }, [language]);
 
   const value = useMemo<AuthContextValue>(
     () => ({
@@ -55,6 +68,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       async switchCompany(companyId: string) {
         await api('/api/auth/switch-company', { method: 'POST', body: { companyId } });
         await refresh();
+      },
+
+      async updateUserSettings(patch: UserSettingsPatch) {
+        const settings = await userSettingsApi.update(patch);
+        setState((current) => ({ ...current, settings }));
       },
     }),
     [state, refresh],

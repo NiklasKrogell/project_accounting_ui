@@ -1,5 +1,6 @@
 // Mirrors the backend's Role/SubscriptionStatus enums (prisma/models) and the
 // shapes returned by /api/auth/me.
+import type { UserSettings, UserSettingsPatch } from './settings';
 
 export type Role = 'VIEWER' | 'LEDGER' | 'ACCOUNTANT' | 'ADMIN';
 export type SubscriptionStatus = 'PENDING_PAYMENT' | 'ACTIVE' | 'PAST_DUE' | 'CANCELED';
@@ -42,6 +43,7 @@ export interface SignupInput {
 
 export interface MeResponse {
   user: User;
+  settings: UserSettings;
   memberships: Membership[];
   activeCompanyId: string | null;
 }
@@ -49,6 +51,8 @@ export interface MeResponse {
 export interface AuthState {
   loading: boolean;
   user: User | null;
+  // The user's personal settings; null while logged out.
+  settings: UserSettings | null;
   memberships: Membership[];
   activeCompanyId: string | null;
 }
@@ -59,4 +63,5 @@ export interface AuthContextValue extends AuthState {
   signup(input: SignupInput): Promise<void>;
   logout(): Promise<void>;
   switchCompany(companyId: string): Promise<void>;
+  updateUserSettings(patch: UserSettingsPatch): Promise<void>;
 }

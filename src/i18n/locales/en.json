@@ -32,12 +32,19 @@
   },
   "settings": {
     "title": "Settings",
+    "scopes": {
+      "user": "User settings",
+      "company": "Company settings"
+    },
     "sections": {
       "general": "General settings"
     },
+    "save": "Save",
+    "saving": "Saving…",
+    "saved": "Saved",
     "general": {
       "language": "Language",
-      "languageHint": "The language of the app's user interface."
+      "languageHint": "The language of the app's user interface. This setting is personal and follows you in all your companies."
     }
   },
   "accountMainClass": {
@@ -171,8 +178,7 @@
     "hint": "The VAT of an entry line is posted automatically as a row of its own on these accounts: VAT on a debit line to the receivable account, VAT on a credit line to the payable account.",
     "receivable": "VAT receivable account",
     "payable": "VAT payable account",
-    "submit": "Save",
-    "submitting": "Saving…"
+    "readOnlyNote": "You have read-only access. Changing the VAT accounts requires ledger rights."
   },
   "accountEdit": {
     "title": "Edit account",
@@ -357,7 +363,7 @@
       "payable": "VAT payable",
       "rowsTitle": "VAT rows added to the entry automatically.",
       "grossHint": "The VAT is taken out of the line amount, and the line is stored net.",
-      "accountMissing": "The VAT account is not set, so a line with VAT can't be saved. Set the VAT accounts in the chart of accounts."
+      "accountMissing": "The VAT account is not set, so a line with VAT can't be saved. Set the VAT accounts in the company settings."
     },
     "submit": "Save entry",
     "submitting": "Saving…",

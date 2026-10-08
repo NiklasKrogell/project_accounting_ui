@@ -14,7 +14,8 @@ import GeneralLedger from './pages/GeneralLedger';
 import IncomeStatement from './pages/IncomeStatement';
 import BalanceSheet from './pages/BalanceSheet';
 import Settings, { SETTINGS_SECTIONS } from './pages/Settings';
-import { GeneralSettings } from './components/Settings/GeneralSettings';
+import { GeneralSettings } from './components/Settings/User/GeneralSettings';
+import { VatAccountsSettings } from './components/Settings/Company/VatAccountsSettings';
 import { SETTINGS_PATH } from './components/Header/navConfig';
 import ProtectedRoute from './routes/ProtectedRoute';
 import PublicOnlyRoute from './routes/PublicOnlyRoute';
@@ -50,7 +51,8 @@ function AppRoutes() {
           <Route path="/reports/balance-sheet" element={<BalanceSheet />} />
           <Route path={SETTINGS_PATH} element={<Settings />}>
             <Route index element={<Navigate to={SETTINGS_SECTIONS[0].path} replace />} />
-            <Route path="general" element={<GeneralSettings />} />
+            <Route path="user/general" element={<GeneralSettings />} />
+            <Route path="company/vat-accounts" element={<VatAccountsSettings />} />
           </Route>
         </Route>
       </Route>

@@ -32,12 +32,19 @@
   },
   "settings": {
     "title": "Asetukset",
+    "scopes": {
+      "user": "Käyttäjän asetukset",
+      "company": "Yrityksen asetukset"
+    },
     "sections": {
       "general": "Yleiset asetukset"
     },
+    "save": "Tallenna",
+    "saving": "Tallennetaan…",
+    "saved": "Tallennettu",
     "general": {
       "language": "Kieli",
-      "languageHint": "Sovelluksen käyttöliittymän kieli."
+      "languageHint": "Sovelluksen käyttöliittymän kieli. Asetus on henkilökohtainen ja seuraa sinua kaikissa yrityksissäsi."
     }
   },
   "accountMainClass": {
@@ -171,8 +178,7 @@
     "hint": "Kirjausrivin arvonlisävero kirjataan automaattisesti omalle rivilleen näille tileille: debet-rivin vero saamistilille ja kredit-rivin vero velkatilille.",
     "receivable": "Alv-saamisten tili",
     "payable": "Alv-velan tili",
-    "submit": "Tallenna",
-    "submitting": "Tallennetaan…"
+    "readOnlyNote": "Sinulla on lukuoikeus. ALV-tilien muuttaminen vaatii kirjaajan oikeudet."
   },
   "accountEdit": {
     "title": "Muokkaa tiliä",
@@ -357,7 +363,7 @@
       "payable": "Alv-velka",
       "rowsTitle": "ALV-rivit, jotka lisätään kirjaukseen automaattisesti.",
       "grossHint": "Vero vähennetään rivin summasta, ja rivi tallennetaan verottomana.",
-      "accountMissing": "ALV-tiliä ei ole asetettu, joten arvonlisäverollista riviä ei voi tallentaa. Aseta ALV-tilit tilikartassa."
+      "accountMissing": "ALV-tiliä ei ole asetettu, joten arvonlisäverollista riviä ei voi tallentaa. Aseta ALV-tilit yrityksen asetuksissa."
     },
     "submit": "Tallenna kirjaus",
     "submitting": "Tallennetaan…",

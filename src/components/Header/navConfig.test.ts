@@ -2,7 +2,8 @@ import { resolveActiveTab } from './navConfig';
 
 test('highlights the settings tab on the settings page and its sections', () => {
   expect(resolveActiveTab('/settings')).toBe('/settings');
-  expect(resolveActiveTab('/settings/general')).toBe('/settings');
+  expect(resolveActiveTab('/settings/user/general')).toBe('/settings');
+  expect(resolveActiveTab('/settings/company/vat-accounts')).toBe('/settings');
 });
 
 test('highlights the menu tab that owns the current route', () => {

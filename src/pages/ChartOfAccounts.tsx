@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import { Alert, Box, Button, Typography } from '@mui/material';
 import { useAuth } from '../auth/AuthContext';
 import { accountGroupsApi } from '../api/accountGroups';
@@ -14,12 +15,13 @@ import {
   AccountGroupDialog,
   type AccountGroupDialogTarget,
 } from '../components/ChartOfAccounts/AccountGroupDialog';
-import { VatAccountsDialog } from '../components/ChartOfAccounts/VatAccountsDialog';
+import { SETTINGS_PATH } from '../components/Header/navConfig';
 
 // Chart of accounts (tilikartta): listing of the company's accounts, grouped by
 // account group within their main class. Everyone with access can view it;
-// editing accounts and groups, and picking the VAT accounts, requires LEDGER+
-// (mirrors the backend), and without that role the rows simply aren't clickable. Groups come from /account-groups
+// editing accounts and groups requires LEDGER+ (mirrors the backend), and
+// without that role the rows simply aren't clickable. The VAT accounts are a
+// company setting, so that button leads to the settings page. Groups come from /account-groups
 // (which carries their accounts, and so also shows groups that are still
 // empty); /accounts is fetched alongside only to surface accounts that belong
 // to no group at all.
@@ -33,7 +35,6 @@ export default function ChartOfAccounts() {
   const [error, setError] = useState<string | null>(null);
   const [editing, setEditing] = useState<Account | null>(null);
   const [groupTarget, setGroupTarget] = useState<AccountGroupDialogTarget | null>(null);
-  const [vatAccountsOpen, setVatAccountsOpen] = useState(false);
 
   const load = useCallback(async () => {
     setError(null);
@@ -64,7 +65,7 @@ export default function ChartOfAccounts() {
         </Typography>
         {canEdit && (
           <Box sx={{ display: 'flex', gap: 1 }}>
-            <Button variant="outlined" onClick={() => setVatAccountsOpen(true)}>
+            <Button variant="outlined" component={Link} to={`${SETTINGS_PATH}/company/vat-accounts`}>
               {t('chartOfAccounts.vatAccounts')}
             </Button>
             <Button variant="outlined" onClick={() => setGroupTarget({ mode: 'create' })}>
@@ -113,7 +114,6 @@ export default function ChartOfAccounts() {
         onClose={() => setGroupTarget(null)}
         onSaved={() => void load()}
       />
-      <VatAccountsDialog open={vatAccountsOpen} onClose={() => setVatAccountsOpen(false)} />
     </Box>
   );
 }

@@ -14,11 +14,11 @@ import {
 import type {
   IncomeStatement,
   StatementAccountRow,
-  StatementAmounts,
   StatementItemRow,
   StatementSubItem,
 } from '../../types/incomeStatement';
-import { formatCurrency, formatDateRange } from '../../lib/format';
+import { formatDateRange } from '../../lib/format';
+import { StatementLine, isEmpty, numeric } from '../Statement/StatementLine';
 
 interface IncomeStatementTableProps {
   // null while the first statement is loading.
@@ -27,53 +27,6 @@ interface IncomeStatementTableProps {
   showAccounts: boolean;
   // Present items 1-5 combined as one "Bruttotulos" item.
   grossResult: boolean;
-}
-
-const numeric = { fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' } as const;
-
-// The layout writes turnover and the three subtotals in capitals; they are
-// also the rows that are shown even when empty.
-const emphasised = { fontWeight: 700, textTransform: 'uppercase' } as const;
-
-// An item with no figure in either period is left out of the statement
-// (PMA 2:8 §). With no comparison period, comparisonAmount is null.
-const isEmpty = ({ amount, comparisonAmount }: StatementAmounts) =>
-  amount === 0 && (comparisonAmount ?? 0) === 0;
-
-type Variant = 'emphasised' | 'item' | 'subItem' | 'account';
-
-interface LineProps extends StatementAmounts {
-  label: ReactNode;
-  variant: Variant;
-  // Indentation level; each level is one step further in.
-  depth?: number;
-  hasComparison: boolean;
-  lang: string;
-}
-
-function Line({ label, variant, depth = 0, amount, comparisonAmount, hasComparison, lang }: LineProps) {
-  const text =
-    variant === 'emphasised'
-      ? emphasised
-      : variant === 'item'
-        ? { fontWeight: 600 }
-        : variant === 'account'
-          ? { color: 'text.secondary' }
-          : {};
-
-  return (
-    <TableRow sx={variant === 'emphasised' ? { backgroundColor: 'action.hover' } : undefined}>
-      <TableCell sx={{ pl: 2 + depth * 3, ...text }}>{label}</TableCell>
-      <TableCell align="right" sx={{ ...numeric, ...text, textTransform: 'none' }}>
-        {formatCurrency(amount, lang)}
-      </TableCell>
-      {hasComparison && (
-        <TableCell align="right" sx={{ ...numeric, ...text, textTransform: 'none' }}>
-          {formatCurrency(comparisonAmount ?? 0, lang)}
-        </TableCell>
-      )}
-    </TableRow>
-  );
 }
 
 export function IncomeStatementTable({
@@ -102,7 +55,7 @@ export function IncomeStatementTable({
       ? accounts
           .filter((account) => !isEmpty(account))
           .map((account) => (
-            <Line
+            <StatementLine
               key={account.accountId}
               variant="account"
               depth={depth}
@@ -118,7 +71,7 @@ export function IncomeStatementTable({
     isEmpty(node)
       ? []
       : [
-          <Line
+          <StatementLine
             key={node.key}
             variant="subItem"
             depth={depth}
@@ -136,7 +89,7 @@ export function IncomeStatementTable({
     if (row.mainClass !== 'REVENUE' && isEmpty(row)) return [];
     const hasSubItems = row.subItems.length > 0;
     return [
-      <Line
+      <StatementLine
         key={row.mainClass}
         variant={row.mainClass === 'REVENUE' ? 'emphasised' : 'item'}
         label={t(`accountMainClass.${row.mainClass}`)}
@@ -149,7 +102,7 @@ export function IncomeStatementTable({
       // line of their own so the sub-items still add up to the item.
       ...(hasSubItems && !isEmpty(row.unallocated)
         ? [
-            <Line
+            <StatementLine
               key={`${row.mainClass}-unallocated`}
               variant="subItem"
               depth={1}
@@ -167,7 +120,7 @@ export function IncomeStatementTable({
   const lines = statement.rows.flatMap((row, index): ReactNode[] => {
     if (row.kind === 'subtotal') {
       return [
-        <Line
+        <StatementLine
           key={row.key}
           variant="emphasised"
           label={t(`incomeStatement.subtotals.${row.key}`)}
@@ -182,7 +135,7 @@ export function IncomeStatementTable({
       const isFirst = statement.rows.findIndex((r) => r.kind === 'item' && r.inGrossResult) === index;
       return isFirst
         ? [
-            <Line
+            <StatementLine
               key="grossResult"
               variant="emphasised"
               label={t('incomeStatement.grossResult')}

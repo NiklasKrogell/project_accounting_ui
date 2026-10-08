@@ -23,6 +23,7 @@ export const MAIN_CLASSES: readonly AccountMainClass[] = [
   'FIXED_ASSETS',
   'CURRENT_ASSETS',
   'EQUITY',
+  'ACCUMULATED_APPROPRIATIONS',
   'PROVISIONS',
   'LIABILITIES',
 ];

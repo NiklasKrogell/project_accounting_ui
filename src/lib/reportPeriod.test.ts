@@ -1,4 +1,4 @@
-import { comparisonRange, defaultFiscalYear } from './reportPeriod';
+import { comparisonDate, comparisonRange, defaultFiscalYear } from './reportPeriod';
 
 const fy = (startDate: string, endDate: string) => ({ startDate, endDate });
 
@@ -45,6 +45,34 @@ describe('comparisonRange', () => {
 
   it('clamps a 29 February start date', () => {
     expect(comparisonRange('2024-02-29', '2024-03-10', []).from).toBe('2023-02-28');
+  });
+});
+
+describe('comparisonDate', () => {
+  const years = [fy('2025-01-01', '2025-12-31'), fy('2023-07-01', '2024-06-30')];
+
+  it('compares a fiscal year end against the end of the fiscal year before it', () => {
+    // The earlier year ends in June; a calendar shift would miss its close.
+    expect(comparisonDate('2025-12-31', years)).toBe('2024-06-30');
+  });
+
+  it('picks the closest earlier fiscal year when there are several', () => {
+    const three = [...years, fy('2022-07-01', '2023-06-30')];
+    expect(comparisonDate('2025-12-31', three)).toBe('2024-06-30');
+  });
+
+  it('shifts the end of the first fiscal year back one calendar year', () => {
+    expect(comparisonDate('2024-06-30', years)).toBe('2023-06-30');
+  });
+
+  it('shifts any other date back one calendar year', () => {
+    expect(comparisonDate('2025-03-15', years)).toBe('2024-03-15');
+    expect(comparisonDate('2025-03-15', [])).toBe('2024-03-15');
+  });
+
+  it('keeps a month-end on the month-end across a leap year', () => {
+    expect(comparisonDate('2025-02-28', [])).toBe('2024-02-29');
+    expect(comparisonDate('2024-02-29', [])).toBe('2023-02-28');
   });
 });
 

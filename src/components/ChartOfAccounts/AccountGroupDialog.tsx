@@ -12,7 +12,12 @@ import {
   TextField,
 } from '@mui/material';
 import { accountGroupsApi } from '../../api/accountGroups';
-import type { AccountMainClass, IncomeStatementSubItem } from '../../types/account';
+import type {
+  AccountMainClass,
+  BalanceSheetItem,
+  IncomeStatementSubItem,
+} from '../../types/account';
+import { balanceSheetItemLabel, balanceSheetItemOptions } from '../../lib/balanceSheetScheme';
 import { MAIN_CLASSES, subItemLabel, subItemOptions } from '../../lib/incomeStatementScheme';
 
 // What the dialog is open for: a new group, or an existing one to edit.
@@ -24,6 +29,7 @@ export type AccountGroupDialogTarget =
       name: string;
       mainClass: AccountMainClass;
       incomeStatementSubItem: IncomeStatementSubItem | null;
+      balanceSheetItem: BalanceSheetItem | null;
     };
 
 interface AccountGroupDialogProps {
@@ -34,14 +40,16 @@ interface AccountGroupDialogProps {
 }
 
 // Create/edit dialog for an account group. A group's main class places its
-// accounts on the balance sheet or under a numbered item of the income
-// statement; where that item has lettered sub-items, the group can also be
-// assigned to one of them.
+// accounts under a lettered section of the balance sheet or a numbered item
+// of the income statement. Below that the group can be assigned to an item of
+// the balance sheet section, or to a lettered sub-item where the income
+// statement item has them.
 export function AccountGroupDialog({ target, onClose, onSaved }: AccountGroupDialogProps) {
   const { t } = useTranslation();
   const [name, setName] = useState('');
   const [mainClass, setMainClass] = useState<AccountMainClass>('REVENUE');
   const [subItem, setSubItem] = useState<IncomeStatementSubItem | ''>('');
+  const [balanceSheetItem, setBalanceSheetItem] = useState<BalanceSheetItem | ''>('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -51,11 +59,13 @@ export function AccountGroupDialog({ target, onClose, onSaved }: AccountGroupDia
     setName(target.mode === 'edit' ? target.name : '');
     setMainClass(target.mode === 'edit' ? target.mainClass : 'REVENUE');
     setSubItem(target.mode === 'edit' ? (target.incomeStatementSubItem ?? '') : '');
+    setBalanceSheetItem(target.mode === 'edit' ? (target.balanceSheetItem ?? '') : '');
     setError(null);
     setBusy(false);
   }, [target]);
 
   const options = subItemOptions(mainClass);
+  const balanceSheetOptions = balanceSheetItemOptions(mainClass);
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -66,6 +76,7 @@ export function AccountGroupDialog({ target, onClose, onSaved }: AccountGroupDia
       name: name.trim(),
       mainClass,
       incomeStatementSubItem: subItem === '' ? null : subItem,
+      balanceSheetItem: balanceSheetItem === '' ? null : balanceSheetItem,
     };
     try {
       if (target.mode === 'edit') await accountGroupsApi.update(target.id, input);
@@ -105,8 +116,10 @@ export function AccountGroupDialog({ target, onClose, onSaved }: AccountGroupDia
               value={mainClass}
               onChange={(e) => {
                 setMainClass(e.target.value as AccountMainClass);
-                // A sub-item only exists under its own main class.
+                // A sub-item or balance sheet item only exists under its own
+                // main class.
                 setSubItem('');
+                setBalanceSheetItem('');
               }}
               fullWidth
             >
@@ -129,6 +142,23 @@ export function AccountGroupDialog({ target, onClose, onSaved }: AccountGroupDia
                 {options.map((option) => (
                   <MenuItem key={option.key} value={option.key}>
                     {subItemLabel(option.key, t)}
+                  </MenuItem>
+                ))}
+              </TextField>
+            )}
+            {balanceSheetOptions.length > 0 && (
+              <TextField
+                select
+                label={t('accountGroupEdit.balanceSheetItem')}
+                helperText={t('accountGroupEdit.balanceSheetItemHint')}
+                value={balanceSheetItem}
+                onChange={(e) => setBalanceSheetItem(e.target.value as BalanceSheetItem | '')}
+                fullWidth
+              >
+                <MenuItem value="">{t('accountGroupEdit.noBalanceSheetItem')}</MenuItem>
+                {balanceSheetOptions.map((option) => (
+                  <MenuItem key={option.key} value={option.key}>
+                    {balanceSheetItemLabel(option.key, t)}
                   </MenuItem>
                 ))}
               </TextField>

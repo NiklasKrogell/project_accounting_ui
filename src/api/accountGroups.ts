@@ -1,11 +1,18 @@
 import { api } from './client';
-import type { AccountGroup, AccountMainClass, IncomeStatementSubItem } from '../types/account';
+import type {
+  AccountGroup,
+  AccountMainClass,
+  BalanceSheetItem,
+  IncomeStatementSubItem,
+} from '../types/account';
 
-// The update endpoint is a full replace (PUT): a sub-item left out is cleared.
+// The update endpoint is a full replace (PUT): a sub-item or balance sheet
+// item left out is cleared.
 export interface AccountGroupInput {
   name: string;
   mainClass: AccountMainClass;
   incomeStatementSubItem: IncomeStatementSubItem | null;
+  balanceSheetItem: BalanceSheetItem | null;
 }
 
 // Typed wrappers over the account group endpoints. The list endpoint returns

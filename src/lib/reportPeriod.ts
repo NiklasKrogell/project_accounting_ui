@@ -53,6 +53,26 @@ export function comparisonRange(
   return { from: oneYearEarlier(from, false), to: oneYearEarlier(to, true) };
 }
 
+// The date a balance sheet's figures are compared against.
+//
+// When the date closes a fiscal year, that is the closing date of the fiscal
+// year before it (the comparison the financial statements make), for the same
+// reason as above. Any other date, or the end of a first fiscal year, is
+// shifted back one year.
+export function comparisonDate(date: string, fiscalYears: readonly PeriodLike[]): string {
+  const closed = fiscalYears.find((fy) => fy.endDate === date);
+  if (closed) {
+    const previous = fiscalYears
+      .filter((fy) => fy.endDate < closed.startDate)
+      .reduce<PeriodLike | null>(
+        (latest, fy) => (latest === null || fy.endDate > latest.endDate ? fy : latest),
+        null,
+      );
+    if (previous) return previous.endDate;
+  }
+  return oneYearEarlier(date, true);
+}
+
 // The fiscal year a report opens on: the one containing `today`, else the most
 // recent one, else none.
 export function defaultFiscalYear<T extends PeriodLike>(

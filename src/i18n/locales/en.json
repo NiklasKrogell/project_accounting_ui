@@ -25,7 +25,8 @@
     "generalLedger": "General ledger",
     "chartOfAccounts": "Chart of accounts",
     "newEntry": "New entry",
-    "incomeStatement": "Income statement"
+    "incomeStatement": "Income statement",
+    "balanceSheet": "Balance sheet"
   },
   "accountMainClass": {
     "REVENUE": "Revenue",
@@ -43,6 +44,7 @@
     "FIXED_ASSETS": "Non-current assets",
     "CURRENT_ASSETS": "Current assets",
     "EQUITY": "Equity",
+    "ACCUMULATED_APPROPRIATIONS": "Accumulated appropriations",
     "PROVISIONS": "Provisions",
     "LIABILITIES": "Liabilities"
   },
@@ -72,6 +74,77 @@
     "CHANGE_IN_TAX_BASED_PROVISIONS": "Change in tax-based provisions",
     "GROUP_CONTRIBUTION": "Group contribution"
   },
+  "balanceSheetItem": {
+    "INTANGIBLE_ASSETS": "Intangible assets",
+    "DEVELOPMENT_EXPENDITURE": "Development expenditure",
+    "INTANGIBLE_RIGHTS": "Intangible rights",
+    "GOODWILL": "Goodwill",
+    "OTHER_INTANGIBLE_ASSETS": "Other intangible assets",
+    "INTANGIBLE_ADVANCE_PAYMENTS": "Advance payments",
+    "TANGIBLE_ASSETS": "Tangible assets",
+    "LAND_AND_WATERS": "Land and waters",
+    "BUILDINGS_AND_STRUCTURES": "Buildings and structures",
+    "MACHINERY_AND_EQUIPMENT": "Machinery and equipment",
+    "OTHER_TANGIBLE_ASSETS": "Other tangible assets",
+    "TANGIBLE_ADVANCE_PAYMENTS_AND_CONSTRUCTION_IN_PROGRESS": "Advance payments and construction in progress",
+    "INVESTMENTS": "Investments",
+    "INVESTMENT_HOLDINGS_IN_GROUP_UNDERTAKINGS": "Holdings in group undertakings",
+    "INVESTMENT_RECEIVABLES_FROM_GROUP_UNDERTAKINGS": "Receivables from group undertakings",
+    "INVESTMENT_PARTICIPATING_INTERESTS": "Participating interests",
+    "INVESTMENT_RECEIVABLES_FROM_PARTICIPATING_INTERESTS": "Receivables from participating interests",
+    "INVESTMENT_OTHER_SHARES_AND_HOLDINGS": "Other shares and holdings",
+    "INVESTMENT_OTHER_RECEIVABLES": "Other receivables",
+    "INVENTORIES": "Inventories",
+    "RAW_MATERIALS_AND_CONSUMABLES": "Raw materials and consumables",
+    "WORK_IN_PROGRESS": "Work in progress",
+    "FINISHED_GOODS": "Finished products/goods",
+    "OTHER_INVENTORIES": "Other inventories",
+    "INVENTORY_ADVANCE_PAYMENTS": "Advance payments",
+    "RECEIVABLES": "Receivables",
+    "LONG_TERM_RECEIVABLES": "Long-term receivables",
+    "SHORT_TERM_RECEIVABLES": "Short-term receivables",
+    "TRADE_RECEIVABLES": "Trade receivables",
+    "RECEIVABLES_FROM_GROUP_UNDERTAKINGS": "Receivables from group undertakings",
+    "RECEIVABLES_FROM_PARTICIPATING_INTERESTS": "Receivables from participating interests",
+    "LOAN_RECEIVABLES": "Loan receivables",
+    "OTHER_RECEIVABLES": "Other receivables",
+    "UNPAID_SHARES": "Unpaid shares/holdings",
+    "PREPAYMENTS_AND_ACCRUED_INCOME": "Prepayments and accrued income",
+    "FINANCIAL_SECURITIES": "Financial securities",
+    "SECURITIES_HOLDINGS_IN_GROUP_UNDERTAKINGS": "Holdings in group undertakings",
+    "SECURITIES_OTHER_SHARES_AND_HOLDINGS": "Other shares and holdings",
+    "OTHER_SECURITIES": "Other securities",
+    "CASH_AND_BANK": "Cash in hand and at banks",
+    "SHARE_CAPITAL": "Share, co-operative or other corresponding capital",
+    "SHARE_PREMIUM_RESERVE": "Share premium reserve",
+    "REVALUATION_RESERVE": "Revaluation reserve",
+    "RESERVES": "Other reserves",
+    "INVESTED_UNRESTRICTED_EQUITY_RESERVE": "Reserve for invested unrestricted equity",
+    "RESERVE_FUND": "Reserve fund",
+    "RESERVES_UNDER_ARTICLES": "Reserves under the articles of association or rules",
+    "FAIR_VALUE_RESERVE": "Fair value reserve",
+    "OTHER_RESERVES": "Other reserves",
+    "RETAINED_EARNINGS": "Retained earnings (loss)",
+    "PROFIT_FOR_THE_FINANCIAL_YEAR": "Profit (loss) for the financial year",
+    "DEPRECIATION_DIFFERENCE": "Depreciation difference",
+    "TAX_BASED_PROVISIONS": "Tax-based provisions",
+    "PENSION_PROVISIONS": "Provisions for pensions",
+    "TAX_PROVISIONS": "Tax provisions",
+    "OTHER_PROVISIONS": "Other provisions",
+    "LONG_TERM_LIABILITIES": "Long-term liabilities",
+    "SHORT_TERM_LIABILITIES": "Short-term liabilities",
+    "BONDS": "Bonds",
+    "CONVERTIBLE_BONDS": "Convertible bonds",
+    "LOANS_FROM_FINANCIAL_INSTITUTIONS": "Loans from financial institutions",
+    "PENSION_LOANS": "Loans from pension insurance institutions",
+    "ADVANCES_RECEIVED": "Advances received",
+    "TRADE_PAYABLES": "Trade payables",
+    "BILLS_OF_EXCHANGE_PAYABLE": "Bills of exchange payable",
+    "LIABILITIES_TO_GROUP_UNDERTAKINGS": "Liabilities to group undertakings",
+    "LIABILITIES_TO_PARTICIPATING_INTERESTS": "Liabilities to participating interests",
+    "OTHER_LIABILITIES": "Other liabilities",
+    "ACCRUALS_AND_DEFERRED_INCOME": "Accruals and deferred income"
+  },
   "chartOfAccounts": {
     "title": "Chart of accounts",
     "empty": "No accounts yet.",
@@ -98,6 +171,9 @@
     "subItem": "Income statement sub-item",
     "subItemHint": "The sub-item of the income statement layout the group's accounts are shown under.",
     "noSubItem": "No sub-item",
+    "balanceSheetItem": "Balance sheet item",
+    "balanceSheetItemHint": "The item of the balance sheet layout the group's accounts are shown under.",
+    "noBalanceSheetItem": "No balance sheet item",
     "submit": "Save",
     "submitting": "Saving…"
   },
@@ -170,6 +246,32 @@
     "warnings": {
       "unclassified": "These accounts have postings but belong to no account group, so they could not be placed on the income statement: {{accounts}}. If they are income or expense accounts, add them to a group in the chart of accounts.",
       "unallocated": "Some accounts are not allocated to a sub-item of the income statement layout ({{items}}). Their amounts are included in the item total. Set a sub-item for the account group in the chart of accounts."
+    }
+  },
+  "balanceSheet": {
+    "title": "Balance sheet",
+    "noDate": "Choose the balance sheet date.",
+    "unallocated": "Not allocated to a balance sheet item",
+    "derivedResult": "From the income statement",
+    "sides": {
+      "ASSETS": "Assets",
+      "EQUITY_AND_LIABILITIES": "Equity and liabilities"
+    },
+    "totals": {
+      "ASSETS": "Total assets",
+      "EQUITY_AND_LIABILITIES": "Total equity and liabilities"
+    },
+    "filters": {
+      "fiscalYear": "Fiscal year",
+      "customDate": "Custom date",
+      "date": "Date",
+      "showAccounts": "Show accounts",
+      "abridged": "Abridged balance sheet"
+    },
+    "warnings": {
+      "unclassified": "These accounts have postings but belong to no account group, so they could not be placed on the balance sheet: {{accounts}}. Assets and equity and liabilities therefore differ by {{difference}}. Add the accounts to a group in the chart of accounts.",
+      "unbalanced": "Assets and equity and liabilities differ by {{difference}}.",
+      "unallocated": "Some accounts are not allocated to an item of the balance sheet layout ({{items}}). Their amounts are included in the section total. Set a balance sheet item for the account group in the chart of accounts."
     }
   },
   "journalEntry": {

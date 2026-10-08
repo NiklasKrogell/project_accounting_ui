@@ -2,6 +2,7 @@ import type {
   Account,
   AccountGroup,
   AccountMainClass,
+  BalanceSheetItem,
   IncomeStatementSubItem,
 } from '../../types/account';
 
@@ -10,6 +11,7 @@ export interface ChartGroup {
   name: string;
   mainClass: AccountMainClass;
   incomeStatementSubItem: IncomeStatementSubItem | null;
+  balanceSheetItem: BalanceSheetItem | null;
   accounts: Account[];
 }
 
@@ -34,6 +36,7 @@ export function buildChartSections(groups: AccountGroup[]): ChartSection[] {
       name: group.name,
       mainClass: group.mainClass,
       incomeStatementSubItem: group.incomeStatementSubItem,
+      balanceSheetItem: group.balanceSheetItem,
       accounts: group.accounts ?? [],
     });
   }

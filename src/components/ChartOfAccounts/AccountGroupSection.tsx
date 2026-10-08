@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { Box, Chip, IconButton, Typography } from '@mui/material';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import type { Account } from '../../types/account';
+import { balanceSheetItemLabel } from '../../lib/balanceSheetScheme';
 import { subItemLabel } from '../../lib/incomeStatementScheme';
 import type { ChartGroup } from './chartSections';
 import { AccountsTable } from './AccountsTable';
@@ -14,7 +15,8 @@ interface AccountGroupSectionProps {
 }
 
 // One account group inside a main class card: its name, the income statement
-// sub-item it is classified as (if any), and its accounts.
+// sub-item or balance sheet item it is classified as (if any), and its
+// accounts.
 export function AccountGroupSection({
   group,
   onSelectAccount,
@@ -33,6 +35,13 @@ export function AccountGroupSection({
             size="small"
             variant="outlined"
             label={subItemLabel(group.incomeStatementSubItem, t)}
+          />
+        )}
+        {group.balanceSheetItem && (
+          <Chip
+            size="small"
+            variant="outlined"
+            label={balanceSheetItemLabel(group.balanceSheetItem, t)}
           />
         )}
         {onEditGroup && (

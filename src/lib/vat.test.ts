@@ -1,4 +1,12 @@
-import { vatCents, vatCentsInGross } from './vat';
+import { formatVatRate, vatCents, vatCentsInGross } from './vat';
+
+describe('formatVatRate', () => {
+  it('writes the rate with a decimal comma', () => {
+    expect(formatVatRate(25.5)).toBe('25,5 %');
+    expect(formatVatRate(10)).toBe('10 %');
+    expect(formatVatRate(0)).toBe('0 %');
+  });
+});
 
 describe('vatCents', () => {
   it('computes VAT on a net amount', () => {

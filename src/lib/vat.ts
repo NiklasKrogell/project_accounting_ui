@@ -2,6 +2,16 @@
 // actually posts the VAT rows — the dialog only previews them, so the two must
 // round identically.
 
+// The Finnish VAT rates: what a journal entry line can be given, and what an
+// account can be given as its default. The backend accepts the same ones as an
+// account's default (VAT_RATES in src/lib/vat.ts there) — change both together.
+export const VAT_RATES = [25.5, 13.5, 10, 0];
+
+// '25,5 %': a rate the Finnish way, with a decimal comma.
+export function formatVatRate(rate: number): string {
+  return `${String(rate).replace('.', ',')} %`;
+}
+
 // VAT in cents on a net amount in cents. The rate is a percentage taken to two
 // decimals (25.5 -> 2550), which keeps the product an integer: multiplying by
 // 0.255 instead would put a half cent just under .5 and round it down.

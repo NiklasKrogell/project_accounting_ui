@@ -22,9 +22,11 @@ import DeleteOutlineIcon from '@mui/icons-material/DeleteOutlined';
 import AddIcon from '@mui/icons-material/Add';
 import { accountsApi } from '../../api/accounts';
 import { chartOfAccountsApi } from '../../api/chartOfAccounts';
+import { companySettingsApi } from '../../api/companySettings';
 import { costCentersApi } from '../../api/costCenters';
 import { journalEntriesApi } from '../../api/journalEntries';
 import type { Account, VatAccounts } from '../../types/account';
+import type { CompanySettings } from '../../types/settings';
 import { costCenterLabel, type CostCenter } from '../../types/costCenter';
 import type {
   CreateJournalEntryInput,
@@ -34,12 +36,9 @@ import type {
 } from '../../types/journal';
 import { VOUCHER_TYPES } from '../../types/journal';
 import { formatCurrency } from '../../lib/format';
-import { vatCents, vatCentsInGross } from '../../lib/vat';
+import { VAT_RATES, formatVatRate, vatCents, vatCentsInGross } from '../../lib/vat';
 
 const MAX_LINES = 100;
-
-// The VAT rates a line can be given, as LineDraft.vatRate strings.
-const VAT_RATES = ['25.5', '13.5', '10', '0'];
 
 // Fixed column widths shared by the header row and every line row so they
 // line up like a spreadsheet. Account/cost center/description flex, the rest
@@ -58,7 +57,12 @@ const LINE_GRID_COLUMNS =
 // rows counted — or gross, with the VAT taken out of the amount. With the
 // automatic VAT switch off no VAT rows are generated: the amounts are stored
 // and balanced as entered, the VAT is booked as lines of its own, and vatRate
-// only describes the line.
+// only describes the line. vatRate is one of VAT_RATES as a string. Picking an
+// account sets it to that account's default VAT rate (0 % when it has none);
+// it can be changed afterwards, until another account is picked. A company
+// that is not VAT-registered books no VAT at all: every VAT control is
+// disabled for it and the lines stay at 0 %, whatever defaults its accounts
+// have.
 // vatCode is a placeholder column: VAT codes aren't modeled anywhere in the
 // backend yet, so it's purely local and never sent with the entry.
 // costCenter is optional per line and never blocks submitting.
@@ -134,6 +138,7 @@ export default function JournalEntryDialog({ open, onClose, onSaved }: Props) {
   const [accountsError, setAccountsError] = useState<string | null>(null);
   const [costCenters, setCostCenters] = useState<CostCenter[] | null>(null);
   const [vatAccounts, setVatAccounts] = useState<VatAccounts | null>(null);
+  const [companySettings, setCompanySettings] = useState<CompanySettings | null>(null);
 
   const [voucherType, setVoucherType] = useState<VoucherType>('SALES');
   const [date, setDate] = useState(todayIso());
@@ -145,9 +150,9 @@ export default function JournalEntryDialog({ open, onClose, onSaved }: Props) {
   const [busy, setBusy] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
-  // Reset the form and (re)fetch accounts, cost centers and the VAT accounts
-  // every time the dialog opens — this is trivially correct across company
-  // switches.
+  // Reset the form and (re)fetch accounts, cost centers, the VAT accounts and
+  // the company settings every time the dialog opens — this is trivially
+  // correct across company switches.
   useEffect(() => {
     if (!open) return;
     setVoucherType('SALES');
@@ -173,7 +178,37 @@ export default function JournalEntryDialog({ open, onClose, onSaved }: Props) {
       .getVatAccounts()
       .then(setVatAccounts)
       .catch((err) => setAccountsError((err as Error).message));
+    setCompanySettings(null);
+    companySettingsApi
+      .get()
+      .then((settings) => {
+        setCompanySettings(settings);
+        // A line whose account was picked before this arrived missed its
+        // default VAT rate. The rate couldn't be touched until now, so nothing
+        // the user chose is overwritten.
+        if (settings.vatRegistered) {
+          setLines((prev) =>
+            prev.map((line) =>
+              line.account?.defaultVatRate != null
+                ? { ...line, vatRate: String(line.account.defaultVatRate) }
+                : line,
+            ),
+          );
+        }
+      })
+      .catch((err) => setAccountsError((err as Error).message));
   }, [open]);
+
+  // The backend refuses a line with a VAT rate from a company that is not
+  // VAT-registered. The VAT controls also stay off until the settings have
+  // loaded, so a rate can't be picked ahead of them.
+  const vatEnabled = companySettings?.vatRegistered === true;
+  const notVatRegistered = companySettings?.vatRegistered === false;
+
+  // The VAT rate a line gets when `account` is picked for it: the account's
+  // default, if it has one and the company books VAT.
+  const defaultVatRateOf = (account: Account | null) =>
+    vatEnabled && account?.defaultVatRate != null ? String(account.defaultVatRate) : '0';
 
   // The VAT rows the backend will generate, one per line that carries VAT, on
   // the side of that line: VAT on a debit is deductible (receivable,
@@ -339,7 +374,11 @@ export default function JournalEntryDialog({ open, onClose, onSaved }: Props) {
           />
           <FormControlLabel
             control={
-              <Switch checked={automaticVat} onChange={(e) => setAutomaticVat(e.target.checked)} />
+              <Switch
+                checked={automaticVat}
+                onChange={(e) => setAutomaticVat(e.target.checked)}
+                disabled={!vatEnabled}
+              />
             }
             label={t('journalEntry.automaticVat')}
           />
@@ -353,7 +392,7 @@ export default function JournalEntryDialog({ open, onClose, onSaved }: Props) {
               color="primary"
               // Without automatic VAT nothing is added to or taken out of an
               // amount, so there is no basis to choose.
-              disabled={!automaticVat}
+              disabled={!vatEnabled || !automaticVat}
               value={vatBasis}
               // Clicking the selected option reports null; keep the choice.
               onChange={(_, value: VatBasis | null) => value && setVatBasis(value)}
@@ -364,6 +403,11 @@ export default function JournalEntryDialog({ open, onClose, onSaved }: Props) {
             </ToggleButtonGroup>
           </Box>
         </Box>
+        {notVatRegistered && (
+          <Alert severity="info" sx={{ mt: 2 }}>
+            {t('journalEntry.vat.notRegistered')}
+          </Alert>
+        )}
         <TextField
           label={t('journalEntry.description')}
           value={description}
@@ -383,7 +427,7 @@ export default function JournalEntryDialog({ open, onClose, onSaved }: Props) {
           </Typography>
           <Typography variant="caption" color="text.secondary">
             {t(
-              !automaticVat
+              !automaticVat || notVatRegistered
                 ? 'journalEntry.line.amountPlain'
                 : vatBasis === 'gross'
                   ? 'journalEntry.line.amountGross'
@@ -413,7 +457,9 @@ export default function JournalEntryDialog({ open, onClose, onSaved }: Props) {
             <Autocomplete
               options={accounts ?? []}
               value={line.account}
-              onChange={(_, value) => updateLine(index, { account: value })}
+              onChange={(_, value) =>
+                updateLine(index, { account: value, vatRate: defaultVatRateOf(value) })
+              }
               getOptionLabel={accountLabel}
               isOptionEqualToValue={(a, b) => a.id === b.id}
               loading={accounts === null}
@@ -434,10 +480,11 @@ export default function JournalEntryDialog({ open, onClose, onSaved }: Props) {
               size="small"
               value={line.vatRate}
               onChange={(e) => updateLine(index, { vatRate: e.target.value })}
+              disabled={!vatEnabled}
             >
               {VAT_RATES.map((rate) => (
-                <MenuItem key={rate} value={rate}>
-                  {rate.replace('.', ',')} %
+                <MenuItem key={rate} value={String(rate)}>
+                  {formatVatRate(rate)}
                 </MenuItem>
               ))}
             </TextField>
@@ -445,6 +492,7 @@ export default function JournalEntryDialog({ open, onClose, onSaved }: Props) {
               size="small"
               value={line.vatCode}
               onChange={(e) => updateLine(index, { vatCode: e.target.value })}
+              disabled={!vatEnabled}
             />
             <TextField
               size="small"
@@ -540,7 +588,7 @@ export default function JournalEntryDialog({ open, onClose, onSaved }: Props) {
             ? t('journalEntry.balance.balanced')
             : `${t('journalEntry.balance.difference')}: ${formatCurrency(balance.difference / 100, lang)}`}
         </Typography>
-        {automaticVat && (
+        {automaticVat && !notVatRegistered && (
           <Typography color="text.secondary">
             {t('journalEntry.vat.receivable')}: {formatCurrency(vatSummary.receivable / 100, lang)}
             {' | '}

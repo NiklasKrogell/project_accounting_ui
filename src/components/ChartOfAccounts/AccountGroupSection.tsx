@@ -9,6 +9,7 @@ import { AccountsTable } from './AccountsTable';
 
 interface AccountGroupSectionProps {
   group: ChartGroup;
+  vatRegistered: boolean;
   onSelectAccount?: (account: Account) => void;
   // When omitted (read-only access), the group can't be edited.
   onEditGroup?: (group: ChartGroup) => void;
@@ -19,6 +20,7 @@ interface AccountGroupSectionProps {
 // accounts.
 export function AccountGroupSection({
   group,
+  vatRegistered,
   onSelectAccount,
   onEditGroup,
 }: AccountGroupSectionProps) {
@@ -59,7 +61,11 @@ export function AccountGroupSection({
           {t('chartOfAccounts.emptyGroup')}
         </Typography>
       ) : (
-        <AccountsTable accounts={group.accounts} onSelect={onSelectAccount} />
+        <AccountsTable
+          accounts={group.accounts}
+          vatRegistered={vatRegistered}
+          onSelect={onSelectAccount}
+        />
       )}
     </Box>
   );

@@ -5,6 +5,7 @@ import { Alert, Box, Button, Typography } from '@mui/material';
 import { useAuth } from '../auth/AuthContext';
 import { accountGroupsApi } from '../api/accountGroups';
 import { accountsApi } from '../api/accounts';
+import { companySettingsApi } from '../api/companySettings';
 import type { Account, AccountGroup } from '../types/account';
 import { roleAtLeast } from '../lib/roles';
 import { buildChartSections } from '../components/ChartOfAccounts/chartSections';
@@ -24,7 +25,9 @@ import { SETTINGS_PATH } from '../components/Header/navConfig';
 // company setting, so that button leads to the settings page. Groups come from /account-groups
 // (which carries their accounts, and so also shows groups that are still
 // empty); /accounts is fetched alongside only to surface accounts that belong
-// to no group at all.
+// to no group at all. An account's default VAT rate is shown on its row and
+// set in the edit dialog; the company settings are fetched to grey both out
+// for a company that is not VAT-registered.
 export default function ChartOfAccounts() {
   const { t } = useTranslation();
   const { activeMembership } = useAuth();
@@ -32,6 +35,7 @@ export default function ChartOfAccounts() {
 
   const [groups, setGroups] = useState<AccountGroup[] | null>(null);
   const [ungrouped, setUngrouped] = useState<Account[]>([]);
+  const [vatRegistered, setVatRegistered] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [editing, setEditing] = useState<Account | null>(null);
   const [groupTarget, setGroupTarget] = useState<AccountGroupDialogTarget | null>(null);
@@ -39,12 +43,14 @@ export default function ChartOfAccounts() {
   const load = useCallback(async () => {
     setError(null);
     try {
-      const [groupList, accounts] = await Promise.all([
+      const [groupList, accounts, settings] = await Promise.all([
         accountGroupsApi.list(),
         accountsApi.list(),
+        companySettingsApi.get(),
       ]);
       setGroups(groupList);
       setUngrouped(accounts.filter((account) => account.accountGroupId === null));
+      setVatRegistered(settings.vatRegistered);
     } catch (err) {
       setError((err as Error).message);
     }
@@ -91,6 +97,7 @@ export default function ChartOfAccounts() {
             <MainClassCard
               key={section.mainClass}
               section={section}
+              vatRegistered={vatRegistered}
               onSelectAccount={onSelectAccount}
               onEditGroup={
                 canEdit ? (group) => setGroupTarget({ mode: 'edit', ...group }) : undefined
@@ -98,7 +105,11 @@ export default function ChartOfAccounts() {
             />
           ))}
           {ungrouped.length > 0 && (
-            <UngroupedAccountsCard accounts={ungrouped} onSelectAccount={onSelectAccount} />
+            <UngroupedAccountsCard
+              accounts={ungrouped}
+              vatRegistered={vatRegistered}
+              onSelectAccount={onSelectAccount}
+            />
           )}
         </>
       )}
@@ -106,6 +117,7 @@ export default function ChartOfAccounts() {
       <AccountEditDialog
         account={editing}
         groups={groups ?? []}
+        vatRegistered={vatRegistered}
         onClose={() => setEditing(null)}
         onSaved={() => void load()}
       />

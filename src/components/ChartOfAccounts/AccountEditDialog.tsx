@@ -13,25 +13,40 @@ import {
 } from '@mui/material';
 import { accountsApi } from '../../api/accounts';
 import type { Account, AccountGroup } from '../../types/account';
+import { VAT_RATES, formatVatRate } from '../../lib/vat';
 
 interface AccountEditDialogProps {
   // The account being edited; null keeps the dialog closed.
   account: Account | null;
   // The company's groups, in chart order, for the group select.
   groups: AccountGroup[];
+  // Whether the company books VAT; when it doesn't, the default VAT rate
+  // can't be changed.
+  vatRegistered: boolean;
   onClose: () => void;
   onSaved: () => void;
 }
 
-// Edit dialog for a single account: its name and the group it belongs to. The
-// group decides where the account lands on the income statement or balance
-// sheet. The number is shown disabled so it's clear which account is open and
+// Edit dialog for a single account: its name, the group it belongs to and its
+// default VAT rate. The group decides where the account lands on the income
+// statement or balance sheet; the default VAT rate is what a journal entry
+// line starts with when the account is picked for it. A company that is not
+// VAT-registered books no VAT, so the rate is greyed out for it and kept as it
+// is. The number is shown disabled so it's clear which account is open and
 // that it is not (yet) editable. The backend's PUT replaces the whole account,
-// so the untouched number is sent back as-is.
-export function AccountEditDialog({ account, groups, onClose, onSaved }: AccountEditDialogProps) {
+// so the untouched number — and a greyed-out VAT rate — is sent back as-is.
+export function AccountEditDialog({
+  account,
+  groups,
+  vatRegistered,
+  onClose,
+  onSaved,
+}: AccountEditDialogProps) {
   const { t } = useTranslation();
   const [name, setName] = useState('');
   const [groupId, setGroupId] = useState('');
+  // A VAT_RATES entry as a string; '' for no default.
+  const [defaultVatRate, setDefaultVatRate] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -40,6 +55,7 @@ export function AccountEditDialog({ account, groups, onClose, onSaved }: Account
     if (!account) return;
     setName(account.name);
     setGroupId(account.accountGroupId ?? '');
+    setDefaultVatRate(account.defaultVatRate === null ? '' : String(account.defaultVatRate));
     setError(null);
     setBusy(false);
   }, [account]);
@@ -54,6 +70,7 @@ export function AccountEditDialog({ account, groups, onClose, onSaved }: Account
         number: account.number,
         name: name.trim(),
         accountGroupId: groupId === '' ? null : groupId,
+        defaultVatRate: defaultVatRate === '' ? null : Number(defaultVatRate),
       });
       onSaved();
       onClose();
@@ -100,6 +117,24 @@ export function AccountEditDialog({ account, groups, onClose, onSaved }: Account
               {groups.map((group) => (
                 <MenuItem key={group.id} value={group.id}>
                   {t(`accountMainClass.${group.mainClass}`)} – {group.name}
+                </MenuItem>
+              ))}
+            </TextField>
+            <TextField
+              select
+              label={t('accountEdit.defaultVat')}
+              value={defaultVatRate}
+              onChange={(e) => setDefaultVatRate(e.target.value)}
+              helperText={t(
+                vatRegistered ? 'accountEdit.defaultVatHint' : 'accountEdit.defaultVatNotRegistered',
+              )}
+              disabled={!vatRegistered}
+              fullWidth
+            >
+              <MenuItem value="">{t('accountEdit.noDefaultVat')}</MenuItem>
+              {VAT_RATES.map((rate) => (
+                <MenuItem key={rate} value={String(rate)}>
+                  {formatVatRate(rate)}
                 </MenuItem>
               ))}
             </TextField>

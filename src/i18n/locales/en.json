@@ -171,10 +171,14 @@
     "ungrouped": "Ungrouped accounts",
     "newGroup": "New account group",
     "editGroup": "Edit account group {{name}}",
-    "vatAccounts": "VAT accounts"
+    "vatAccounts": "VAT accounts",
+    "defaultVat": "VAT {{rate}}"
   },
   "vatAccounts": {
-    "title": "VAT accounts",
+    "title": "VAT settings",
+    "registered": "The company is VAT-registered",
+    "registeredRoleNote": "Changing the VAT registration requires accountant rights.",
+    "notRegisteredNote": "The company is not VAT-registered, so entry lines can't be given a VAT rate and the VAT accounts are not used.",
     "hint": "The VAT of an entry line is posted automatically as a row of its own on these accounts: VAT on a debit line to the receivable account, VAT on a credit line to the payable account.",
     "receivable": "VAT receivable account",
     "payable": "VAT payable account",
@@ -187,6 +191,10 @@
     "name": "Account name",
     "group": "Account group",
     "noGroup": "No account group",
+    "defaultVat": "Default VAT %",
+    "noDefaultVat": "No default",
+    "defaultVatHint": "An entry line gets this VAT rate when the account is picked for it.",
+    "defaultVatNotRegistered": "The company is not VAT-registered, so the default is not used on entry lines.",
     "submit": "Save",
     "submitting": "Saving…"
   },
@@ -223,6 +231,39 @@
       "name": "Name",
       "submit": "Save",
       "submitting": "Saving…"
+    }
+  },
+  "bankSettings": {
+    "title": "Bank settings",
+    "accounts": {
+      "title": "Bank accounts",
+      "readOnlyNote": "You have read-only access. Managing bank accounts requires ledger rights.",
+      "empty": "No bank accounts yet.",
+      "newButton": "Add bank account",
+      "columns": {
+        "name": "Name",
+        "iban": "IBAN",
+        "account": "Accounting account"
+      },
+      "inactive": "Not in use",
+      "edit": "Edit bank account {{name}}",
+      "deactivate": "Remove from use",
+      "deactivateLabel": "Remove bank account {{name}} from use",
+      "activate": "Take into use",
+      "activateLabel": "Take bank account {{name}} into use",
+      "confirmDeactivate": "Remove bank account {{name}} from use? It can be taken back into use later.",
+      "dialog": {
+        "createTitle": "New bank account",
+        "editTitle": "Edit bank account",
+        "name": "Name",
+        "iban": "IBAN",
+        "ibanInvalid": "The IBAN is not valid.",
+        "account": "Accounting account",
+        "accountHint": "The account the bank account's transactions are booked on. The accounts of the balance sheet item Cash in hand and at banks can be picked.",
+        "noAccounts": "No accounts under the balance sheet item Cash in hand and at banks.",
+        "submit": "Save",
+        "submitting": "Saving…"
+      }
     }
   },
   "voucherType": {
@@ -363,7 +404,8 @@
       "payable": "VAT payable",
       "rowsTitle": "VAT rows added to the entry automatically.",
       "grossHint": "The VAT is taken out of the line amount, and the line is stored net.",
-      "accountMissing": "The VAT account is not set, so a line with VAT can't be saved. Set the VAT accounts in the company settings."
+      "accountMissing": "The VAT account is not set, so a line with VAT can't be saved. Set the VAT accounts in the company settings.",
+      "notRegistered": "The company is not VAT-registered, so entry lines can't be given a VAT rate."
     },
     "submit": "Save entry",
     "submitting": "Saving…",

@@ -21,6 +21,7 @@ const SETTINGS_SCOPES: { scope: SettingsScope; labelKey: string }[] = [
 export const SETTINGS_SECTIONS: { scope: SettingsScope; path: string; labelKey: string }[] = [
   { scope: 'user', path: 'user/general', labelKey: 'settings.sections.general' },
   { scope: 'company', path: 'company/vat-accounts', labelKey: 'vatAccounts.title' },
+  { scope: 'company', path: 'company/bank', labelKey: 'bankSettings.title' },
 ];
 
 // Settings shell: a side menu on the left edge of the page, grouped by scope,

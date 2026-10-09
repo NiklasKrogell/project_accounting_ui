@@ -165,6 +165,10 @@ export interface Account {
   number: string;
   name: string;
   accountGroupId: string | null;
+  // The VAT rate a journal entry line starts with when this account is picked
+  // for it: one of VAT_RATES (src/lib/vat.ts), or null for no default. 0 is a
+  // default of its own. Not applied when the company is not VAT-registered.
+  defaultVatRate: number | null;
   // Omitted by the serializer when the group relation wasn't loaded.
   accountGroup?: AccountGroupRef | null;
   createdAt: string;

@@ -13,6 +13,7 @@ export interface AccountInput {
   number: string;
   name: string;
   accountGroupId: string | null;
+  defaultVatRate: number | null;
 }
 
 // Typed wrappers over the account endpoints (chart of accounts).

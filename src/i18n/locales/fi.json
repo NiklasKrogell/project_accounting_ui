@@ -171,10 +171,14 @@
     "ungrouped": "Ryhmittelemättömät tilit",
     "newGroup": "Uusi tiliryhmä",
     "editGroup": "Muokkaa tiliryhmää {{name}}",
-    "vatAccounts": "ALV-tilit"
+    "vatAccounts": "ALV-tilit",
+    "defaultVat": "ALV {{rate}}"
   },
   "vatAccounts": {
-    "title": "ALV-tilit",
+    "title": "ALV-asetukset",
+    "registered": "Yritys on arvonlisäverovelvollinen",
+    "registeredRoleNote": "Arvonlisäverovelvollisuuden muuttaminen vaatii kirjanpitäjän oikeudet.",
+    "notRegisteredNote": "Yritys ei ole arvonlisäverovelvollinen, joten kirjausriveille ei voi antaa ALV-prosenttia eikä ALV-tilejä käytetä.",
     "hint": "Kirjausrivin arvonlisävero kirjataan automaattisesti omalle rivilleen näille tileille: debet-rivin vero saamistilille ja kredit-rivin vero velkatilille.",
     "receivable": "Alv-saamisten tili",
     "payable": "Alv-velan tili",
@@ -187,6 +191,10 @@
     "name": "Tilin nimi",
     "group": "Tiliryhmä",
     "noGroup": "Ei tiliryhmää",
+    "defaultVat": "Oletus-ALV-%",
+    "noDefaultVat": "Ei oletusta",
+    "defaultVatHint": "Kirjausrivi saa tämän ALV-prosentin, kun tili valitaan sille.",
+    "defaultVatNotRegistered": "Yritys ei ole arvonlisäverovelvollinen, joten oletusta ei käytetä kirjausriveillä.",
     "submit": "Tallenna",
     "submitting": "Tallennetaan…"
   },
@@ -223,6 +231,39 @@
       "name": "Nimi",
       "submit": "Tallenna",
       "submitting": "Tallennetaan…"
+    }
+  },
+  "bankSettings": {
+    "title": "Pankkiasetukset",
+    "accounts": {
+      "title": "Pankkitilit",
+      "readOnlyNote": "Sinulla on lukuoikeus. Pankkitilien hallinta vaatii kirjaajan oikeudet.",
+      "empty": "Ei pankkitilejä vielä.",
+      "newButton": "Lisää pankkitili",
+      "columns": {
+        "name": "Nimi",
+        "iban": "IBAN",
+        "account": "Kirjanpitotili"
+      },
+      "inactive": "Ei käytössä",
+      "edit": "Muokkaa pankkitiliä {{name}}",
+      "deactivate": "Poista käytöstä",
+      "deactivateLabel": "Poista pankkitili {{name}} käytöstä",
+      "activate": "Ota käyttöön",
+      "activateLabel": "Ota pankkitili {{name}} käyttöön",
+      "confirmDeactivate": "Poistetaanko pankkitili {{name}} käytöstä? Sen voi ottaa myöhemmin takaisin käyttöön.",
+      "dialog": {
+        "createTitle": "Uusi pankkitili",
+        "editTitle": "Muokkaa pankkitiliä",
+        "name": "Nimi",
+        "iban": "IBAN",
+        "ibanInvalid": "IBAN-tilinumero ei ole kelvollinen.",
+        "account": "Kirjanpitotili",
+        "accountHint": "Tili, jolle pankkitilin tapahtumat kirjataan. Valittavissa ovat taseen erän Rahat ja pankkisaamiset tilit.",
+        "noAccounts": "Ei tilejä taseen erässä Rahat ja pankkisaamiset.",
+        "submit": "Tallenna",
+        "submitting": "Tallennetaan…"
+      }
     }
   },
   "voucherType": {
@@ -363,7 +404,8 @@
       "payable": "Alv-velka",
       "rowsTitle": "ALV-rivit, jotka lisätään kirjaukseen automaattisesti.",
       "grossHint": "Vero vähennetään rivin summasta, ja rivi tallennetaan verottomana.",
-      "accountMissing": "ALV-tiliä ei ole asetettu, joten arvonlisäverollista riviä ei voi tallentaa. Aseta ALV-tilit yrityksen asetuksissa."
+      "accountMissing": "ALV-tiliä ei ole asetettu, joten arvonlisäverollista riviä ei voi tallentaa. Aseta ALV-tilit yrityksen asetuksissa.",
+      "notRegistered": "Yritys ei ole arvonlisäverovelvollinen, joten kirjausriveille ei voi antaa ALV-prosenttia."
     },
     "submit": "Tallenna kirjaus",
     "submitting": "Tallennetaan…",

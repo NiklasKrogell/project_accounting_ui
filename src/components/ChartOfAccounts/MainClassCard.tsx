@@ -6,13 +6,19 @@ import { AccountGroupSection } from './AccountGroupSection';
 
 interface MainClassCardProps {
   section: ChartSection;
+  vatRegistered: boolean;
   onSelectAccount?: (account: Account) => void;
   onEditGroup?: (group: ChartGroup) => void;
 }
 
 // One card per account main class (Pysyvät vastaavat, Liikevaihto, …),
 // containing that class's account groups.
-export function MainClassCard({ section, onSelectAccount, onEditGroup }: MainClassCardProps) {
+export function MainClassCard({
+  section,
+  vatRegistered,
+  onSelectAccount,
+  onEditGroup,
+}: MainClassCardProps) {
   const { t } = useTranslation();
 
   return (
@@ -25,6 +31,7 @@ export function MainClassCard({ section, onSelectAccount, onEditGroup }: MainCla
           <AccountGroupSection
             key={group.id}
             group={group}
+            vatRegistered={vatRegistered}
             onSelectAccount={onSelectAccount}
             onEditGroup={onEditGroup}
           />

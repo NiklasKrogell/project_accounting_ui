@@ -29,7 +29,8 @@ export default function Home() {
           {activeMembership?.companyName}
         </Typography>
         <Typography>
-          {t('dashboard.roleLabel')} <strong>{activeMembership?.role}</strong>
+          {t('dashboard.roleLabel')}{' '}
+          <strong>{activeMembership && t(`roles.${activeMembership.role}`)}</strong>
           {activeMembership?.isAdmin ? ` (${t('common.administrator')})` : ''}
         </Typography>
         {ping && (

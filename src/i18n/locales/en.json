@@ -8,6 +8,7 @@
     "administrator": "administrator",
     "inactive": "inactive",
     "cancel": "Cancel",
+    "close": "Close",
     "genericError": "Something went wrong."
   },
   "languages": {
@@ -280,6 +281,86 @@
       }
     }
   },
+  "usersSettings": {
+    "title": "Users and roles",
+    "listTitle": "Users",
+    "readOnlyNote": "You have read-only access. Adding and removing users requires company administrator rights, changing roles at least accountant rights.",
+    "rolesOnlyNote": "You can change the roles of users whose role is below your own. Adding and removing users requires company administrator rights.",
+    "newButton": "Add user",
+    "columns": {
+      "name": "Name",
+      "email": "Email",
+      "role": "Role"
+    },
+    "you": "You",
+    "administrator": "Administrator",
+    "pending": "Has not logged in yet",
+    "editRole": "Edit the role of {{name}}",
+    "remove": "Remove the access of {{name}}",
+    "confirmRemove": "Remove {{name}}'s access to {{company}}? The entries they have made are kept.",
+    "newPassword": "New password",
+    "newPasswordLabel": "Create a new temporary password for {{name}}",
+    "confirmNewPassword": "Create a new temporary password for {{name}}? The earlier one stops working.",
+    "createDialog": {
+      "title": "New user",
+      "email": "Email",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "role": "Role",
+      "isAdmin": "Company administrator",
+      "isAdminHint": "An administrator can add and remove users, change everyone's roles and edit the company's details.",
+      "existingHint": "If the email address already has an account, the person is not added directly but sent an invitation, which they accept or decline themselves. Their name stays as it is.",
+      "submit": "Add user",
+      "submitting": "Adding…"
+    },
+    "roleDialog": {
+      "title": "Edit role",
+      "role": "Role",
+      "isAdmin": "Company administrator",
+      "submit": "Save",
+      "submitting": "Saving…"
+    },
+    "credentials": {
+      "title": "Temporary password",
+      "intro": "Give these credentials to the user. The password is shown only this once, and the user has to change it the first time they log in.",
+      "email": "Email",
+      "password": "Temporary password",
+      "copy": "Copy password",
+      "copied": "Copied",
+      "invitedTitle": "Invitation sent",
+      "invitedBody": "The email address {{email}} already has an account, so the person was sent an invitation. They find it in their inbox and get access to the company once they accept it."
+    },
+    "invitations": {
+      "title": "Pending invitations",
+      "note": "An invited person gets access to the company only after accepting the invitation.",
+      "invited": "Invited",
+      "cancel": "Cancel invitation",
+      "cancelLabel": "Cancel the invitation of {{name}}",
+      "confirmCancel": "Cancel the invitation of {{name}}?"
+    }
+  },
+  "inbox": {
+    "title": "Inbox",
+    "labelWithCount": "Inbox ({{count}})",
+    "empty": "No messages.",
+    "invitation": {
+      "title": "Invitation to {{company}}",
+      "businessId": "Business ID {{businessId}}",
+      "body": "You have been invited to join this company. Role: {{role}}.",
+      "bodyAdmin": "You have been invited to join this company as one of its administrators. Role: {{role}}.",
+      "from": "Invited by {{name}} · {{date}}",
+      "accept": "Accept",
+      "decline": "Decline",
+      "acceptLabel": "Accept the invitation to {{company}}",
+      "declineLabel": "Decline the invitation to {{company}}"
+    }
+  },
+  "roles": {
+    "VIEWER": "Viewer",
+    "LEDGER": "Ledger clerk",
+    "ACCOUNTANT": "Accountant",
+    "ADMIN": "Head accountant"
+  },
   "voucherType": {
     "SALES": "Sales",
     "PURCHASE": "Purchase",
@@ -443,17 +524,20 @@
       "email": "Email",
       "password": "Password",
       "passwordHint": "Password (min 10 characters)",
-      "companyName": "Company name",
-      "businessId": "Business ID",
-      "billingEmail": "Billing email",
-      "billingAddress": "Billing address",
-      "billingCity": "City",
-      "billingPostalCode": "Postal code",
-      "billingCountry": "Country",
       "submit": "Sign up",
       "submitting": "Creating…",
       "haveAccount": "Already have an account?",
       "logIn": "Log in"
+    },
+    "changePassword": {
+      "title": "Set your own password",
+      "intro": "Your account was created with a temporary password. Set a password of your own to continue.",
+      "currentPassword": "Temporary password",
+      "newPassword": "New password (min 10 characters)",
+      "confirmation": "New password again",
+      "mismatch": "The passwords don't match.",
+      "submit": "Save password",
+      "submitting": "Saving…"
     }
   },
   "dashboard": {
@@ -465,6 +549,22 @@
     "title": "Subscription required",
     "statusNote": "does not have an active subscription (status: {{status}}).",
     "body": "To start using the app for this company, its subscription must be paid. Online payment is coming soon — until then, please contact support to activate the subscription."
+  },
+  "noCompany": {
+    "title": "No company",
+    "choose": "No company is selected. Choose a company from the top bar. If the one you were working in isn't listed, your access to it has been removed.",
+    "notMember": "You don't belong to any company.",
+    "askForAccess": "If you should have access to a company's books, ask that company's administrator to invite you with the email address {{email}}. The invitation will appear in the inbox in the top bar.",
+    "pendingInvitations_one": "You have an invitation to a company. Open the inbox in the top bar to answer it.",
+    "pendingInvitations_other": "You have {{count}} invitations. Open the inbox in the top bar to answer them.",
+    "registerQuestion": "Do you want to register a new company?"
+  },
+  "companyCreate": {
+    "open": "Register a new company",
+    "title": "Register a new company",
+    "note": "You become the company's administrator. Its books can be used once its subscription has been paid.",
+    "submit": "Register company",
+    "submitting": "Registering…"
   },
   "fiscalYears": {
     "title": "Fiscal years",

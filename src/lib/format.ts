@@ -11,6 +11,16 @@ export function formatDate(iso: string, lang: string): string {
   }).format(date);
 }
 
+// Formats the date of an ISO timestamp (e.g. a createdAt) for display. Unlike
+// an accounting date it is a moment in time, so the day is the viewer's own.
+export function formatTimestampDate(iso: string, lang: string): string {
+  return new Intl.DateTimeFormat(lang, {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  }).format(new Date(iso));
+}
+
 export function formatDateRange(startIso: string, endIso: string, lang: string): string {
   return `${formatDate(startIso, lang)} – ${formatDate(endIso, lang)}`;
 }

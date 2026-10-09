@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Alert, Box, TextField, Typography } from '@mui/material';
 import { useAuth } from '../../../auth/AuthContext';
 import { companyInfoApi } from '../../../api/companyInfo';
+import { COMPANY_FIELD_MAX_LENGTH } from '../../../lib/companyFields';
 import type { CompanyInfo, CompanyInfoPatch } from '../../../types/settings';
 import { SettingsSection } from '../SettingsSection';
 
@@ -16,16 +17,6 @@ const EDITABLE_FIELDS: EditableField[] = [
   'billingCity',
   'billingCountry',
 ];
-
-// Upper bounds of the backend's patch schema (company-info.controller.ts).
-const MAX_LENGTH: Record<EditableField, number> = {
-  name: 200,
-  billingEmail: 254,
-  billingAddress: 200,
-  billingPostalCode: 20,
-  billingCity: 100,
-  billingCountry: 100,
-};
 
 // Company settings for the company's own details: its name, business ID and
 // billing details. The business ID identifies the company and is shown but
@@ -93,7 +84,7 @@ export function CompanyInfoSettings() {
       disabled={!canEdit || draft === null}
       required
       fullWidth
-      slotProps={{ htmlInput: { maxLength: MAX_LENGTH[name] } }}
+      slotProps={{ htmlInput: { maxLength: COMPANY_FIELD_MAX_LENGTH[name] } }}
     />
   );
 

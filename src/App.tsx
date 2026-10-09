@@ -18,6 +18,7 @@ import { GeneralSettings } from './components/Settings/User/GeneralSettings';
 import { CompanyInfoSettings } from './components/Settings/Company/CompanyInfoSettings';
 import { VatAccountsSettings } from './components/Settings/Company/VatAccountsSettings';
 import { BankSettings } from './components/Settings/Company/BankSettings';
+import { UsersSettings } from './components/Settings/Company/UsersSettings';
 import { SETTINGS_PATH } from './components/Header/navConfig';
 import ProtectedRoute from './routes/ProtectedRoute';
 import PublicOnlyRoute from './routes/PublicOnlyRoute';
@@ -57,6 +58,7 @@ function AppRoutes() {
             <Route path="company/info" element={<CompanyInfoSettings />} />
             <Route path="company/vat-accounts" element={<VatAccountsSettings />} />
             <Route path="company/bank" element={<BankSettings />} />
+            <Route path="company/users" element={<UsersSettings />} />
           </Route>
         </Route>
       </Route>

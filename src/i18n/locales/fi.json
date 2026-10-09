@@ -8,6 +8,7 @@
     "administrator": "ylläpitäjä",
     "inactive": "ei-aktiivinen",
     "cancel": "Peruuta",
+    "close": "Sulje",
     "genericError": "Jokin meni pieleen."
   },
   "languages": {
@@ -280,6 +281,86 @@
       }
     }
   },
+  "usersSettings": {
+    "title": "Käyttäjät ja roolit",
+    "listTitle": "Käyttäjät",
+    "readOnlyNote": "Sinulla on lukuoikeus. Käyttäjien lisääminen ja poistaminen vaatii yrityksen ylläpitäjän oikeudet, roolien muuttaminen vähintään kirjanpitäjän oikeudet.",
+    "rolesOnlyNote": "Voit muuttaa rooleja käyttäjiltä, joiden rooli on omaasi alempi. Käyttäjien lisääminen ja poistaminen vaatii yrityksen ylläpitäjän oikeudet.",
+    "newButton": "Lisää käyttäjä",
+    "columns": {
+      "name": "Nimi",
+      "email": "Sähköposti",
+      "role": "Rooli"
+    },
+    "you": "Sinä",
+    "administrator": "Ylläpitäjä",
+    "pending": "Ei vielä kirjautunut",
+    "editRole": "Muokkaa käyttäjän {{name}} roolia",
+    "remove": "Poista käyttäjän {{name}} pääsy",
+    "confirmRemove": "Poistetaanko käyttäjän {{name}} pääsy yritykseen {{company}}? Hänen tekemänsä kirjaukset säilyvät.",
+    "newPassword": "Uusi salasana",
+    "newPasswordLabel": "Luo käyttäjälle {{name}} uusi väliaikainen salasana",
+    "confirmNewPassword": "Luodaanko käyttäjälle {{name}} uusi väliaikainen salasana? Aiempi lakkaa toimimasta.",
+    "createDialog": {
+      "title": "Uusi käyttäjä",
+      "email": "Sähköposti",
+      "firstName": "Etunimi",
+      "lastName": "Sukunimi",
+      "role": "Rooli",
+      "isAdmin": "Yrityksen ylläpitäjä",
+      "isAdminHint": "Ylläpitäjä voi lisätä ja poistaa käyttäjiä, muuttaa kaikkien rooleja ja muokata yrityksen tietoja.",
+      "existingHint": "Jos sähköpostiosoitteella on jo tili, henkilöä ei lisätä suoraan, vaan hänelle lähetetään kutsu, jonka hän hyväksyy tai hylkää itse. Hänen nimensä säilyy ennallaan.",
+      "submit": "Lisää käyttäjä",
+      "submitting": "Lisätään…"
+    },
+    "roleDialog": {
+      "title": "Muokkaa roolia",
+      "role": "Rooli",
+      "isAdmin": "Yrityksen ylläpitäjä",
+      "submit": "Tallenna",
+      "submitting": "Tallennetaan…"
+    },
+    "credentials": {
+      "title": "Väliaikainen salasana",
+      "intro": "Anna nämä tunnukset käyttäjälle. Salasana näytetään vain tämän kerran, ja käyttäjän on vaihdettava se ensimmäisellä kirjautumiskerralla.",
+      "email": "Sähköposti",
+      "password": "Väliaikainen salasana",
+      "copy": "Kopioi salasana",
+      "copied": "Kopioitu",
+      "invitedTitle": "Kutsu lähetetty",
+      "invitedBody": "Sähköpostiosoitteella {{email}} on jo tili, joten henkilölle lähetettiin kutsu. Hän näkee sen saapuneissa ja pääsee yritykseen, kun hän hyväksyy sen."
+    },
+    "invitations": {
+      "title": "Odottavat kutsut",
+      "note": "Kutsuttu henkilö pääsee yritykseen vasta hyväksyttyään kutsun.",
+      "invited": "Kutsuttu",
+      "cancel": "Peru kutsu",
+      "cancelLabel": "Peru käyttäjän {{name}} kutsu",
+      "confirmCancel": "Perutaanko käyttäjän {{name}} kutsu?"
+    }
+  },
+  "inbox": {
+    "title": "Saapuneet",
+    "labelWithCount": "Saapuneet ({{count}})",
+    "empty": "Ei viestejä.",
+    "invitation": {
+      "title": "Kutsu yritykseen {{company}}",
+      "businessId": "Y-tunnus {{businessId}}",
+      "body": "Sinut on kutsuttu tämän yrityksen käyttäjäksi. Rooli: {{role}}.",
+      "bodyAdmin": "Sinut on kutsuttu tämän yrityksen käyttäjäksi ja ylläpitäjäksi. Rooli: {{role}}.",
+      "from": "Kutsuja: {{name}} · {{date}}",
+      "accept": "Hyväksy",
+      "decline": "Hylkää",
+      "acceptLabel": "Hyväksy kutsu yritykseen {{company}}",
+      "declineLabel": "Hylkää kutsu yritykseen {{company}}"
+    }
+  },
+  "roles": {
+    "VIEWER": "Katselija",
+    "LEDGER": "Kirjaaja",
+    "ACCOUNTANT": "Kirjanpitäjä",
+    "ADMIN": "Pääkirjanpitäjä"
+  },
   "voucherType": {
     "SALES": "Myynti",
     "PURCHASE": "Osto",
@@ -443,17 +524,20 @@
       "email": "Sähköposti",
       "password": "Salasana",
       "passwordHint": "Salasana (vähintään 10 merkkiä)",
-      "companyName": "Yrityksen nimi",
-      "businessId": "Y-tunnus",
-      "billingEmail": "Laskutussähköposti",
-      "billingAddress": "Laskutusosoite",
-      "billingCity": "Kaupunki",
-      "billingPostalCode": "Postinumero",
-      "billingCountry": "Maa",
       "submit": "Luo tili",
       "submitting": "Luodaan…",
       "haveAccount": "Onko sinulla jo tili?",
       "logIn": "Kirjaudu sisään"
+    },
+    "changePassword": {
+      "title": "Aseta oma salasana",
+      "intro": "Tilisi luotiin väliaikaisella salasanalla. Aseta oma salasanasi, niin pääset jatkamaan.",
+      "currentPassword": "Väliaikainen salasana",
+      "newPassword": "Uusi salasana (vähintään 10 merkkiä)",
+      "confirmation": "Uusi salasana uudelleen",
+      "mismatch": "Salasanat eivät täsmää.",
+      "submit": "Tallenna salasana",
+      "submitting": "Tallennetaan…"
     }
   },
   "dashboard": {
@@ -465,6 +549,22 @@
     "title": "Tilaus vaaditaan",
     "statusNote": "ei ole aktiivista tilausta (tila: {{status}}).",
     "body": "Jotta voit käyttää sovellusta tälle yritykselle, tilauksen on oltava maksettu. Verkkomaksu on tulossa — siihen asti ota yhteyttä tukeen tilauksen aktivoimiseksi."
+  },
+  "noCompany": {
+    "title": "Ei yritystä",
+    "choose": "Yritystä ei ole valittuna. Valitse yritys yläpalkista. Jos yritystä, jossa työskentelit, ei ole valikossa, pääsysi siihen on poistettu.",
+    "notMember": "Et kuulu yhteenkään yritykseen.",
+    "askForAccess": "Jos sinun pitäisi päästä jonkin yrityksen kirjanpitoon, pyydä yrityksen ylläpitäjää kutsumaan sinut sähköpostiosoitteella {{email}}. Kutsu ilmestyy yläpalkin saapuneisiin.",
+    "pendingInvitations_one": "Sinulle on tullut kutsu yritykseen. Avaa saapuneet yläpalkista ja vastaa siihen.",
+    "pendingInvitations_other": "Sinulle on tullut {{count}} kutsua. Avaa saapuneet yläpalkista ja vastaa niihin.",
+    "registerQuestion": "Haluatko rekisteröidä uuden yrityksen?"
+  },
+  "companyCreate": {
+    "open": "Rekisteröi uusi yritys",
+    "title": "Rekisteröi uusi yritys",
+    "note": "Sinusta tulee yrityksen ylläpitäjä. Yrityksen kirjanpitoa voi käyttää, kun sen tilaus on maksettu.",
+    "submit": "Rekisteröi yritys",
+    "submitting": "Rekisteröidään…"
   },
   "fiscalYears": {
     "title": "Tilikaudet",

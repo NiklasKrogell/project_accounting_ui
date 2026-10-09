@@ -23,6 +23,7 @@ export const SETTINGS_SECTIONS: { scope: SettingsScope; path: string; labelKey: 
   { scope: 'company', path: 'company/info', labelKey: 'companyInfo.title' },
   { scope: 'company', path: 'company/vat-accounts', labelKey: 'vatAccounts.title' },
   { scope: 'company', path: 'company/bank', labelKey: 'bankSettings.title' },
+  { scope: 'company', path: 'company/users', labelKey: 'usersSettings.title' },
 ];
 
 // Settings shell: a side menu on the left edge of the page, grouped by scope,

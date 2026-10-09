@@ -9,15 +9,10 @@ interface SignupFormState {
   lastName: string;
   email: string;
   password: string;
-  companyName: string;
-  businessId: string;
-  billingEmail: string;
-  billingAddress: string;
-  billingCity: string;
-  billingPostalCode: string;
-  billingCountry: string;
 }
 
+// Registers the person only: a company is registered, or joined, once logged
+// in (see src/pages/NoCompany.tsx).
 export function SignupForm() {
   const { t } = useTranslation();
   const { signup } = useAuth();
@@ -26,13 +21,6 @@ export function SignupForm() {
     lastName: '',
     email: '',
     password: '',
-    companyName: '',
-    businessId: '',
-    billingEmail: '',
-    billingAddress: '',
-    billingCity: '',
-    billingPostalCode: '',
-    billingCountry: '',
   });
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -89,56 +77,6 @@ export function SignupForm() {
             value={form.password}
             onChange={set('password')}
             slotProps={{ htmlInput: { minLength: 10 } }}
-            required
-            fullWidth
-          />
-          <TextField
-            label={t('auth.signup.companyName')}
-            value={form.companyName}
-            onChange={set('companyName')}
-            required
-            fullWidth
-          />
-          <TextField
-            label={t('auth.signup.businessId')}
-            value={form.businessId}
-            onChange={set('businessId')}
-            required
-            fullWidth
-          />
-          <TextField
-            type="email"
-            label={t('auth.signup.billingEmail')}
-            value={form.billingEmail}
-            onChange={set('billingEmail')}
-            required
-            fullWidth
-          />
-          <TextField
-            label={t('auth.signup.billingAddress')}
-            value={form.billingAddress}
-            onChange={set('billingAddress')}
-            required
-            fullWidth
-          />
-          <TextField
-            label={t('auth.signup.billingCity')}
-            value={form.billingCity}
-            onChange={set('billingCity')}
-            required
-            fullWidth
-          />
-          <TextField
-            label={t('auth.signup.billingPostalCode')}
-            value={form.billingPostalCode}
-            onChange={set('billingPostalCode')}
-            required
-            fullWidth
-          />
-          <TextField
-            label={t('auth.signup.billingCountry')}
-            value={form.billingCountry}
-            onChange={set('billingCountry')}
             required
             fullWidth
           />

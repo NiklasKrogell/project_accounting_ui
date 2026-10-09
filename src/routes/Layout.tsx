@@ -2,6 +2,7 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { Box } from '@mui/material';
 import { useAuth } from '../auth/AuthContext';
 import SubscriptionRequired from '../pages/SubscriptionRequired';
+import NoCompany from '../pages/NoCompany';
 import { CustomAppBar } from '../components/Header/CustomAppBar';
 import { TabBar } from '../components/Header/TabBar';
 import { resolveActiveTab, SETTINGS_PATH, type NavAction } from '../components/Header/navConfig';
@@ -62,7 +63,7 @@ function LayoutContent() {
               : { width: '100%', maxWidth: 900, mx: 'auto', p: 3 }
         }
       >
-        {subscriptionActive ? <Outlet /> : <SubscriptionRequired />}
+        {subscriptionActive ? <Outlet /> : activeMembership ? <SubscriptionRequired /> : <NoCompany />}
       </Box>
     </Box>
   );

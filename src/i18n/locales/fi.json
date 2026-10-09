@@ -233,6 +233,20 @@
       "submitting": "Tallennetaan…"
     }
   },
+  "companyInfo": {
+    "title": "Yrityksen tiedot",
+    "basics": "Perustiedot",
+    "billing": "Laskutustiedot",
+    "name": "Yrityksen nimi",
+    "businessId": "Y-tunnus",
+    "businessIdHint": "Y-tunnusta ei voi muuttaa.",
+    "billingEmail": "Laskutussähköposti",
+    "billingAddress": "Laskutusosoite",
+    "billingPostalCode": "Postinumero",
+    "billingCity": "Kaupunki",
+    "billingCountry": "Maa",
+    "readOnlyNote": "Sinulla on lukuoikeus. Yrityksen tietojen muuttaminen vaatii yrityksen ylläpitäjän oikeudet."
+  },
   "bankSettings": {
     "title": "Pankkiasetukset",
     "accounts": {

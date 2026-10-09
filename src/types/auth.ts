@@ -63,5 +63,8 @@ export interface AuthContextValue extends AuthState {
   signup(input: SignupInput): Promise<void>;
   logout(): Promise<void>;
   switchCompany(companyId: string): Promise<void>;
+  // Re-reads the session (user, settings, memberships) from the backend, for
+  // when something shown from it was changed elsewhere, e.g. a company's name.
+  refreshSession(): Promise<void>;
   updateUserSettings(patch: UserSettingsPatch): Promise<void>;
 }

@@ -233,6 +233,20 @@
       "submitting": "Saving…"
     }
   },
+  "companyInfo": {
+    "title": "Company info",
+    "basics": "Basic details",
+    "billing": "Billing details",
+    "name": "Company name",
+    "businessId": "Business ID",
+    "businessIdHint": "The business ID can't be changed.",
+    "billingEmail": "Billing email",
+    "billingAddress": "Billing address",
+    "billingPostalCode": "Postal code",
+    "billingCity": "City",
+    "billingCountry": "Country",
+    "readOnlyNote": "You have read-only access. Changing the company's details requires company administrator rights."
+  },
   "bankSettings": {
     "title": "Bank settings",
     "accounts": {

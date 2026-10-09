@@ -21,3 +21,19 @@ export interface CompanySettings {
 }
 
 export type CompanySettingsPatch = Partial<CompanySettings>;
+
+// The active company's own details, mirroring CompanyInfo in the backend's
+// src/services/company.service.ts. Company administrators maintain them.
+export interface CompanyInfo {
+  name: string;
+  // Identifies the company; returned but can't be changed.
+  businessId: string;
+  billingEmail: string;
+  billingAddress: string;
+  billingCity: string;
+  billingPostalCode: string;
+  billingCountry: string;
+}
+
+// The update is partial (PATCH): only the fields sent are changed.
+export type CompanyInfoPatch = Partial<Omit<CompanyInfo, 'businessId'>>;

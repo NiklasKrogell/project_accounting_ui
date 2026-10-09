@@ -15,6 +15,7 @@ import IncomeStatement from './pages/IncomeStatement';
 import BalanceSheet from './pages/BalanceSheet';
 import Settings, { SETTINGS_SECTIONS } from './pages/Settings';
 import { GeneralSettings } from './components/Settings/User/GeneralSettings';
+import { CompanyInfoSettings } from './components/Settings/Company/CompanyInfoSettings';
 import { VatAccountsSettings } from './components/Settings/Company/VatAccountsSettings';
 import { BankSettings } from './components/Settings/Company/BankSettings';
 import { SETTINGS_PATH } from './components/Header/navConfig';
@@ -53,6 +54,7 @@ function AppRoutes() {
           <Route path={SETTINGS_PATH} element={<Settings />}>
             <Route index element={<Navigate to={SETTINGS_SECTIONS[0].path} replace />} />
             <Route path="user/general" element={<GeneralSettings />} />
+            <Route path="company/info" element={<CompanyInfoSettings />} />
             <Route path="company/vat-accounts" element={<VatAccountsSettings />} />
             <Route path="company/bank" element={<BankSettings />} />
           </Route>

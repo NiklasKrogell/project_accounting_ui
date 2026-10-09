@@ -70,6 +70,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         await refresh();
       },
 
+      refreshSession: refresh,
+
       async updateUserSettings(patch: UserSettingsPatch) {
         const settings = await userSettingsApi.update(patch);
         setState((current) => ({ ...current, settings }));

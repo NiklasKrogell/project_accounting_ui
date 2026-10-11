@@ -216,7 +216,7 @@
   },
   "costCenters": {
     "title": "Kustannuspaikat",
-    "readOnlyNote": "Sinulla on lukuoikeus. Kustannuspaikkojen hallinta vaatii kirjaajan oikeudet.",
+    "readOnlyNote": "Sinulla on lukuoikeus. Kustannuspaikkojen hallinta vaatii reskontranhoitajan oikeudet.",
     "empty": "Ei kustannuspaikkoja vielä.",
     "newButton": "Uusi kustannuspaikka",
     "columns": {
@@ -253,7 +253,7 @@
     "title": "Pankkiasetukset",
     "accounts": {
       "title": "Pankkitilit",
-      "readOnlyNote": "Sinulla on lukuoikeus. Pankkitilien hallinta vaatii kirjaajan oikeudet.",
+      "readOnlyNote": "Sinulla on lukuoikeus. Pankkitilien hallinta vaatii reskontranhoitajan oikeudet.",
       "empty": "Ei pankkitilejä vielä.",
       "newButton": "Lisää pankkitili",
       "columns": {

@@ -516,7 +516,7 @@
     "importFailed": "{{name}}: {{message}}",
     "empty": "No bank statements yet.",
     "emptyUnposted": "No unposted bank statements.",
-    "readOnlyNote": "You have read-only access. Importing and booking bank statements requires the ledger clerk role.",
+    "readOnlyNote": "You have read-only access. Importing and booking bank statements requires ledger rights.",
     "selectHint": "Pick a statement from the list to book its transactions here.",
     "discardConfirm": "The entry is unfinished. Discard it?",
     "filter": {

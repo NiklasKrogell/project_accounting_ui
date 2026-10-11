@@ -129,7 +129,7 @@ test('adds a user and shows the temporary password, which can be copied', async 
   fireEvent.change(dialog.getByLabelText(/^Sähköposti/), { target: { value: ' eeva@esimerkki.fi ' } });
   fireEvent.change(dialog.getByLabelText(/^Etunimi/), { target: { value: 'Eeva' } });
   fireEvent.change(dialog.getByLabelText(/^Sukunimi/), { target: { value: ' Salo ' } });
-  pickRole('Kirjaaja');
+  pickRole('Reskontranhoitaja');
   expect(submit).toBeEnabled();
 
   jest.mocked(companyUsersApi.list).mockResolvedValue([...MEMBERS, added]);
@@ -284,11 +284,11 @@ test('lets a company administrator give any role and the administrator flag, sen
   fireEvent.mouseDown(screen.getByRole('combobox', { name: 'Rooli' }));
   expect(screen.getAllByRole('option').map((option) => option.textContent)).toEqual([
     'Katselija',
-    'Kirjaaja',
+    'Reskontranhoitaja',
     'Kirjanpitäjä',
-    'Pääkirjanpitäjä',
+    'Ylläpitäjä',
   ]);
-  fireEvent.click(within(screen.getByRole('listbox')).getByText('Pääkirjanpitäjä'));
+  fireEvent.click(within(screen.getByRole('listbox')).getByText('Ylläpitäjä'));
   expect(save).toBeEnabled();
   fireEvent.click(save);
   await waitFor(() => expect(companyUsersApi.update).toHaveBeenCalledWith('led', { role: 'ADMIN' }));
@@ -324,7 +324,7 @@ test('offers an accountant only the members and roles below them', async () => {
   fireEvent.mouseDown(screen.getByRole('combobox', { name: 'Rooli' }));
   expect(screen.getAllByRole('option').map((option) => option.textContent)).toEqual([
     'Katselija',
-    'Kirjaaja',
+    'Reskontranhoitaja',
   ]);
   fireEvent.click(within(screen.getByRole('listbox')).getByText('Katselija'));
   fireEvent.click(dialog.getByRole('button', { name: 'Tallenna' }));

@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Card,
@@ -25,6 +25,11 @@ interface JournalEntriesTableProps {
   rowsPerPage: number;
   onPageChange: (page: number) => void;
   onRowsPerPageChange: (rowsPerPage: number) => void;
+  // Buttons acting on an entry (the journal page has none). Keep the function
+  // stable, or every row re-renders with its parent.
+  renderActions?: (entry: JournalEntry) => ReactNode;
+  // Shown when there are no entries; the journal's own text when omitted.
+  emptyText?: string;
 }
 
 export function JournalEntriesTable({
@@ -37,6 +42,8 @@ export function JournalEntriesTable({
   rowsPerPage,
   onPageChange,
   onRowsPerPageChange,
+  renderActions,
+  emptyText,
 }: JournalEntriesTableProps) {
   const { t } = useTranslation();
 
@@ -49,9 +56,10 @@ export function JournalEntriesTable({
         lang={lang}
         accountLabel={accountLabel}
         costCenterLabel={costCenterLabel}
+        actions={renderActions?.(entry)}
       />
     ));
-  }, [entries, lang, accountLabel, costCenterLabel]);
+  }, [entries, lang, accountLabel, costCenterLabel, renderActions]);
 
   return (
     <Card>
@@ -61,7 +69,7 @@ export function JournalEntriesTable({
         </CardContent>
       ) : entries.length === 0 ? (
         <CardContent>
-          <Typography color="text.secondary">{t('journal.empty')}</Typography>
+          <Typography color="text.secondary">{emptyText ?? t('journal.empty')}</Typography>
         </CardContent>
       ) : (
         <TableContainer>

@@ -20,6 +20,12 @@ export type NavTab =
   | { kind: 'menu'; labelKey: string; value: string; items: NavMenuEntry[] };
 
 export const SETTINGS_PATH = '/settings';
+export const BANK_STATEMENTS_PATH = '/accounting/bank-statements';
+
+// Pages laid out as panes that scroll on their own. Layout gives them the
+// whole area under the tabs, bound to the height of the window, instead of
+// the centered content column.
+export const WINDOW_FILLING_PATHS: string[] = [BANK_STATEMENTS_PATH];
 
 // Single extensibility point for the tab bar: add new tabs and menu items here.
 export const NAV_TABS: NavTab[] = [
@@ -30,6 +36,7 @@ export const NAV_TABS: NavTab[] = [
     value: '/accounting',
     items: [
       { labelKey: 'nav.newEntry', action: 'newJournalEntry', minRole: 'LEDGER' },
+      { labelKey: 'nav.bankStatements', path: BANK_STATEMENTS_PATH },
       { labelKey: 'nav.journal', path: '/accounting/journal' },
       { labelKey: 'nav.fiscalYears', path: '/fiscal-years' },
       { labelKey: 'nav.chartOfAccounts', path: '/accounting/chart-of-accounts' },

@@ -12,6 +12,7 @@ function toQueryString(filter: JournalEntryListFilter): string {
   if (filter.from) params.set('from', filter.from);
   if (filter.to) params.set('to', filter.to);
   if (filter.voucherType) params.set('voucherType', filter.voucherType);
+  if (filter.bankStatementId) params.set('bankStatementId', filter.bankStatementId);
   if (filter.take !== undefined) params.set('take', String(filter.take));
   if (filter.skip !== undefined) params.set('skip', String(filter.skip));
   const qs = params.toString();

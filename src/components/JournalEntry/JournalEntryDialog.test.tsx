@@ -14,6 +14,10 @@ jest.mock('../../api/companySettings');
 jest.mock('../../api/costCenters');
 jest.mock('../../api/journalEntries');
 
+// Driving the form in jsdom is slow (MUI Autocompletes), and the suites run in
+// parallel: on a loaded machine a test can outlast the default 5 s.
+jest.setTimeout(20000);
+
 const account = (
   id: string,
   number: string,

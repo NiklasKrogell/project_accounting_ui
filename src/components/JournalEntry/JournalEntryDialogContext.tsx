@@ -14,8 +14,9 @@ const JournalEntryDialogContext = createContext<JournalEntryDialogValue | null>(
 
 // Mounts the journal entry dialog once (inside Layout) so any component — the
 // TabBar's "Uusi → Kirjaus" action or a page button — can open it via
-// useJournalEntryDialog(). Edit mode can later extend the same state with an
-// openEdit(entry) and a mode field.
+// useJournalEntryDialog(). The dialog only creates; a saved entry is edited
+// where the form is shown in place (JournalEntryForm on the bank statement
+// page).
 export function JournalEntryDialogProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<{ open: boolean; onSaved?: (entry: JournalEntry) => void }>({
     open: false,

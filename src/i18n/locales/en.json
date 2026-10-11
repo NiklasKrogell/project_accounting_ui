@@ -27,6 +27,7 @@
     "chartOfAccounts": "Chart of accounts",
     "costCenters": "Cost centers",
     "newEntry": "New entry",
+    "bankStatements": "Bank statements",
     "incomeStatement": "Income statement",
     "balanceSheet": "Balance sheet",
     "settings": "Settings"
@@ -466,6 +467,7 @@
   },
   "journalEntry": {
     "dialogTitle": "New entry",
+    "editTitle": "Edit entry {{voucher}}",
     "voucherType": "Voucher type",
     "date": "Date",
     "description": "Description",
@@ -506,6 +508,65 @@
     "submitting": "Saving…",
     "loadingAccounts": "Loading accounts…",
     "loadingCostCenters": "Loading cost centers…"
+  },
+  "bankStatements": {
+    "title": "Bank statements",
+    "importButton": "Import statements",
+    "importing": "Importing…",
+    "importFailed": "{{name}}: {{message}}",
+    "empty": "No bank statements yet.",
+    "emptyUnposted": "No unposted bank statements.",
+    "readOnlyNote": "You have read-only access. Importing and booking bank statements requires the ledger clerk role.",
+    "selectHint": "Pick a statement from the list to book its transactions here.",
+    "discardConfirm": "The entry is unfinished. Discard it?",
+    "filter": {
+      "label": "Statements shown",
+      "unposted": "Unposted",
+      "all": "All"
+    },
+    "columns": {
+      "file": "Statement",
+      "imported": "Imported",
+      "entries": "Entries",
+      "status": "Status"
+    },
+    "status": {
+      "posted": "Posted",
+      "unposted": "Unposted"
+    },
+    "bankAccount": {
+      "label": "Bank account",
+      "none": "Not chosen"
+    },
+    "markPosted": "Mark as posted",
+    "markUnposted": "Mark as unposted",
+    "entries": {
+      "title": "Entries",
+      "newButton": "New entry",
+      "empty": "No entries have been booked from this statement yet.",
+      "edit": "Edit entry {{voucher}}",
+      "delete": "Delete entry {{voucher}}",
+      "confirmDelete": "Delete entry {{voucher}}? This cannot be undone."
+    },
+    "pdf": {
+      "openInNewTab": "Open in a new tab",
+      "close": "Close statement"
+    },
+    "summary": {
+      "title": "Booked from the statement in total",
+      "deposits": "Deposits",
+      "withdrawals": "Withdrawals",
+      "net": "Change",
+      "noBankAccount": "Choose a bank account to have its deposits and withdrawals summed.",
+      "vatTitle": "Value added tax",
+      "purchases": "Purchases {{rate}}",
+      "sales": "Sales {{rate}}",
+      "base": "Tax base",
+      "vat": "Tax",
+      "noVat": "No entries with VAT.",
+      "receivable": "VAT receivable",
+      "payable": "VAT payable"
+    }
   },
   "auth": {
     "login": {

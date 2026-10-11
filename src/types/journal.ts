@@ -43,6 +43,9 @@ export interface JournalEntry {
   date: string;
   description: string;
   accountId: string;
+  // The bank statement the entry was booked from, if any. Set when the entry
+  // is created and never changed after.
+  bankStatementId: string | null;
   createdById: string;
   createdAt: string;
   updatedAt: string;
@@ -73,16 +76,24 @@ export interface CreateJournalEntryInput {
   // Whether the backend generates the VAT rows; on when omitted. Off, the
   // lines are stored and balanced as entered and the VAT is booked by hand.
   automaticVat?: boolean;
+  // The bank statement the entry is booked from, if any.
+  bankStatementId?: string;
   lines: JournalEntryLineInput[];
 }
 
-// voucherType is immutable after creation, so updates omit it.
-export type UpdateJournalEntryInput = Omit<CreateJournalEntryInput, 'voucherType'>;
+// voucherType and bankStatementId are immutable after creation, so updates
+// omit them.
+export type UpdateJournalEntryInput = Omit<
+  CreateJournalEntryInput,
+  'voucherType' | 'bankStatementId'
+>;
 
 export interface JournalEntryListFilter {
   from?: string;
   to?: string;
   voucherType?: VoucherType;
+  // Only the entries booked from this bank statement.
+  bankStatementId?: string;
   take?: number;
   skip?: number;
 }

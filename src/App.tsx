@@ -8,6 +8,7 @@ import Signup from './pages/Signup';
 import Home from './pages/Home';
 import FiscalYears from './pages/FiscalYears';
 import Journal from './pages/Journal';
+import BankStatements from './pages/BankStatements';
 import ChartOfAccounts from './pages/ChartOfAccounts';
 import CostCenters from './pages/CostCenters';
 import GeneralLedger from './pages/GeneralLedger';
@@ -19,7 +20,7 @@ import { CompanyInfoSettings } from './components/Settings/Company/CompanyInfoSe
 import { VatAccountsSettings } from './components/Settings/Company/VatAccountsSettings';
 import { BankSettings } from './components/Settings/Company/BankSettings';
 import { UsersSettings } from './components/Settings/Company/UsersSettings';
-import { SETTINGS_PATH } from './components/Header/navConfig';
+import { BANK_STATEMENTS_PATH, SETTINGS_PATH } from './components/Header/navConfig';
 import ProtectedRoute from './routes/ProtectedRoute';
 import PublicOnlyRoute from './routes/PublicOnlyRoute';
 import Layout from './routes/Layout';
@@ -47,6 +48,7 @@ function AppRoutes() {
           <Route path="/" element={<Home />} />
           <Route path="/fiscal-years" element={<FiscalYears />} />
           <Route path="/accounting/journal" element={<Journal />} />
+          <Route path={BANK_STATEMENTS_PATH} element={<BankStatements />} />
           <Route path="/accounting/chart-of-accounts" element={<ChartOfAccounts />} />
           <Route path="/accounting/cost-centers" element={<CostCenters />} />
           <Route path="/accounting/general-ledger" element={<GeneralLedger />} />

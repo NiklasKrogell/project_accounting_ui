@@ -27,6 +27,7 @@
     "chartOfAccounts": "Tilikartta",
     "costCenters": "Kustannuspaikat",
     "newEntry": "Uusi kirjaus",
+    "bankStatements": "Tiliotteet",
     "incomeStatement": "Tuloslaskelma",
     "balanceSheet": "Tase",
     "settings": "Asetukset"
@@ -466,6 +467,7 @@
   },
   "journalEntry": {
     "dialogTitle": "Uusi kirjaus",
+    "editTitle": "Muokkaa kirjausta {{voucher}}",
     "voucherType": "Tositelaji",
     "date": "Päivämäärä",
     "description": "Selite",
@@ -506,6 +508,65 @@
     "submitting": "Tallennetaan…",
     "loadingAccounts": "Ladataan tilejä…",
     "loadingCostCenters": "Ladataan kustannuspaikkoja…"
+  },
+  "bankStatements": {
+    "title": "Tiliotteet",
+    "importButton": "Tuo tiliotteita",
+    "importing": "Tuodaan…",
+    "importFailed": "{{name}}: {{message}}",
+    "empty": "Ei tiliotteita vielä.",
+    "emptyUnposted": "Ei kirjaamattomia tiliotteita.",
+    "readOnlyNote": "Sinulla on lukuoikeus. Tiliotteiden tuominen ja kirjaaminen vaatii reskontranhoitajan oikeudet.",
+    "selectHint": "Valitse tiliote listasta, niin voit kirjata sen tapahtumat tässä.",
+    "discardConfirm": "Kirjaus on kesken. Hylätäänkö se?",
+    "filter": {
+      "label": "Näytettävät tiliotteet",
+      "unposted": "Kirjaamattomat",
+      "all": "Kaikki"
+    },
+    "columns": {
+      "file": "Tiliote",
+      "imported": "Tuotu",
+      "entries": "Kirjauksia",
+      "status": "Tila"
+    },
+    "status": {
+      "posted": "Kirjattu",
+      "unposted": "Kirjaamaton"
+    },
+    "bankAccount": {
+      "label": "Pankkitili",
+      "none": "Ei valittu"
+    },
+    "markPosted": "Merkitse kirjatuksi",
+    "markUnposted": "Palauta kirjaamattomaksi",
+    "entries": {
+      "title": "Kirjaukset",
+      "newButton": "Uusi kirjaus",
+      "empty": "Tiliotteelta ei ole vielä tehty kirjauksia.",
+      "edit": "Muokkaa kirjausta {{voucher}}",
+      "delete": "Poista kirjaus {{voucher}}",
+      "confirmDelete": "Poistetaanko kirjaus {{voucher}}? Tätä ei voi perua."
+    },
+    "pdf": {
+      "openInNewTab": "Avaa uudessa välilehdessä",
+      "close": "Sulje tiliote"
+    },
+    "summary": {
+      "title": "Tiliotteelta kirjattu yhteensä",
+      "deposits": "Panot",
+      "withdrawals": "Otot",
+      "net": "Muutos",
+      "noBankAccount": "Valitse pankkitili, niin tilin panot ja otot lasketaan.",
+      "vatTitle": "Arvonlisävero",
+      "purchases": "Ostot {{rate}}",
+      "sales": "Myynnit {{rate}}",
+      "base": "Veron peruste",
+      "vat": "Vero",
+      "noVat": "Ei arvonlisäverollisia kirjauksia.",
+      "receivable": "Alv-saamiset",
+      "payable": "Alv-velka"
+    }
   },
   "auth": {
     "login": {

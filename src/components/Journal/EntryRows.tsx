@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Box, Chip, TableCell, TableRow, Typography } from '@mui/material';
 import type { JournalEntry } from '../../types/journal';
@@ -8,11 +9,13 @@ interface EntryRowsProps {
   lang: string;
   accountLabel: (id: string) => string;
   costCenterLabel: (id: string | null) => string;
+  // Buttons acting on the entry, shown at the end of its header row.
+  actions?: ReactNode;
 }
 
 // One header row per entry (date, voucher chip, description) followed by its
 // indented lines. No expand/collapse — prototype-simple.
-export function EntryRows({ entry, lang, accountLabel, costCenterLabel }: EntryRowsProps) {
+export function EntryRows({ entry, lang, accountLabel, costCenterLabel, actions }: EntryRowsProps) {
   const { t } = useTranslation();
   // Lines carry no stored order, so put the generated VAT rows after the
   // entered ones (the sort is stable, so each kind keeps its relative order).
@@ -32,6 +35,7 @@ export function EntryRows({ entry, lang, accountLabel, costCenterLabel }: EntryR
               label={`${t(`voucherType.${entry.voucherType}`)} #${entry.voucherNumber}`}
             />
             <Typography variant="body2">{entry.description}</Typography>
+            {actions && <Box sx={{ ml: 'auto', display: 'flex' }}>{actions}</Box>}
           </Box>
         </TableCell>
       </TableRow>

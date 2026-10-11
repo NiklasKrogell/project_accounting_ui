@@ -45,7 +45,7 @@
     "saved": "Saved",
     "general": {
       "language": "Language",
-      "languageHint": "The language of the app's user interface. This setting is personal and follows you in all your companies."
+      "languageHint": "The language of the app's user interface."
     }
   },
   "accountMainClass": {

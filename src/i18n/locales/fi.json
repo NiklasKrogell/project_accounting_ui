@@ -45,7 +45,7 @@
     "saved": "Tallennettu",
     "general": {
       "language": "Kieli",
-      "languageHint": "Sovelluksen käyttöliittymän kieli. Asetus on henkilökohtainen ja seuraa sinua kaikissa yrityksissäsi."
+      "languageHint": "Sovelluksen käyttöliittymän kieli."
     }
   },
   "accountMainClass": {
@@ -179,11 +179,11 @@
     "title": "ALV-asetukset",
     "registered": "Yritys on arvonlisäverovelvollinen",
     "registeredRoleNote": "Arvonlisäverovelvollisuuden muuttaminen vaatii kirjanpitäjän oikeudet.",
-    "notRegisteredNote": "Yritys ei ole arvonlisäverovelvollinen, joten kirjausriveille ei voi antaa ALV-prosenttia eikä ALV-tilejä käytetä.",
+    "notRegisteredNote": "Yritys ei ole arvonlisäverovelvollinen, joten ALV-käsittely on estetty.",
     "hint": "Kirjausrivin arvonlisävero kirjataan automaattisesti omalle rivilleen näille tileille: debet-rivin vero saamistilille ja kredit-rivin vero velkatilille.",
     "receivable": "Alv-saamisten tili",
     "payable": "Alv-velan tili",
-    "readOnlyNote": "Sinulla on lukuoikeus. ALV-tilien muuttaminen vaatii kirjaajan oikeudet."
+    "readOnlyNote": "Sinulla on lukuoikeus. ALV-tilien muuttaminen vaatii reskontranhoitajan oikeudet."
   },
   "accountEdit": {
     "title": "Muokkaa tiliä",
@@ -357,9 +357,9 @@
   },
   "roles": {
     "VIEWER": "Katselija",
-    "LEDGER": "Kirjaaja",
+    "LEDGER": "Reskontranhoitaja",
     "ACCOUNTANT": "Kirjanpitäjä",
-    "ADMIN": "Pääkirjanpitäjä"
+    "ADMIN": "Ylläpitäjä"
   },
   "voucherType": {
     "SALES": "Myynti",

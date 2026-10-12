@@ -568,6 +568,9 @@
       "payable": "VAT payable"
     }
   },
+  "pdfViewer": {
+    "page": "Page {{page}} of {{count}}"
+  },
   "auth": {
     "login": {
       "title": "Log in",

@@ -568,6 +568,9 @@
       "payable": "Alv-velka"
     }
   },
+  "pdfViewer": {
+    "page": "Sivu {{page}} / {{count}}"
+  },
   "auth": {
     "login": {
       "title": "Kirjaudu sisään",

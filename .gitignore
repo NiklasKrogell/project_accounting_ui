@@ -11,6 +11,10 @@
 # production
 /build
 
+# copied from node_modules/pdfjs-dist before start and build
+# (scripts/copy-pdfjs-assets.js)
+/public/pdfjs
+
 # misc
 .DS_Store
 .env.local

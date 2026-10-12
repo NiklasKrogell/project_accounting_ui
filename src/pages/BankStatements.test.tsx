@@ -9,6 +9,7 @@ import { costCentersApi } from '../api/costCenters';
 import { filesApi } from '../api/files';
 import { journalEntriesApi } from '../api/journalEntries';
 import { useAuth } from '../auth/AuthContext';
+import { openPdf, type PdfDocumentHandle } from '../lib/pdf';
 import type { Account } from '../types/account';
 import type { AuthContextValue, Role } from '../types/auth';
 import type { BankAccount } from '../types/bankAccount';
@@ -25,6 +26,8 @@ jest.mock('../api/costCenters');
 jest.mock('../api/files');
 jest.mock('../api/journalEntries');
 jest.mock('../auth/AuthContext');
+// The PDF engine itself can't be loaded by Jest (see src/lib/pdf.ts).
+jest.mock('../lib/pdf');
 
 // Driving the form in jsdom is slow (MUI Autocompletes), and the suites run in
 // parallel: on a loaded machine a test can outlast the default 5 s.
@@ -147,6 +150,10 @@ function mockStatements(statements: BankStatement[], total = statements.length) 
 
 const lastListFilter = () => jest.mocked(bankStatementsApi.list).mock.calls.at(-1)![0];
 
+// The opened PDF, as far as the page is concerned. Drawing it is PdfPages'
+// own business (see PdfPages.test.tsx).
+let pdf: PdfDocumentHandle;
+
 beforeEach(() => {
   mockStatements([SEPTEMBER, AUGUST]);
   jest.mocked(bankStatementsApi.import).mockResolvedValue(SEPTEMBER);
@@ -175,6 +182,13 @@ beforeEach(() => {
   jest
     .mocked(filesApi.content)
     .mockResolvedValue(new Blob(['%PDF-1.4'], { type: 'application/pdf' }));
+  pdf = {
+    pageCount: 1,
+    pageSize: jest.fn().mockResolvedValue({ width: 595, height: 842 }),
+    renderPage: jest.fn(() => ({ done: Promise.resolve(), cancel: jest.fn() })),
+    destroy: jest.fn(),
+  };
+  jest.mocked(openPdf).mockResolvedValue(pdf);
   // jsdom has no object URLs.
   URL.createObjectURL = jest.fn(() => 'blob:statement-pdf');
   URL.revokeObjectURL = jest.fn();
@@ -186,10 +200,14 @@ afterEach(() => {
 
 const rowOf = (fileName: string) => screen.getByRole('row', { name: new RegExp(fileName) });
 
+// The pane the statement's PDF is drawn in, named after the file.
+const pdfPane = (fileName: string) => screen.queryByRole('region', { name: fileName });
+const findPdfPane = (fileName: string) => screen.findByRole('region', { name: fileName });
+
 // Opens a statement from the list and waits for both sides to have loaded.
 async function openStatement(fileName: string) {
   fireEvent.click(await screen.findByText(fileName));
-  await screen.findByTitle(fileName);
+  await findPdfPane(fileName);
   await screen.findByText(/Panot/);
 }
 
@@ -256,9 +274,13 @@ test('opens a statement: its PDF in place of the list, its entries and sums on t
   render(<BankStatements />);
   await openStatement('tiliote_syyskuu.pdf');
 
-  // Right: the PDF, fetched through the file API, instead of the list.
+  // Right: the PDF, fetched through the file API and drawn by ourselves
+  // instead of the list. The browser's own viewer is not used for it.
   expect(filesApi.content).toHaveBeenCalledWith('file-september');
-  expect(screen.getByTitle('tiliote_syyskuu.pdf')).toHaveAttribute('src', 'blob:statement-pdf');
+  expect(openPdf).toHaveBeenCalledWith(expect.any(Blob));
+  expect(jest.mocked(openPdf).mock.calls[0][0].type).toBe('application/pdf');
+  expect(screen.queryByTitle('tiliote_syyskuu.pdf')).not.toBeInTheDocument();
+  expect(URL.createObjectURL).not.toHaveBeenCalled();
   expect(screen.queryByRole('heading', { name: 'Tiliotteet' })).not.toBeInTheDocument();
   expect(screen.queryByText('tiliote_elokuu.pdf')).not.toBeInTheDocument();
 
@@ -296,19 +318,40 @@ test('opens the PDF in a new tab and closes it back to the list, keeping the sta
 
   fireEvent.click(screen.getByRole('button', { name: 'Sulje tiliote' }));
   expect(await screen.findByRole('heading', { name: 'Tiliotteet' })).toBeInTheDocument();
-  expect(screen.queryByTitle('tiliote_syyskuu.pdf')).not.toBeInTheDocument();
+  expect(pdfPane('tiliote_syyskuu.pdf')).not.toBeInTheDocument();
   expect(rowOf('tiliote_syyskuu.pdf')).toHaveAttribute('aria-selected', 'true');
   expect(screen.getByText('Myyntisuoritus')).toBeInTheDocument();
 
   // Its row brings the PDF back.
   fireEvent.click(rowOf('tiliote_syyskuu.pdf'));
-  expect(await screen.findByTitle('tiliote_syyskuu.pdf')).toBeInTheDocument();
+  expect(await findPdfPane('tiliote_syyskuu.pdf')).toBeInTheDocument();
+  // The URL given to the tab is left alone: the tab still shows the PDF.
+  expect(URL.revokeObjectURL).not.toHaveBeenCalled();
 });
 
-test('frees the PDF when it is closed without having been opened in a tab', async () => {
+test('frees the drawn PDF when it is closed', async () => {
   mockAuth('company-a');
   render(<BankStatements />);
   await openStatement('tiliote_syyskuu.pdf');
+  await waitFor(() => expect(pdf.pageSize).toHaveBeenCalled());
+  expect(pdf.destroy).not.toHaveBeenCalled();
+
+  fireEvent.click(screen.getByRole('button', { name: 'Sulje tiliote' }));
+  await screen.findByRole('heading', { name: 'Tiliotteet' });
+  expect(pdf.destroy).toHaveBeenCalledTimes(1);
+});
+
+test("falls back to the browser's own viewer when the PDF can't be drawn", async () => {
+  mockAuth('company-a');
+  const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+  jest.mocked(openPdf).mockRejectedValue(new Error('The engine did not start'));
+  render(<BankStatements />);
+  fireEvent.click(await screen.findByText('tiliote_syyskuu.pdf'));
+
+  const frame = await screen.findByTitle('tiliote_syyskuu.pdf');
+  expect(frame).toHaveAttribute('src', 'blob:statement-pdf');
+  expect(pdfPane('tiliote_syyskuu.pdf')).not.toBeInTheDocument();
+  expect(warn).toHaveBeenCalled();
 
   fireEvent.click(screen.getByRole('button', { name: 'Sulje tiliote' }));
   await screen.findByRole('heading', { name: 'Tiliotteet' });
@@ -362,7 +405,7 @@ test('books a new entry on the left, next to the PDF, with the bank account pref
   expect(await screen.findByRole('heading', { name: 'Uusi kirjaus' })).toBeInTheDocument();
   // Not a dialog: the PDF stays where it was.
   expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
-  expect(screen.getByTitle('tiliote_syyskuu.pdf')).toBeInTheDocument();
+  expect(pdfPane('tiliote_syyskuu.pdf')).toBeInTheDocument();
   await waitFor(() => expect(lineAccount(0)).toHaveValue('1910 Pankkitili'));
 
   fireEvent.change(screen.getByLabelText(/^Selite/), { target: { value: 'Käteismyynti' } });
@@ -463,7 +506,7 @@ test('asks before leaving an unfinished entry for another statement', async () =
 
   confirm.mockReturnValue(true);
   fireEvent.click(screen.getByText('tiliote_elokuu.pdf'));
-  expect(await screen.findByTitle('tiliote_elokuu.pdf')).toBeInTheDocument();
+  expect(await findPdfPane('tiliote_elokuu.pdf')).toBeInTheDocument();
   expect(screen.getByRole('heading', { name: 'tiliote_elokuu.pdf', level: 2 })).toBeInTheDocument();
   expect(screen.queryByRole('heading', { name: 'Uusi kirjaus' })).not.toBeInTheDocument();
   // The bank account it already has is shown, and so is its posted mark.
@@ -499,7 +542,7 @@ test('starts over with the statements of the new company when the company change
   rerender(<BankStatements />);
 
   expect(await screen.findByText('toisen_yrityksen_tiliote.pdf')).toBeInTheDocument();
-  expect(screen.queryByTitle('tiliote_syyskuu.pdf')).not.toBeInTheDocument();
+  expect(pdfPane('tiliote_syyskuu.pdf')).not.toBeInTheDocument();
   expect(screen.queryByText('Myyntisuoritus')).not.toBeInTheDocument();
   expect(screen.getByText(/Valitse tiliote listasta/)).toBeInTheDocument();
   expect(bankAccountsApi.list).toHaveBeenCalledTimes(2);

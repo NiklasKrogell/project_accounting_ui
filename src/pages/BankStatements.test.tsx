@@ -13,7 +13,12 @@ import { openPdf, type PdfDocumentHandle } from '../lib/pdf';
 import type { Account } from '../types/account';
 import type { AuthContextValue, Role } from '../types/auth';
 import type { BankAccount } from '../types/bankAccount';
-import type { BankStatement, BankStatementSummary } from '../types/bankStatement';
+import type {
+  BankStatement,
+  BankStatementLine,
+  BankStatementSummary,
+  CsvPreview,
+} from '../types/bankStatement';
 import type { JournalEntry, JournalEntryLine } from '../types/journal';
 import BankStatements from './BankStatements';
 
@@ -165,6 +170,8 @@ beforeEach(() => {
       ...(patch.bankAccountId ? OF_MAIN : {}),
     }));
   jest.mocked(bankStatementsApi.summary).mockResolvedValue(SUMMARY);
+  // No imported transactions: the statement opens on its entries.
+  jest.mocked(bankStatementsApi.lines).mockResolvedValue([]);
   jest
     .mocked(journalEntriesApi.list)
     .mockResolvedValue({ data: [SALE], meta: { total: 1, take: 25, skip: 0 } });
@@ -553,4 +560,196 @@ test('shows a backend error when the statements cannot be loaded', async () => {
   jest.mocked(bankStatementsApi.list).mockRejectedValue(new Error('Internal server error'));
   render(<BankStatements />);
   expect(await screen.findByRole('alert')).toHaveTextContent('Internal server error');
+});
+
+describe("the statement's transactions", () => {
+  const transaction = (overrides: Partial<BankStatementLine>): BankStatementLine => ({
+    id: 'tx',
+    position: 1,
+    bookingDate: '2026-09-10',
+    valueDate: null,
+    amount: 0,
+    counterparty: '',
+    counterpartyAccount: '',
+    reference: '',
+    message: '',
+    transactionType: '',
+    archiveId: null,
+    journalEntry: null,
+    ...overrides,
+  });
+
+  // One booked into the sale entry, one still to book.
+  const BOOKED = transaction({
+    id: 'tx-1',
+    amount: 125.5,
+    counterparty: 'Asiakas Oy',
+    message: 'Lasku 1001',
+    journalEntry: { id: 'entry-1', voucherType: 'PAYMENT', voucherNumber: 7 },
+  });
+  const UNBOOKED = transaction({
+    id: 'tx-2',
+    position: 2,
+    bookingDate: '2026-09-12',
+    amount: -45.2,
+    counterparty: 'Sähkö Oy',
+    reference: '00000000000000012345',
+  });
+
+  const PREVIEW: CsvPreview = {
+    layout: 'nordea',
+    encoding: 'utf-8',
+    delimiter: ';',
+    columns: ['Kirjauspäivä', 'Määrä'],
+    mapping: { bookingDate: [0], amount: [1] },
+    mappingProblem: null,
+    lines: [{ ...UNBOOKED, lineNumber: 2, duplicate: false }],
+    skipped: [],
+    accountMismatch: null,
+  };
+
+  const rowWith = async (text: string) => within((await screen.findByText(text)).closest('tr')!);
+
+  beforeEach(() => {
+    mockStatements([{ ...SEPTEMBER, ...OF_MAIN }]);
+    jest.mocked(bankStatementsApi.lines).mockResolvedValue([BOOKED, UNBOOKED]);
+    jest.mocked(journalEntriesApi.get).mockResolvedValue(SALE);
+    jest.mocked(bankStatementsApi.removeLine).mockResolvedValue(undefined);
+    jest.mocked(bankStatementsApi.csvPreview).mockResolvedValue(PREVIEW);
+    jest.mocked(bankStatementsApi.importCsv).mockResolvedValue({ imported: 3, duplicates: 1, skipped: 0 });
+  });
+
+  test('a statement that has them opens on them, showing which are booked', async () => {
+    mockAuth('company-a');
+    render(<BankStatements />);
+    await openStatement('tiliote_syyskuu.pdf');
+
+    const tab = await screen.findByRole('tab', { name: 'Tapahtumat (1 / 2 kirjattu)' });
+    expect(tab).toHaveAttribute('aria-selected', 'true');
+    expect(bankStatementsApi.lines).toHaveBeenCalledWith('september');
+    const booked = await rowWith('Asiakas Oy');
+    expect(booked.getByText('Lasku 1001')).toBeInTheDocument();
+    expect(booked.getByRole('button', { name: 'Avaa kirjaus Maksu #7' })).toBeInTheDocument();
+    const unbooked = await rowWith('Sähkö Oy');
+    expect(unbooked.getByText('Viite 00000000000000012345')).toBeInTheDocument();
+    expect(unbooked.getByText(/45,20/)).toBeInTheDocument();
+    expect(unbooked.getByRole('button', { name: 'Kirjaa' })).toBeInTheDocument();
+
+    // The entries are one tab away.
+    fireEvent.click(screen.getByRole('tab', { name: 'Kirjaukset' }));
+    expect(await screen.findByText('Myyntisuoritus')).toBeInTheDocument();
+  });
+
+  test('books a transaction with the entry form prefilled from it', async () => {
+    mockAuth('company-a');
+    render(<BankStatements />);
+    await openStatement('tiliote_syyskuu.pdf');
+    fireEvent.click((await rowWith('Sähkö Oy')).getByRole('button', { name: 'Kirjaa' }));
+
+    expect(await screen.findByRole('heading', { name: 'Uusi kirjaus' })).toBeInTheDocument();
+    expect(screen.getByLabelText(/^Selite/)).toHaveValue('Sähkö Oy – 00000000000000012345');
+    expect(screen.getByLabelText(/^Päivämäärä/)).toHaveValue('2026-09-12');
+    // The bank's amount includes any VAT.
+    expect(screen.getByRole('button', { name: 'Brutto' })).toHaveAttribute('aria-pressed', 'true');
+    await waitFor(() => expect(lineAccount(0)).toHaveValue('1910 Pankkitili'));
+    expect(amounts()[0]).toHaveValue('-45,20');
+    expect(amounts()[1]).toHaveValue('45,20');
+    expect(lineAccount(1)).toHaveValue('');
+
+    const second = lineAccount(1);
+    act(() => second.focus());
+    fireEvent.change(second, { target: { value: '3000' } });
+    fireEvent.click(await screen.findByRole('option', { name: /^3000 / }));
+    fireEvent.click(screen.getByRole('button', { name: 'Tallenna kirjaus' }));
+
+    await waitFor(() => expect(journalEntriesApi.create).toHaveBeenCalledTimes(1));
+    expect(jest.mocked(journalEntriesApi.create).mock.calls[0][0]).toMatchObject({
+      bankStatementId: 'september',
+      bankStatementLineId: 'tx-2',
+      date: '2026-09-12',
+      vatBasis: 'gross',
+      lines: [
+        { accountId: 'bank', amount: 45.2, type: 'credit' },
+        { accountId: 'sales', amount: 45.2, type: 'debit' },
+      ],
+    });
+    // Back on the transactions, read again.
+    await waitFor(() => expect(bankStatementsApi.lines).toHaveBeenCalledTimes(2));
+    expect(screen.getByRole('tab', { name: /^Tapahtumat/ })).toHaveAttribute('aria-selected', 'true');
+  });
+
+  test('opens the entry a booked transaction went into', async () => {
+    mockAuth('company-a');
+    render(<BankStatements />);
+    await openStatement('tiliote_syyskuu.pdf');
+    fireEvent.click((await rowWith('Asiakas Oy')).getByRole('button', { name: 'Avaa kirjaus Maksu #7' }));
+
+    expect(await screen.findByRole('heading', { name: 'Muokkaa kirjausta Maksu #7' })).toBeInTheDocument();
+    expect(journalEntriesApi.get).toHaveBeenCalledWith('entry-1');
+  });
+
+  test('deletes an unbooked transaction only after it is confirmed', async () => {
+    mockAuth('company-a');
+    const confirm = jest.spyOn(window, 'confirm').mockReturnValue(false);
+    render(<BankStatements />);
+    await openStatement('tiliote_syyskuu.pdf');
+    const remove = (await rowWith('Sähkö Oy')).getByRole('button', { name: 'Poista tapahtuma' });
+    expect((await rowWith('Asiakas Oy')).queryByRole('button', { name: 'Poista tapahtuma' })).not.toBeInTheDocument();
+
+    fireEvent.click(remove);
+    expect(confirm).toHaveBeenCalledWith(expect.stringMatching(/^Poistetaanko tapahtuma 12\.09\.2026 Sähkö Oy .45,20/));
+    expect(bankStatementsApi.removeLine).not.toHaveBeenCalled();
+
+    confirm.mockReturnValue(true);
+    fireEvent.click(remove);
+    await waitFor(() => expect(bankStatementsApi.removeLine).toHaveBeenCalledWith('september', 'tx-2'));
+    await waitFor(() => expect(bankStatementsApi.lines).toHaveBeenCalledTimes(2));
+  });
+
+  test('imports a CSV and then shows the transactions, with what the import did', async () => {
+    mockAuth('company-a');
+    jest.mocked(bankStatementsApi.lines).mockResolvedValueOnce([]).mockResolvedValue([UNBOOKED]);
+    render(<BankStatements />);
+    await openStatement('tiliote_syyskuu.pdf');
+    // Nothing imported yet: the statement opens on its entries.
+    expect(await screen.findByRole('tab', { name: 'Kirjaukset' })).toHaveAttribute('aria-selected', 'true');
+
+    fireEvent.click(screen.getByRole('button', { name: 'Tuo CSV' }));
+    const dialog = within(await screen.findByRole('dialog', { name: 'Tuo tapahtumat CSV-tiedostosta' }));
+    const file = new File(['Kirjauspäivä;Määrä'], 'tapahtumat.csv', { type: 'text/csv' });
+    fireEvent.change(dialog.getByLabelText('Valitse tiedosto'), { target: { files: [file] } });
+    fireEvent.click(await dialog.findByRole('button', { name: 'Tuo 1 tapahtumaa' }));
+
+    await waitFor(() => expect(bankStatementsApi.importCsv).toHaveBeenCalledWith('september', file, PREVIEW.mapping));
+    expect(
+      await screen.findByText('Tuotiin 3 tapahtumaa. Aiemmin tuotuja: 1. Ohitettuja rivejä: 0.'),
+    ).toBeInTheDocument();
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+    expect(screen.getByRole('tab', { name: 'Tapahtumat (0 / 1 kirjattu)' })).toHaveAttribute('aria-selected', 'true');
+    expect(await rowWith('Sähkö Oy')).toBeTruthy();
+  });
+
+  test("can't import a CSV before the statement has a bank account", async () => {
+    mockAuth('company-a');
+    mockStatements([SEPTEMBER]);
+    jest.mocked(bankStatementsApi.lines).mockResolvedValue([]);
+    render(<BankStatements />);
+    await openStatement('tiliote_syyskuu.pdf');
+    expect(await screen.findByRole('button', { name: 'Tuo CSV' })).toBeDisabled();
+  });
+
+  test('is read-only below the LEDGER role', async () => {
+    mockAuth('company-a', 'VIEWER');
+    render(<BankStatements />);
+    await openStatement('tiliote_syyskuu.pdf');
+
+    const unbooked = await rowWith('Sähkö Oy');
+    expect(unbooked.getByText('Kirjaamatta')).toBeInTheDocument();
+    expect(unbooked.queryByRole('button')).not.toBeInTheDocument();
+    // The voucher is shown, but not opened for editing.
+    const booked = await rowWith('Asiakas Oy');
+    expect(booked.getByText('Maksu #7')).toBeInTheDocument();
+    expect(booked.queryByRole('button')).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Tuo CSV' })).not.toBeInTheDocument();
+  });
 });

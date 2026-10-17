@@ -78,14 +78,16 @@ export interface CreateJournalEntryInput {
   automaticVat?: boolean;
   // The bank statement the entry is booked from, if any.
   bankStatementId?: string;
+  // The statement transaction the entry books, if any; it must be unbooked.
+  bankStatementLineId?: string;
   lines: JournalEntryLineInput[];
 }
 
-// voucherType and bankStatementId are immutable after creation, so updates
-// omit them.
+// voucherType, bankStatementId and bankStatementLineId are immutable after
+// creation, so updates omit them.
 export type UpdateJournalEntryInput = Omit<
   CreateJournalEntryInput,
-  'voucherType' | 'bankStatementId'
+  'voucherType' | 'bankStatementId' | 'bankStatementLineId'
 >;
 
 export interface JournalEntryListFilter {

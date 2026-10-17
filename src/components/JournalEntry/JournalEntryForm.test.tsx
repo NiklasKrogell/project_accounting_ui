@@ -124,7 +124,7 @@ const submitButton = () => screen.getByRole('button', { name: 'Tallenna kirjaus'
 
 describe('a new entry opened with a prefill', () => {
   it('starts with the given account on its first line and is booked from the given statement', async () => {
-    renderForm({ mode: 'create', initial: { accountId: 'bank', bankStatementId: 'statement-1' } });
+    renderForm({ mode: 'create', initial: { lines: [{ accountId: 'bank' }], bankStatementId: 'statement-1' } });
     expect(screen.getByRole('heading', { name: 'Uusi kirjaus' })).toBeInTheDocument();
     await waitFor(() => expect(lineCombobox(0, 'account')).toHaveValue('1910 Pankkitili'));
     expect(lineCombobox(1, 'account')).toHaveValue('');
@@ -151,7 +151,7 @@ describe('a new entry opened with a prefill', () => {
   });
 
   it('sends no statement when none was given', async () => {
-    renderForm({ mode: 'create', initial: { accountId: 'bank' } });
+    renderForm({ mode: 'create', initial: { lines: [{ accountId: 'bank' }] } });
     await waitFor(() => expect(lineCombobox(0, 'account')).toHaveValue('1910 Pankkitili'));
     fireEvent.change(screen.getByLabelText(/^Selite/), { target: { value: 'Siirto' } });
     fireEvent.change(amounts()[0], { target: { value: '100' } });
@@ -254,4 +254,44 @@ it('hands cancelling to its host', async () => {
   await waitFor(() => expect(screen.getByLabelText('Automaattinen ALV')).toBeEnabled());
   fireEvent.click(screen.getByRole('button', { name: 'Peruuta' }));
   expect(onCancel).toHaveBeenCalledTimes(1);
+});
+
+describe('a new entry opened from a statement transaction', () => {
+  it('starts with its date, description, gross amounts and both lines, and books the transaction', async () => {
+    renderForm({
+      mode: 'create',
+      initial: {
+        bankStatementId: 'statement-1',
+        bankStatementLineId: 'line-1',
+        date: '2026-09-12',
+        description: 'Sähkö Oy – 00000000000000012345',
+        vatBasis: 'gross',
+        lines: [{ accountId: 'bank', amount: -45.2 }, { amount: 45.2 }],
+      },
+    });
+    expect(screen.getByLabelText(/^Päivämäärä/)).toHaveValue('2026-09-12');
+    expect(screen.getByLabelText(/^Selite/)).toHaveValue('Sähkö Oy – 00000000000000012345');
+    expect(screen.getByRole('button', { name: 'Brutto' })).toHaveAttribute('aria-pressed', 'true');
+    expect(amounts().map((input) => input.value)).toEqual(['-45,20', '45,20']);
+    await waitFor(() => expect(lineCombobox(0, 'account')).toHaveValue('1910 Pankkitili'));
+    expect(lineCombobox(1, 'account')).toHaveValue('');
+
+    const second = lineCombobox(1, 'account');
+    act(() => second.focus());
+    fireEvent.change(second, { target: { value: '3000' } });
+    fireEvent.click(await screen.findByRole('option', { name: /^3000 / }));
+    fireEvent.click(submitButton());
+
+    await waitFor(() => expect(journalEntriesApi.create).toHaveBeenCalledTimes(1));
+    expect(jest.mocked(journalEntriesApi.create).mock.calls[0][0]).toMatchObject({
+      date: '2026-09-12',
+      vatBasis: 'gross',
+      bankStatementId: 'statement-1',
+      bankStatementLineId: 'line-1',
+      lines: [
+        { accountId: 'bank', amount: 45.2, type: 'credit' },
+        { accountId: 'sales', amount: 45.2, type: 'debit' },
+      ],
+    });
+  });
 });

@@ -1,6 +1,18 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, Box, Button, Chip, IconButton, MenuItem, TextField, Typography } from '@mui/material';
+import {
+  Alert,
+  Box,
+  Button,
+  Chip,
+  IconButton,
+  MenuItem,
+  Tab,
+  Tabs,
+  TextField,
+  Tooltip,
+  Typography,
+} from '@mui/material';
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import { bankStatementsApi } from '../../api/bankStatements';
@@ -8,14 +20,31 @@ import { journalEntriesApi } from '../../api/journalEntries';
 import type { BankAccount } from '../../types/bankAccount';
 import type {
   BankStatement,
+  BankStatementLine,
   BankStatementPatch,
   BankStatementSummary,
+  CsvImportResult,
 } from '../../types/bankStatement';
 import type { JournalEntry } from '../../types/journal';
+import { formatCurrency, formatDate } from '../../lib/format';
 import { formatIban } from '../../lib/iban';
 import { JournalEntriesTable } from '../Journal/JournalEntriesTable';
 import JournalEntryForm, { type JournalEntryFormTarget } from '../JournalEntry/JournalEntryForm';
+import { CsvImportDialog } from './CsvImportDialog';
+import { StatementLinesTable } from './StatementLinesTable';
 import { StatementSummary } from './StatementSummary';
+
+// The middle of the panel: the statement's transactions (imported from the
+// bank's CSV) or the journal entries booked from it.
+type PanelTab = 'lines' | 'entries';
+
+// A booked transaction's description: who, and what for.
+function lineDescription(line: BankStatementLine): string {
+  return [line.counterparty, line.message || line.reference || line.transactionType]
+    .filter(Boolean)
+    .join(' – ')
+    .slice(0, 500);
+}
 
 interface StatementEntriesPanelProps {
   // The panel is for one statement: the page gives it a key by the
@@ -37,8 +66,9 @@ interface StatementEntriesPanelProps {
 }
 
 // The left-hand side of the bank statement page: the bank account the
-// statement is of on top, the journal entries booked from it in the middle —
-// or the entry form, when one is being written — and what they add up to at
+// statement is of on top; in the middle, in tabs, the transactions imported
+// from the bank's CSV and the journal entries booked from the statement — or
+// the entry form, when one is being written; and what the entries add up to at
 // the foot.
 export function StatementEntriesPanel({
   statement,
@@ -69,6 +99,31 @@ export function StatementEntriesPanel({
   const [formKey, setFormKey] = useState(0);
   // Bumped after an entry is saved or deleted, to reload entries and sums.
   const [version, setVersion] = useState(0);
+  const [lines, setLines] = useState<BankStatementLine[] | null>(null);
+  // Null until the transactions have loaded: a statement that has some opens
+  // on them, one that has none on its entries.
+  const [tab, setTab] = useState<PanelTab | null>(null);
+  const [busyLineId, setBusyLineId] = useState<string | null>(null);
+  const [csvOpen, setCsvOpen] = useState(false);
+  // What the last import did.
+  const [notice, setNotice] = useState<string | null>(null);
+
+  useEffect(() => {
+    let stale = false;
+    bankStatementsApi
+      .lines(statementId)
+      .then((loaded) => {
+        if (stale) return;
+        setLines(loaded);
+        setTab((current) => current ?? (loaded.length > 0 ? 'lines' : 'entries'));
+      })
+      .catch((err) => {
+        if (!stale) setError((err as Error).message);
+      });
+    return () => {
+      stale = true;
+    };
+  }, [statementId, version]);
 
   useEffect(() => {
     let stale = false;
@@ -144,7 +199,7 @@ export function StatementEntriesPanel({
       mode: 'create',
       initial: {
         bankStatementId: statementId,
-        ...(statement.bankAccount ? { accountId: statement.bankAccount.accountId } : {}),
+        ...(statement.bankAccount ? { lines: [{ accountId: statement.bankAccount.accountId }] } : {}),
       },
     });
 
@@ -153,6 +208,68 @@ export function StatementEntriesPanel({
     setVersion((v) => v + 1);
     onEntriesChange();
   }
+
+  // A transaction booked as it is on the statement: on its date, from the
+  // bank account's accounting account to an account left to choose, the
+  // amounts gross since the bank's amount includes any VAT.
+  const bookLine = (line: BankStatementLine) =>
+    openForm({
+      mode: 'create',
+      initial: {
+        bankStatementId: statementId,
+        bankStatementLineId: line.id,
+        date: line.bookingDate,
+        description: lineDescription(line),
+        vatBasis: 'gross',
+        lines: [
+          { accountId: statement.bankAccount?.accountId, amount: line.amount },
+          { amount: -line.amount },
+        ],
+      },
+    });
+
+  async function openLineEntry(line: BankStatementLine) {
+    if (!line.journalEntry) return;
+    setError(null);
+    try {
+      openForm({ mode: 'edit', entry: await journalEntriesApi.get(line.journalEntry.id) });
+    } catch (err) {
+      setError((err as Error).message);
+    }
+  }
+
+  async function removeLine(line: BankStatementLine) {
+    if (
+      !window.confirm(
+        t('bankStatements.lines.confirmDelete', {
+          date: formatDate(line.bookingDate, lang),
+          counterparty: line.counterparty,
+          amount: formatCurrency(line.amount, lang),
+        }),
+      )
+    ) {
+      return;
+    }
+    setBusyLineId(line.id);
+    setError(null);
+    try {
+      await bankStatementsApi.removeLine(statementId, line.id);
+      setVersion((v) => v + 1);
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setBusyLineId(null);
+    }
+  }
+
+  function handleImported(result: CsvImportResult) {
+    setCsvOpen(false);
+    setNotice(t('bankStatements.lines.imported', { ...result }));
+    setTab('lines');
+    setVersion((v) => v + 1);
+  }
+
+  const bookedCount = lines?.filter((line) => line.journalEntry).length ?? 0;
 
   const removeEntry = useCallback(
     async (entry: JournalEntry) => {
@@ -301,34 +418,114 @@ export function StatementEntriesPanel({
           )}
         </JournalEntryForm>
       ) : (
-        <Box sx={{ flex: 1, minHeight: 0, overflowY: 'auto', p: 2 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 2, mb: 2 }}>
-            <Typography variant="h6" component="h3">
-              {t('bankStatements.entries.title')}
-            </Typography>
+        <Box sx={{ flex: 1, minHeight: 0, overflowY: 'auto', p: 2, pt: 1 }}>
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              flexWrap: 'wrap',
+              gap: 1,
+              mb: 2,
+              borderBottom: 1,
+              borderColor: 'divider',
+            }}
+          >
+            <Tabs
+              value={tab ?? false}
+              onChange={(_, value: PanelTab) => setTab(value)}
+              aria-label={t('bankStatements.lines.tabsLabel')}
+            >
+              <Tab
+                value="lines"
+                id="statement-tab-lines"
+                aria-controls="statement-tabpanel-lines"
+                label={
+                  lines && lines.length > 0
+                    ? t('bankStatements.lines.tabWithCount', { booked: bookedCount, count: lines.length })
+                    : t('bankStatements.lines.tab')
+                }
+              />
+              <Tab
+                value="entries"
+                id="statement-tab-entries"
+                aria-controls="statement-tabpanel-entries"
+                label={t('bankStatements.entries.title')}
+              />
+            </Tabs>
             {canManage && (
-              <Button variant="contained" onClick={openCreate}>
-                {t('bankStatements.entries.newButton')}
-              </Button>
+              <Box sx={{ display: 'flex', gap: 1, pb: 1 }}>
+                <Tooltip title={statement.bankAccount ? '' : t('bankStatements.csv.needsBankAccount')}>
+                  {/* A disabled button gets no hover, so the hint sits on a wrapper. */}
+                  <span>
+                    <Button
+                      variant="outlined"
+                      disabled={!statement.bankAccount}
+                      onClick={() => {
+                        setNotice(null);
+                        setCsvOpen(true);
+                      }}
+                    >
+                      {t('bankStatements.csv.button')}
+                    </Button>
+                  </span>
+                </Tooltip>
+                <Button variant="contained" onClick={openCreate}>
+                  {t('bankStatements.entries.newButton')}
+                </Button>
+              </Box>
             )}
           </Box>
-          <JournalEntriesTable
-            entries={entries}
-            lang={lang}
-            accountLabel={accountLabel}
-            costCenterLabel={costCenterLabel}
-            total={total}
-            page={page}
-            rowsPerPage={rowsPerPage}
-            onPageChange={setPage}
-            onRowsPerPageChange={(value) => {
-              setRowsPerPage(value);
-              setPage(0);
-            }}
-            renderActions={canManage ? renderActions : undefined}
-            emptyText={t('bankStatements.entries.empty')}
-          />
+          {notice && (
+            <Alert severity="success" sx={{ mb: 2 }} onClose={() => setNotice(null)}>
+              {notice}
+            </Alert>
+          )}
+          {tab === null && <Typography>{t('common.loading')}</Typography>}
+          {tab === 'lines' && (
+            <Box role="tabpanel" id="statement-tabpanel-lines" aria-labelledby="statement-tab-lines">
+              <StatementLinesTable
+                lines={lines}
+                lang={lang}
+                canManage={canManage}
+                busyLineId={busyLineId}
+                onBook={bookLine}
+                onOpenEntry={(line) => void openLineEntry(line)}
+                onDelete={(line) => void removeLine(line)}
+              />
+            </Box>
+          )}
+          {tab === 'entries' && (
+            <Box role="tabpanel" id="statement-tabpanel-entries" aria-labelledby="statement-tab-entries">
+              <JournalEntriesTable
+                entries={entries}
+                lang={lang}
+                accountLabel={accountLabel}
+                costCenterLabel={costCenterLabel}
+                total={total}
+                page={page}
+                rowsPerPage={rowsPerPage}
+                onPageChange={setPage}
+                onRowsPerPageChange={(value) => {
+                  setRowsPerPage(value);
+                  setPage(0);
+                }}
+                renderActions={canManage ? renderActions : undefined}
+                emptyText={t('bankStatements.entries.empty')}
+              />
+            </Box>
+          )}
         </Box>
+      )}
+
+      {canManage && (
+        <CsvImportDialog
+          open={csvOpen}
+          statement={statement}
+          lang={lang}
+          onClose={() => setCsvOpen(false)}
+          onImported={handleImported}
+        />
       )}
 
       <Box

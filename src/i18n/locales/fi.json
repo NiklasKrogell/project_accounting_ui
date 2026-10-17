@@ -566,6 +566,70 @@
       "noVat": "Ei arvonlisäverollisia kirjauksia.",
       "receivable": "Alv-saamiset",
       "payable": "Alv-velka"
+    },
+    "lines": {
+      "tab": "Tapahtumat",
+      "tabWithCount": "Tapahtumat ({{booked}} / {{count}} kirjattu)",
+      "tabsLabel": "Tiliotteen tapahtumat ja kirjaukset",
+      "empty": "Tiliotteelle ei ole tuotu tapahtumia. Tuo ne pankin CSV-tiedostosta.",
+      "columns": {
+        "date": "Päivä",
+        "counterparty": "Vastapuoli",
+        "amount": "Määrä",
+        "entry": "Kirjaus"
+      },
+      "reference": "Viite",
+      "book": "Kirjaa",
+      "openEntry": "Avaa kirjaus {{voucher}}",
+      "delete": "Poista tapahtuma",
+      "confirmDelete": "Poistetaanko tapahtuma {{date}} {{counterparty}} {{amount}}?",
+      "unbooked": "Kirjaamatta",
+      "imported": "Tuotiin {{imported}} tapahtumaa. Aiemmin tuotuja: {{duplicates}}. Ohitettuja rivejä: {{skipped}}."
+    },
+    "csv": {
+      "button": "Tuo CSV",
+      "needsBankAccount": "Valitse ensin tiliotteen pankkitili.",
+      "title": "Tuo tapahtumat CSV-tiedostosta",
+      "chooseFile": "Valitse tiedosto",
+      "fileHint": "Lataa tilin tapahtumat verkkopankista CSV-tiedostona ja valitse se tähän.",
+      "reading": "Luetaan tiedostoa…",
+      "layout": {
+        "op": "Tunnistettu: OP:n tilitapahtumat.",
+        "nordea": "Tunnistettu: Nordean tilitapahtumat.",
+        "nordea-classic": "Tunnistettu: Nordean tilitapahtumat (vanha verkkopankki).",
+        "unknown": "Tiedoston muotoa ei tunnistettu. Sarakkeet on arvattu otsikoista: tarkista ne."
+      },
+      "accountMismatch": "Tiedosto näyttää olevan tilin {{found}} tapahtumat, mutta tiliotteen pankkitili on {{expected}}.",
+      "columnsTitle": "Sarakkeet",
+      "none": "–",
+      "fields": {
+        "bookingDate": "Kirjauspäivä",
+        "amount": "Määrä",
+        "amountIn": "Panot",
+        "amountOut": "Otot",
+        "counterparty": "Vastapuoli",
+        "counterpartyAccount": "Vastapuolen tili",
+        "reference": "Viite",
+        "message": "Viesti",
+        "transactionType": "Tapahtumalaji",
+        "archiveId": "Arkistointitunnus",
+        "valueDate": "Arvopäivä"
+      },
+      "needDate": "Valitse kirjauspäivän sarake.",
+      "needAmount": "Valitse määrän sarake tai panojen ja ottojen sarakkeet.",
+      "rowsLabel": "Tuotavat tapahtumat",
+      "duplicate": "Jo tuotu",
+      "noLines": "Tiedostossa ei ole tapahtumia näillä sarakkeilla.",
+      "more": "…ja {{count}} tapahtumaa lisää.",
+      "skipped": "Ohitetaan rivit, jotka eivät ole tapahtumia: {{lines}}.",
+      "skipReason": {
+        "pending": "rivi {{line}} (varaus)",
+        "no-date": "rivi {{line}} (ei päivämäärää)",
+        "no-amount": "rivi {{line}} (ei määrää)",
+        "currency": "rivi {{line}} (muu valuutta kuin euro)"
+      },
+      "submit": "Tuo {{count}} tapahtumaa",
+      "submitting": "Tuodaan…"
     }
   },
   "pdfViewer": {

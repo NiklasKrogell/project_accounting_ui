@@ -566,6 +566,70 @@
       "noVat": "No entries with VAT.",
       "receivable": "VAT receivable",
       "payable": "VAT payable"
+    },
+    "lines": {
+      "tab": "Transactions",
+      "tabWithCount": "Transactions ({{booked}} / {{count}} booked)",
+      "tabsLabel": "The statement's transactions and entries",
+      "empty": "No transactions have been imported to this statement. Import them from the bank's CSV file.",
+      "columns": {
+        "date": "Date",
+        "counterparty": "Counterparty",
+        "amount": "Amount",
+        "entry": "Entry"
+      },
+      "reference": "Reference",
+      "book": "Book",
+      "openEntry": "Open entry {{voucher}}",
+      "delete": "Delete transaction",
+      "confirmDelete": "Delete the transaction {{date}} {{counterparty}} {{amount}}?",
+      "unbooked": "Unbooked",
+      "imported": "Imported {{imported}} transactions. Already imported: {{duplicates}}. Rows skipped: {{skipped}}."
+    },
+    "csv": {
+      "button": "Import CSV",
+      "needsBankAccount": "Choose the statement's bank account first.",
+      "title": "Import transactions from a CSV file",
+      "chooseFile": "Choose file",
+      "fileHint": "Download the account's transactions from your online bank as a CSV file and choose it here.",
+      "reading": "Reading the file…",
+      "layout": {
+        "op": "Recognised: OP account transactions.",
+        "nordea": "Recognised: Nordea account transactions.",
+        "nordea-classic": "Recognised: Nordea account transactions (old netbank).",
+        "unknown": "The file's layout was not recognised. The columns were guessed from their names: check them."
+      },
+      "accountMismatch": "The file seems to hold the transactions of {{found}}, but the statement's bank account is {{expected}}.",
+      "columnsTitle": "Columns",
+      "none": "–",
+      "fields": {
+        "bookingDate": "Booking date",
+        "amount": "Amount",
+        "amountIn": "Money in",
+        "amountOut": "Money out",
+        "counterparty": "Counterparty",
+        "counterpartyAccount": "Counterparty account",
+        "reference": "Reference",
+        "message": "Message",
+        "transactionType": "Transaction type",
+        "archiveId": "Archive ID",
+        "valueDate": "Value date"
+      },
+      "needDate": "Choose the column of the booking date.",
+      "needAmount": "Choose the column of the amount, or the columns of money in and out.",
+      "rowsLabel": "Transactions to import",
+      "duplicate": "Already imported",
+      "noLines": "The file has no transactions with these columns.",
+      "more": "…and {{count}} more transactions.",
+      "skipped": "Skipping the rows that are no transactions: {{lines}}.",
+      "skipReason": {
+        "pending": "line {{line}} (reservation)",
+        "no-date": "line {{line}} (no date)",
+        "no-amount": "line {{line}} (no amount)",
+        "currency": "line {{line}} (not in euros)"
+      },
+      "submit": "Import {{count}} transactions",
+      "submitting": "Importing…"
     }
   },
   "pdfViewer": {

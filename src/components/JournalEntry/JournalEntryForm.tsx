@@ -117,6 +117,11 @@ function lineVatCents(line: LineDraft, basis: VatBasis): number | null {
 
 const accountLabel = (a: Account) => `${a.number} ${a.name}`;
 
+// An amount as the amount field shows it: 125,50 or -100,00.
+function amountText(amount: number): string {
+  return amount.toFixed(2).replace('.', ',');
+}
+
 // The lines of a saved entry as the form edits them: the entered ones only
 // (the VAT rows are generated anew on save), each at its stored net amount
 // with the sign carrying the side.
@@ -126,7 +131,7 @@ function draftsOf(entry: JournalEntry, accounts: Account[], costCenters: CostCen
     .map((line) => ({
       account: accounts.find((a) => a.id === line.accountId) ?? null,
       costCenter: costCenters.find((c) => c.id === line.costCenterId) ?? null,
-      amount: (line.type === 'credit' ? -line.amount : line.amount).toFixed(2).replace('.', ','),
+      amount: amountText(line.type === 'credit' ? -line.amount : line.amount),
       vatRate: String(line.vatRate),
       vatCode: '',
       description: line.description,
@@ -140,12 +145,36 @@ function hadAutomaticVat(entry: JournalEntry): boolean {
   return entry.lines.some((line) => line.isVat) || entry.lines.every((line) => line.vatRate === 0);
 }
 
-// What a new entry starts with, when it is opened from somewhere that knows.
-export interface JournalEntryInitial {
-  // The account of the first line (the bank account of a bank statement).
+// A line a new entry starts with. The account is picked once the accounts
+// have loaded, if the line's account is still unpicked then.
+export interface JournalEntryInitialLine {
   accountId?: string;
+  // Signed as the amount field takes it: + debit, - credit.
+  amount?: number;
+}
+
+// What a new entry starts with, when it is opened from somewhere that knows:
+// the bank statement page gives the statement's bank account on the first
+// line, and a statement transaction gives everything it says.
+export interface JournalEntryInitial {
+  date?: string;
+  description?: string;
+  vatBasis?: VatBasis;
+  // There are always at least two lines; missing ones start empty.
+  lines?: JournalEntryInitialLine[];
   // The bank statement the entry is booked from.
   bankStatementId?: string;
+  // The statement transaction the entry books.
+  bankStatementLineId?: string;
+}
+
+function initialDrafts(initial: JournalEntryInitial | undefined): LineDraft[] {
+  const drafts = (initial?.lines ?? []).map((line) => ({
+    ...emptyLine(),
+    amount: line.amount === undefined ? '' : amountText(line.amount),
+  }));
+  while (drafts.length < 2) drafts.push(emptyLine());
+  return drafts;
 }
 
 // A new entry or a saved one to change. The voucher type of a saved entry is
@@ -181,6 +210,7 @@ export default function JournalEntryForm({ target, onCancel, onSaved, children }
   // The target the form was mounted for; see Props.target.
   const targetRef = useRef(target);
   const editedEntry = targetRef.current.mode === 'edit' ? targetRef.current.entry : null;
+  const initial = targetRef.current.mode === 'create' ? targetRef.current.initial : undefined;
 
   const [accounts, setAccounts] = useState<Account[] | null>(null);
   const [accountsError, setAccountsError] = useState<string | null>(null);
@@ -189,11 +219,13 @@ export default function JournalEntryForm({ target, onCancel, onSaved, children }
   const [companySettings, setCompanySettings] = useState<CompanySettings | null>(null);
 
   const [voucherType, setVoucherType] = useState<VoucherType>(editedEntry?.voucherType ?? 'SALES');
-  const [date, setDate] = useState(editedEntry?.date ?? todayIso());
-  const [description, setDescription] = useState(editedEntry?.description ?? '');
-  const [vatBasis, setVatBasis] = useState<VatBasis>('net');
+  const [date, setDate] = useState(editedEntry?.date ?? initial?.date ?? todayIso());
+  const [description, setDescription] = useState(
+    editedEntry?.description ?? initial?.description ?? '',
+  );
+  const [vatBasis, setVatBasis] = useState<VatBasis>(initial?.vatBasis ?? 'net');
   const [automaticVat, setAutomaticVat] = useState(editedEntry ? hadAutomaticVat(editedEntry) : true);
-  const [lines, setLines] = useState<LineDraft[]>([emptyLine(), emptyLine()]);
+  const [lines, setLines] = useState<LineDraft[]>(() => initialDrafts(initial));
   // A saved entry's lines can be shown only once the accounts and cost centers
   // they point at have loaded.
   const [linesReady, setLinesReady] = useState(editedEntry === null);
@@ -223,24 +255,26 @@ export default function JournalEntryForm({ target, onCancel, onSaved, children }
       .then((list) => {
         if (stale) return;
         setAccounts(list);
-        const initialAccountId =
-          mountedFor.mode === 'create' ? mountedFor.initial?.accountId : undefined;
-        const initialAccount = list.find((a) => a.id === initialAccountId);
-        if (!initialAccount) return;
-        // Only while the first line is still untouched.
+        const initialAccountIds =
+          mountedFor.mode === 'create'
+            ? (mountedFor.initial?.lines ?? []).map((line) => line.accountId)
+            : [];
+        if (!initialAccountIds.some(Boolean)) return;
+        // Only on a line whose account is still unpicked.
         setLines((prev) =>
-          prev.map((line, index) =>
-            index === 0 && line.account === null
+          prev.map((line, index) => {
+            const account = list.find((a) => a.id === initialAccountIds[index]);
+            return account && line.account === null
               ? {
                   ...line,
-                  account: initialAccount,
+                  account,
                   vatRate:
-                    vatRegistered && initialAccount.defaultVatRate != null
-                      ? String(initialAccount.defaultVatRate)
+                    vatRegistered && account.defaultVatRate != null
+                      ? String(account.defaultVatRate)
                       : '0',
                 }
-              : line,
-          ),
+              : line;
+          }),
         );
       })
       .catch(fail);
@@ -427,6 +461,9 @@ export default function JournalEntryForm({ target, onCancel, onSaved, children }
               ...input,
               ...(mountedFor.initial?.bankStatementId
                 ? { bankStatementId: mountedFor.initial.bankStatementId }
+                : {}),
+              ...(mountedFor.initial?.bankStatementLineId
+                ? { bankStatementLineId: mountedFor.initial.bankStatementLineId }
                 : {}),
             });
       onSaved?.(entry);

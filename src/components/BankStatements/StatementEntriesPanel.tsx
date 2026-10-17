@@ -331,10 +331,10 @@ export function StatementEntriesPanel({
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
-      <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider', flexShrink: 0 }}>
+      <Box sx={{ px: 2, pt: 1.5, pb: 1, borderBottom: 1, borderColor: 'divider', flexShrink: 0 }}>
         {/* No title row: the file's name is over the PDF, and the list shows
             which statement is open and whether it is posted. */}
-        <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 2 }}>
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 1 }}>
           <TextField
             select
             size="small"
@@ -342,7 +342,11 @@ export function StatementEntriesPanel({
             value={statement.bankAccountId ?? ''}
             onChange={(e) => void patchStatement({ bankAccountId: e.target.value || null })}
             disabled={!canManage || busy}
-            sx={{ minWidth: 300 }}
+            // Compact: the space goes to the entries below.
+            sx={{
+              minWidth: 260,
+              '& .MuiInputBase-input': { py: 0.5, fontSize: '0.875rem' },
+            }}
             // The empty choice has a text of its own, so the label stays up.
             slotProps={{ select: { displayEmpty: true }, inputLabel: { shrink: true } }}
           >
@@ -358,6 +362,7 @@ export function StatementEntriesPanel({
           {canManage && (
             <Button
               variant="outlined"
+              size="small"
               disabled={busy}
               onClick={() => void patchStatement({ posted: !statement.posted })}
               sx={{ ml: 'auto' }}
@@ -367,7 +372,7 @@ export function StatementEntriesPanel({
           )}
         </Box>
         {error && (
-          <Alert severity="error" sx={{ mt: 2 }}>
+          <Alert severity="error" sx={{ mt: 1 }}>
             {error}
           </Alert>
         )}
@@ -423,6 +428,8 @@ export function StatementEntriesPanel({
               value={tab ?? false}
               onChange={(_, value: PanelTab) => setTab(value)}
               aria-label={t('bankStatements.lines.tabsLabel')}
+              // Compact, like the rest of the panel's controls.
+              sx={{ minHeight: 36, '& .MuiTab-root': { minHeight: 36, py: 0.5, px: 1.5, fontSize: '0.8125rem' } }}
             >
               <Tab
                 value="lines"
@@ -442,12 +449,13 @@ export function StatementEntriesPanel({
               />
             </Tabs>
             {canManage && (
-              <Box sx={{ display: 'flex', gap: 1, pb: 1 }}>
+              <Box sx={{ display: 'flex', gap: 1, pb: 0.5 }}>
                 <Tooltip title={statement.bankAccount ? '' : t('bankStatements.csv.needsBankAccount')}>
                   {/* A disabled button gets no hover, so the hint sits on a wrapper. */}
                   <span>
                     <Button
                       variant="outlined"
+                      size="small"
                       disabled={!statement.bankAccount}
                       onClick={() => {
                         setNotice(null);
@@ -458,7 +466,7 @@ export function StatementEntriesPanel({
                     </Button>
                   </span>
                 </Tooltip>
-                <Button variant="contained" onClick={openCreate}>
+                <Button variant="contained" size="small" onClick={openCreate}>
                   {t('bankStatements.entries.newButton')}
                 </Button>
               </Box>

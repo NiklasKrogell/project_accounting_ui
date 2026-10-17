@@ -24,3 +24,18 @@ export function vatCentsInGross(grossCents: number, vatRate: number): number {
   const rate = Math.round(vatRate * 100);
   return Math.round((grossCents * rate) / (10000 + rate));
 }
+
+// Splits an entered amount in cents into its net amount and VAT in cents,
+// like the backend's splitVat does before it stores a line: on a net basis the
+// VAT is added on top, on a gross basis it is taken out of the amount.
+export function splitVatCents(
+  cents: number,
+  vatRate: number,
+  basis: 'net' | 'gross',
+): { net: number; vat: number } {
+  if (basis === 'gross') {
+    const vat = vatCentsInGross(cents, vatRate);
+    return { net: cents - vat, vat };
+  }
+  return { net: cents, vat: vatCents(cents, vatRate) };
+}

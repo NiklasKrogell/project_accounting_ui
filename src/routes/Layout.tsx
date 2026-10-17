@@ -6,6 +6,7 @@ import NoCompany from '../pages/NoCompany';
 import { CustomAppBar } from '../components/Header/CustomAppBar';
 import { TabBar } from '../components/Header/TabBar';
 import {
+  PURCHASE_INVOICES_PATH,
   resolveActiveTab,
   SETTINGS_PATH,
   WINDOW_FILLING_PATHS,
@@ -15,12 +16,18 @@ import {
   JournalEntryDialogProvider,
   useJournalEntryDialog,
 } from '../components/JournalEntry/JournalEntryDialogContext';
+import {
+  PurchaseInvoiceDialogProvider,
+  usePurchaseInvoiceDialog,
+} from '../components/PurchaseInvoices/PurchaseInvoiceDialogContext';
 
-// Split in two so LayoutContent can use hooks that need the dialog provider.
+// Split in two so LayoutContent can use hooks that need the dialog providers.
 export default function Layout() {
   return (
     <JournalEntryDialogProvider>
-      <LayoutContent />
+      <PurchaseInvoiceDialogProvider>
+        <LayoutContent />
+      </PurchaseInvoiceDialogProvider>
     </JournalEntryDialogProvider>
   );
 }
@@ -30,6 +37,7 @@ function LayoutContent() {
   const location = useLocation();
   const navigate = useNavigate();
   const { openCreate } = useJournalEntryDialog();
+  const { openCreate: openCreatePurchaseInvoice } = usePurchaseInvoiceDialog();
 
   const subscriptionActive = activeMembership?.subscriptionStatus === 'ACTIVE';
   const activeTab = resolveActiveTab(location.pathname);
@@ -43,6 +51,8 @@ function LayoutContent() {
   const handleAction = (action: NavAction) => {
     if (action === 'newJournalEntry') {
       openCreate({ onSaved: () => navigate('/accounting/journal') });
+    } else if (action === 'newPurchaseInvoice') {
+      openCreatePurchaseInvoice({ onSaved: () => navigate(PURCHASE_INVOICES_PATH) });
     }
   };
 

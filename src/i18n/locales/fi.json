@@ -11,6 +11,9 @@
     "close": "Sulje",
     "genericError": "Jokin meni pieleen."
   },
+  "pdf": {
+    "openInNewTab": "Avaa uudessa välilehdessä"
+  },
   "languages": {
     "fi": "Suomi",
     "en": "English"
@@ -28,6 +31,8 @@
     "costCenters": "Kustannuspaikat",
     "newEntry": "Uusi kirjaus",
     "bankStatements": "Tiliotteet",
+    "newPurchaseInvoice": "Uusi ostolasku",
+    "purchaseInvoices": "Ostolaskut",
     "incomeStatement": "Tuloslaskelma",
     "balanceSheet": "Tase",
     "settings": "Asetukset"
@@ -509,6 +514,95 @@
     "loadingAccounts": "Ladataan tilejä…",
     "loadingCostCenters": "Ladataan kustannuspaikkoja…"
   },
+  "suppliers": {
+    "quickDialog": {
+      "title": "Uusi toimittaja",
+      "name": "Nimi",
+      "country": "Maa",
+      "countryHint": "Maakoodi kahdella kirjaimella, esim. FI, SE, DE",
+      "businessId": "Y-tunnus",
+      "vatNumber": "ALV-numero",
+      "iban": "IBAN",
+      "bic": "BIC",
+      "nameRequired": "Pakollinen tieto",
+      "countryInvalid": "Anna maakoodi kahdella kirjaimella, esim. FI",
+      "businessIdInvalid": "Y-tunnus ei ole oikein: tarkista numerot",
+      "vatNumberInvalid": "ALV-numero ei ole oikean muotoinen",
+      "vatNumberMismatch": "Y-tunnuksen mukainen ALV-numero on {{expected}}",
+      "ibanInvalid": "IBAN ei ole oikein: tarkista numerot",
+      "bicInvalid": "BIC ei ole oikean muotoinen",
+      "duplicateBusinessId": "Toimittaja tällä Y-tunnuksella on jo olemassa.",
+      "submit": "Lisää toimittaja",
+      "submitting": "Lisätään…"
+    }
+  },
+  "purchaseInvoices": {
+    "title": "Ostolaskut",
+    "empty": "Ei ostolaskuja vielä.",
+    "noMatches": "Rajauksia vastaavia ostolaskuja ei löytynyt.",
+    "filters": {
+      "title": "Rajaukset",
+      "search": "Hae",
+      "searchHint": "Laskunumero, toimittaja, viitenumero tai summa",
+      "status": "Tila",
+      "invoiceDate": "Laskun päivämäärä",
+      "dueDate": "Eräpäivä",
+      "from": "Alkaen",
+      "to": "Päättyen",
+      "clear": "Tyhjennä rajaukset"
+    },
+    "columns": {
+      "invoiceNumber": "Laskunumero",
+      "supplier": "Toimittaja",
+      "invoiceDate": "Laskun pvm",
+      "dueDate": "Eräpäivä",
+      "paymentReference": "Viitenumero",
+      "totalAmount": "Summa",
+      "status": "Tila"
+    },
+    "status": {
+      "NEW": "Uusi",
+      "APPROVED": "Hyväksytty",
+      "PAID": "Maksettu",
+      "REJECTED": "Hylätty"
+    },
+    "dialog": {
+      "title": "Uusi ostolasku",
+      "details": "Laskun tiedot",
+      "supplier": "Toimittaja",
+      "addSupplier": "Lisää uusi toimittaja",
+      "addSupplierNamed": "Lisää uusi toimittaja \"{{name}}\"",
+      "invoiceNumber": "Laskunumero",
+      "invoiceDate": "Laskun päivämäärä",
+      "dueDate": "Eräpäivä",
+      "entryDate": "Kirjauspäivä",
+      "entryDateHint": "Ostokirjauksen päivä hyväksyttäessä",
+      "totalAmount": "Summa (verollinen)",
+      "paymentReference": "Viitenumero",
+      "iban": "IBAN",
+      "bic": "BIC",
+      "description": "Kuvaus",
+      "required": "Pakollinen tieto",
+      "dueBeforeInvoice": "Eräpäivä ei voi olla ennen laskun päivämäärää",
+      "totalInvalid": "Anna summa euroina, esim. 125,50",
+      "referenceInvalid": "Viitenumero ei ole oikein: tarkista numerot",
+      "ibanInvalid": "IBAN ei ole oikein: tarkista numerot",
+      "bicInvalid": "BIC ei ole oikean muotoinen",
+      "duplicateNumber": "Toimittajalta {{supplier}} on jo lasku tällä numerolla.",
+      "discardConfirm": "Lasku on kesken. Hylätäänkö se?",
+      "save": "Tallenna",
+      "saving": "Tallennetaan…",
+      "pdfZone": "Laskun PDF",
+      "pdfDrop": "Pudota laskun PDF tähän",
+      "pdfPick": "Valitse tiedosto",
+      "pdfOptional": "PDF ei ole pakollinen.",
+      "pdfNotPdf": "{{name}} ei ole PDF-tiedosto.",
+      "pdfTooLarge": "{{name}} on liian suuri (enintään 20 Mt).",
+      "removePdf": "Poista PDF"
+    },
+    "rowsPerPage": "Laskuja sivulla",
+    "displayedRows": "{{from}}–{{to}} / {{count}}"
+  },
   "bankStatements": {
     "title": "Tiliotteet",
     "importButton": "Tuo tiliotteita",
@@ -549,7 +643,6 @@
       "confirmDelete": "Poistetaanko kirjaus {{voucher}}? Tätä ei voi perua."
     },
     "pdf": {
-      "openInNewTab": "Avaa uudessa välilehdessä",
       "close": "Sulje tiliote"
     },
     "summary": {

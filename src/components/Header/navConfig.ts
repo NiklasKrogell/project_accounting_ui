@@ -2,7 +2,7 @@ import type { Role } from '../../types/auth';
 
 // Actions a nav menu item can trigger instead of navigating. Handled by
 // Layout's onAction; the union grows as more action items are added.
-export type NavAction = 'newJournalEntry';
+export type NavAction = 'newJournalEntry' | 'newPurchaseInvoice';
 
 export interface NavMenuEntry {
   labelKey: string;
@@ -21,11 +21,12 @@ export type NavTab =
 
 export const SETTINGS_PATH = '/settings';
 export const BANK_STATEMENTS_PATH = '/accounting/bank-statements';
+export const PURCHASE_INVOICES_PATH = '/purchases/invoices';
 
 // Pages laid out as panes that scroll on their own. Layout gives them the
 // whole area under the tabs, bound to the height of the window, instead of
 // the centered content column.
-export const WINDOW_FILLING_PATHS: string[] = [BANK_STATEMENTS_PATH];
+export const WINDOW_FILLING_PATHS: string[] = [BANK_STATEMENTS_PATH, PURCHASE_INVOICES_PATH];
 
 // Single extensibility point for the tab bar: add new tabs and menu items here.
 export const NAV_TABS: NavTab[] = [
@@ -43,7 +44,15 @@ export const NAV_TABS: NavTab[] = [
       { labelKey: 'nav.costCenters', path: '/accounting/cost-centers' },
     ],
   },
-  { kind: 'menu', labelKey: 'nav.purchases', value: '/purchases', items: [] },
+  {
+    kind: 'menu',
+    labelKey: 'nav.purchases',
+    value: '/purchases',
+    items: [
+      { labelKey: 'nav.newPurchaseInvoice', action: 'newPurchaseInvoice', minRole: 'LEDGER' },
+      { labelKey: 'nav.purchaseInvoices', path: PURCHASE_INVOICES_PATH },
+    ],
+  },
   { kind: 'menu', labelKey: 'nav.sales', value: '/sales', items: [] },
   {
     kind: 'menu',

@@ -11,6 +11,9 @@
     "close": "Close",
     "genericError": "Something went wrong."
   },
+  "pdf": {
+    "openInNewTab": "Open in a new tab"
+  },
   "languages": {
     "fi": "Suomi",
     "en": "English"
@@ -28,6 +31,8 @@
     "costCenters": "Cost centers",
     "newEntry": "New entry",
     "bankStatements": "Bank statements",
+    "newPurchaseInvoice": "New purchase invoice",
+    "purchaseInvoices": "Purchase invoices",
     "incomeStatement": "Income statement",
     "balanceSheet": "Balance sheet",
     "settings": "Settings"
@@ -509,6 +514,95 @@
     "loadingAccounts": "Loading accounts…",
     "loadingCostCenters": "Loading cost centers…"
   },
+  "suppliers": {
+    "quickDialog": {
+      "title": "New supplier",
+      "name": "Name",
+      "country": "Country",
+      "countryHint": "Two-letter country code, e.g. FI, SE, DE",
+      "businessId": "Business ID",
+      "vatNumber": "VAT number",
+      "iban": "IBAN",
+      "bic": "BIC",
+      "nameRequired": "Required",
+      "countryInvalid": "Enter a two-letter country code, e.g. FI",
+      "businessIdInvalid": "The business ID is not valid: check the digits",
+      "vatNumberInvalid": "The VAT number is not in the right form",
+      "vatNumberMismatch": "The VAT number of this business ID is {{expected}}",
+      "ibanInvalid": "The IBAN is not valid: check the digits",
+      "bicInvalid": "The BIC is not in the right form",
+      "duplicateBusinessId": "A supplier with this business ID already exists.",
+      "submit": "Add supplier",
+      "submitting": "Adding…"
+    }
+  },
+  "purchaseInvoices": {
+    "title": "Purchase invoices",
+    "empty": "No purchase invoices yet.",
+    "noMatches": "No purchase invoices match the filters.",
+    "filters": {
+      "title": "Filters",
+      "search": "Search",
+      "searchHint": "Invoice number, supplier, reference or amount",
+      "status": "Status",
+      "invoiceDate": "Invoice date",
+      "dueDate": "Due date",
+      "from": "From",
+      "to": "To",
+      "clear": "Clear filters"
+    },
+    "columns": {
+      "invoiceNumber": "Invoice no.",
+      "supplier": "Supplier",
+      "invoiceDate": "Invoice date",
+      "dueDate": "Due date",
+      "paymentReference": "Reference",
+      "totalAmount": "Amount",
+      "status": "Status"
+    },
+    "status": {
+      "NEW": "New",
+      "APPROVED": "Approved",
+      "PAID": "Paid",
+      "REJECTED": "Rejected"
+    },
+    "dialog": {
+      "title": "New purchase invoice",
+      "details": "Invoice details",
+      "supplier": "Supplier",
+      "addSupplier": "Add a new supplier",
+      "addSupplierNamed": "Add a new supplier \"{{name}}\"",
+      "invoiceNumber": "Invoice number",
+      "invoiceDate": "Invoice date",
+      "dueDate": "Due date",
+      "entryDate": "Entry date",
+      "entryDateHint": "The date the purchase is booked on when approved",
+      "totalAmount": "Total (incl. VAT)",
+      "paymentReference": "Reference number",
+      "iban": "IBAN",
+      "bic": "BIC",
+      "description": "Description",
+      "required": "Required",
+      "dueBeforeInvoice": "The due date cannot be before the invoice date",
+      "totalInvalid": "Enter the total in euros, e.g. 125.50",
+      "referenceInvalid": "The reference number is not valid: check the digits",
+      "ibanInvalid": "The IBAN is not valid: check the digits",
+      "bicInvalid": "The BIC is not in the right form",
+      "duplicateNumber": "{{supplier}} already has an invoice with this number.",
+      "discardConfirm": "The invoice is unfinished. Discard it?",
+      "save": "Save",
+      "saving": "Saving…",
+      "pdfZone": "Invoice PDF",
+      "pdfDrop": "Drop the invoice PDF here",
+      "pdfPick": "Choose a file",
+      "pdfOptional": "A PDF is optional.",
+      "pdfNotPdf": "{{name}} is not a PDF file.",
+      "pdfTooLarge": "{{name}} is too large (at most 20 MB).",
+      "removePdf": "Remove the PDF"
+    },
+    "rowsPerPage": "Invoices per page",
+    "displayedRows": "{{from}}–{{to}} of {{count}}"
+  },
   "bankStatements": {
     "title": "Bank statements",
     "importButton": "Import statements",
@@ -549,7 +643,6 @@
       "confirmDelete": "Delete entry {{voucher}}? This cannot be undone."
     },
     "pdf": {
-      "openInNewTab": "Open in a new tab",
       "close": "Close statement"
     },
     "summary": {

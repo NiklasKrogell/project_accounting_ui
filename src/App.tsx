@@ -9,6 +9,7 @@ import Home from './pages/Home';
 import FiscalYears from './pages/FiscalYears';
 import Journal from './pages/Journal';
 import BankStatements from './pages/BankStatements';
+import PurchaseInvoices from './pages/PurchaseInvoices';
 import ChartOfAccounts from './pages/ChartOfAccounts';
 import CostCenters from './pages/CostCenters';
 import GeneralLedger from './pages/GeneralLedger';
@@ -20,7 +21,11 @@ import { CompanyInfoSettings } from './components/Settings/Company/CompanyInfoSe
 import { VatAccountsSettings } from './components/Settings/Company/VatAccountsSettings';
 import { BankSettings } from './components/Settings/Company/BankSettings';
 import { UsersSettings } from './components/Settings/Company/UsersSettings';
-import { BANK_STATEMENTS_PATH, SETTINGS_PATH } from './components/Header/navConfig';
+import {
+  BANK_STATEMENTS_PATH,
+  PURCHASE_INVOICES_PATH,
+  SETTINGS_PATH,
+} from './components/Header/navConfig';
 import ProtectedRoute from './routes/ProtectedRoute';
 import PublicOnlyRoute from './routes/PublicOnlyRoute';
 import Layout from './routes/Layout';
@@ -51,6 +56,7 @@ function AppRoutes() {
           <Route path={BANK_STATEMENTS_PATH} element={<BankStatements />} />
           <Route path="/accounting/chart-of-accounts" element={<ChartOfAccounts />} />
           <Route path="/accounting/cost-centers" element={<CostCenters />} />
+          <Route path={PURCHASE_INVOICES_PATH} element={<PurchaseInvoices />} />
           <Route path="/accounting/general-ledger" element={<GeneralLedger />} />
           <Route path="/reports/income-statement" element={<IncomeStatement />} />
           <Route path="/reports/balance-sheet" element={<BalanceSheet />} />

@@ -32,6 +32,7 @@ import type {
 } from '../../types/journal';
 import { VOUCHER_TYPES } from '../../types/journal';
 import { formatCurrency } from '../../lib/format';
+import { amountText, parseAmount, toCents } from '../../lib/amount';
 import { VAT_RATES, formatVatRate, vatCents, vatCentsInGross } from '../../lib/vat';
 
 const MAX_LINES = 100;
@@ -94,17 +95,6 @@ function todayIso(): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
-// Accepts Finnish comma decimals ('123,45' / '-123,45'). Returns null when not a number.
-function parseAmount(value: string): number | null {
-  if (!value.trim()) return null;
-  const n = parseFloat(value.trim().replace(',', '.'));
-  return Number.isFinite(n) ? n : null;
-}
-
-function toCents(value: number): number {
-  return Math.round(value * 100);
-}
-
 // VAT amount in cents for a line, derived from its (signed) amount and VAT
 // rate — null when either input doesn't parse yet.
 function lineVatCents(line: LineDraft, basis: VatBasis): number | null {
@@ -116,11 +106,6 @@ function lineVatCents(line: LineDraft, basis: VatBasis): number | null {
 }
 
 const accountLabel = (a: Account) => `${a.number} ${a.name}`;
-
-// An amount as the amount field shows it: 125,50 or -100,00.
-function amountText(amount: number): string {
-  return amount.toFixed(2).replace('.', ',');
-}
 
 // The lines of a saved entry as the form edits them: the entered ones only
 // (the VAT rows are generated anew on save), each at its stored net amount

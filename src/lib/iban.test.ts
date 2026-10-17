@@ -1,4 +1,4 @@
-import { formatIban, isValidIban, normalizeIban } from './iban';
+import { formatIban, isValidBic, isValidIban, normalizeBic, normalizeIban } from './iban';
 
 test('normalizeIban strips whitespace and upper-cases', () => {
   expect(normalizeIban(' fi21 1234 5600 0007 85 ')).toBe('FI2112345600000785');
@@ -28,4 +28,19 @@ test('formatIban groups by four', () => {
   expect(formatIban('FI2112345600000785')).toBe('FI21 1234 5600 0007 85');
   expect(formatIban('fi21 12345600000785')).toBe('FI21 1234 5600 0007 85');
   expect(formatIban('NO9386011117947')).toBe('NO93 8601 1117 947');
+});
+
+test('normalizeBic strips whitespace and upper-cases', () => {
+  expect(normalizeBic(' nda sfihh ')).toBe('NDASFIHH');
+});
+
+test.each(['NDEAFIHH', 'OKOYFIHH', 'DEUTDEFF500'])('isValidBic accepts %s', (bic) => {
+  expect(isValidBic(bic)).toBe(true);
+});
+
+test('isValidBic rejects a wrong shape', () => {
+  expect(isValidBic('')).toBe(false);
+  expect(isValidBic('NDEAFI')).toBe(false);
+  expect(isValidBic('NDEAFIHH5')).toBe(false);
+  expect(isValidBic('ndeafihh')).toBe(false);
 });

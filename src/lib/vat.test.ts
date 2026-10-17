@@ -1,4 +1,4 @@
-import { formatVatRate, vatCents, vatCentsInGross } from './vat';
+import { formatVatRate, splitVatCents, vatCents, vatCentsInGross } from './vat';
 
 describe('formatVatRate', () => {
   it('writes the rate with a decimal comma', () => {
@@ -39,5 +39,17 @@ describe('vatCentsInGross', () => {
     expect(vatCentsInGross(1000, 25.5)).toBe(203);
     // Not the same as VAT on the net: 15,86 net would give 4,04.
     expect(vatCentsInGross(1991, 25.5)).toBe(405);
+  });
+});
+
+describe('splitVatCents', () => {
+  it('adds the VAT on top of a net amount', () => {
+    expect(splitVatCents(10000, 25.5, 'net')).toEqual({ net: 10000, vat: 2550 });
+  });
+
+  it('takes the VAT out of a gross amount, the two adding up to it', () => {
+    expect(splitVatCents(12550, 25.5, 'gross')).toEqual({ net: 10000, vat: 2550 });
+    const { net, vat } = splitVatCents(1999, 25.5, 'gross');
+    expect(net + vat).toBe(1999);
   });
 });

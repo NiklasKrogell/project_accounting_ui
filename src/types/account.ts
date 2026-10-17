@@ -159,6 +159,13 @@ export interface VatAccounts {
   vatPayableAccountId: string | null;
 }
 
+// The account an approved purchase invoice credits its gross total to
+// (Ostovelat). Null until the company has picked one; approving an invoice is
+// refused without it.
+export interface TradePayablesAccount {
+  tradePayablesAccountId: string | null;
+}
+
 export interface Account {
   id: string;
   // Account number is a per-company string (e.g. '1900'), not a numeric id.

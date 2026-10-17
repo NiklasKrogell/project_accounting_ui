@@ -1,5 +1,5 @@
-// IBAN handling. normalizeIban and isValidIban mirror the backend's
-// src/lib/iban.ts, so change both together.
+// IBAN and BIC handling. normalizeIban, isValidIban, normalizeBic and
+// isValidBic mirror the backend's src/lib/iban.ts, so change both together.
 
 // IBANs are stored and compared without spaces, in upper case.
 export function normalizeIban(value: string): string {
@@ -28,4 +28,16 @@ export function isValidIban(iban: string): boolean {
 // For display: groups of four, e.g. "FI21 1234 5600 0007 85".
 export function formatIban(iban: string): string {
   return normalizeIban(iban).replace(/(.{4})(?=.)/g, '$1 ');
+}
+
+// BICs (SWIFT codes) are stored like IBANs: without spaces, in upper case.
+export function normalizeBic(value: string): string {
+  return value.replace(/\s+/g, '').toUpperCase();
+}
+
+// Expects a normalized BIC. ISO 9362: four letters of institution, a country
+// code, two characters of location and an optional three of branch. A BIC has
+// no check digits, so the shape is all there is to check.
+export function isValidBic(bic: string): boolean {
+  return /^[A-Z]{6}[A-Z0-9]{2}([A-Z0-9]{3})?$/.test(bic);
 }

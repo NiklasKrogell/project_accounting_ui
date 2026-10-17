@@ -553,11 +553,10 @@
       "close": "Close statement"
     },
     "summary": {
-      "title": "Booked from the statement in total",
+      "title": "Booked",
       "deposits": "Deposits",
       "withdrawals": "Withdrawals",
       "net": "Change",
-      "noBankAccount": "Choose a bank account to have its deposits and withdrawals summed.",
       "vatTitle": "Value added tax",
       "purchases": "Purchases {{rate}}",
       "sales": "Sales {{rate}}",

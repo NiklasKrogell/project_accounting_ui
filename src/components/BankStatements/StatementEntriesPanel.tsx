@@ -4,7 +4,6 @@ import {
   Alert,
   Box,
   Button,
-  Chip,
   IconButton,
   MenuItem,
   Tab,
@@ -333,19 +332,8 @@ export function StatementEntriesPanel({
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
       <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider', flexShrink: 0 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2, minWidth: 0 }}>
-          <Typography variant="h6" component="h2" noWrap sx={{ minWidth: 0 }}>
-            {statement.file.originalName}
-          </Typography>
-          <Chip
-            size="small"
-            color={statement.posted ? 'success' : 'default'}
-            variant={statement.posted ? 'filled' : 'outlined'}
-            label={t(
-              statement.posted ? 'bankStatements.status.posted' : 'bankStatements.status.unposted',
-            )}
-          />
-        </Box>
+        {/* No title row: the file's name is over the PDF, and the list shows
+            which statement is open and whether it is posted. */}
         <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 2 }}>
           <TextField
             select

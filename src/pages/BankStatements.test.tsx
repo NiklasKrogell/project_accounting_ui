@@ -393,7 +393,7 @@ test("saves the statement's bank account and the posted mark as they are chosen"
   );
   expect(await screen.findByRole('button', { name: 'Palauta kirjaamattomaksi' })).toBeInTheDocument();
   // Still open, although it has left the unposted ones.
-  expect(screen.getByRole('heading', { name: 'tiliote_syyskuu.pdf', level: 2 })).toBeInTheDocument();
+  expect(pdfPane('tiliote_syyskuu.pdf')).toBeInTheDocument();
 });
 
 // With a statement open and its PDF on the right, the comboboxes are the bank
@@ -508,13 +508,12 @@ test('asks before leaving an unfinished entry for another statement', async () =
 
   fireEvent.click(await screen.findByText('tiliote_elokuu.pdf'));
   expect(confirm).toHaveBeenCalledWith('Kirjaus on kesken. Hylätäänkö se?');
-  expect(screen.getByRole('heading', { name: 'tiliote_syyskuu.pdf', level: 2 })).toBeInTheDocument();
+  expect(rowOf('tiliote_syyskuu.pdf')).toHaveAttribute('aria-selected', 'true');
   expect(screen.getByRole('heading', { name: 'Uusi kirjaus' })).toBeInTheDocument();
 
   confirm.mockReturnValue(true);
   fireEvent.click(screen.getByText('tiliote_elokuu.pdf'));
   expect(await findPdfPane('tiliote_elokuu.pdf')).toBeInTheDocument();
-  expect(screen.getByRole('heading', { name: 'tiliote_elokuu.pdf', level: 2 })).toBeInTheDocument();
   expect(screen.queryByRole('heading', { name: 'Uusi kirjaus' })).not.toBeInTheDocument();
   // The bank account it already has is shown, and so is its posted mark.
   expect(screen.getByRole('combobox', { name: /Pankkitili/ })).toHaveTextContent('Käyttötili');

@@ -553,11 +553,10 @@
       "close": "Sulje tiliote"
     },
     "summary": {
-      "title": "Tiliotteelta kirjattu yhteensä",
+      "title": "Kirjattu",
       "deposits": "Panot",
       "withdrawals": "Otot",
       "net": "Muutos",
-      "noBankAccount": "Valitse pankkitili, niin tilin panot ja otot lasketaan.",
       "vatTitle": "Arvonlisävero",
       "purchases": "Ostot {{rate}}",
       "sales": "Myynnit {{rate}}",

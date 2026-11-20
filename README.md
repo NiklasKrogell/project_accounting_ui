@@ -2,7 +2,7 @@
 
 Web client for a multi-tenant accounting SaaS: journal entries, fiscal years, chart of accounts, bank statements, purchase and sales invoices, financial reports and company settings. The UI is in Finnish, with English as the fallback language.
 
-It talks to the API in the sibling repo `project_accounting_backend`.
+It talks to the API in the sibling repo [project_accounting_backend](https://github.com/NiklasKrogell/project_accounting_backend).
 
 ## Tech stack
 

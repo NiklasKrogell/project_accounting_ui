@@ -1,70 +1,60 @@
-# Getting Started with Create React App
+# Project accounting – UI
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Web client for a multi-tenant accounting SaaS: journal entries, fiscal years, chart of accounts, bank statements, purchase and sales invoices, financial reports and company settings. The UI is in Finnish, with English as the fallback language.
 
-## Available Scripts
+It talks to the API in the sibling repo `project_accounting_backend`.
 
-In the project directory, you can run:
+## Tech stack
 
-### `npm start`
+- React 19 + TypeScript on Create React App (react-scripts 5)
+- MUI (Material UI) for components
+- React Router v6
+- i18next / react-i18next for translations
+- pdf.js for showing invoice and bank statement PDFs
+- Jest + Testing Library for tests
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Getting started
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Start the backend first (it serves the API on `http://localhost:4000`), then:
 
-### `npm test`
+```bash
+npm install     # .npmrc sets legacy-peer-deps, needed with React 19
+npm start       # dev server on http://localhost:3000
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+To get in: sign up at `/signup`, register a company, then activate it with the backend's `npm run activate:company` (subscriptions aren't wired to payments yet).
 
-### `npm run build`
+## Scripts
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+| Command | What it does |
+| --- | --- |
+| `npm start` | Dev server on port 3000 (doesn't open a browser, see `.env`) |
+| `npm run build` | Production build into `build/` |
+| `npm test` | Tests in watch mode (`npm test -- --watchAll=false` runs them once) |
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+`npm start` and `npm run build` first copy the pdf.js worker into `public/` (`scripts/copy-pdfjs-assets.js`).
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Configuration
 
-### `npm run eject`
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `REACT_APP_API_URL` | `http://localhost:4000` | Backend address; requests are sent with credentials (cookies) |
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+The backend's `CORS_ORIGIN` must match the origin the UI is served from.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Project layout
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+```
+src/
+  api/          one module per backend resource, on top of client.ts
+  auth/         AuthContext: session, memberships, active company
+  pages/        routed pages
+  components/   UI by feature area (Journal, BankStatements, PurchaseInvoices, Settings…)
+  routes/       layout and route guards
+  i18n/         translations
+  lib/          shared helpers (roles, VAT, IBAN, money, dates…)
+```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+CI (`.github/workflows/ci.yml`) runs the tests once and builds the app on Node 22.
 
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+See [CLAUDE.md](CLAUDE.md) for the detailed architecture and conventions.
